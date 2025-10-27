@@ -40,7 +40,7 @@ A comprehensive platform combining career guidance, spiritual wisdom, and curate
 ## 📦 Installation
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/marg-darshak.git
+git clone https://github.com/Vaibhavsharma45/marg-darshak.git
 cd marg-darshak
 
 # Create virtual environment
@@ -84,11 +84,11 @@ This is a college project. Feedback and suggestions welcome!
 
 MIT License
 
-## 👨‍💻 Author
+## 👨‍💻 Vaibhav sharma
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Project: Minor Project - [Your College Name]
+- GitHub: [Vaibhavsharma45](https://github.com/Vaibhavshharma45)
+- Project: Minor Project - [Disha Bharti College of Management and Education, Saharanpur]
 
 ---
 
