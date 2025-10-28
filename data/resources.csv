@@ -1,0 +1,41 @@
+title,topic,platform,resource_type,url,difficulty,duration_hours,quality_score,language,is_free
+Python for Beginners Full Course,Programming,YouTube,Video,https://www.youtube.com/watch?v=rfscVS0vtbw,Beginner,20,4.7,English,TRUE
+Data Science Complete Course,Data Science,YouTube,Video,https://www.youtube.com/watch?v=ua-CiDNNj30,Intermediate,40,4.8,English,TRUE
+Machine Learning A-Z Hands-On Python,Machine Learning,Udemy,Course,https://www.udemy.com/course/machinelearning/,Intermediate,44,4.6,English,FALSE
+Web Development Bootcamp,Web Development,Udemy,Course,https://www.udemy.com/course/the-complete-web-development-bootcamp/,Beginner,65,4.7,English,FALSE
+DSA for Beginners,Data Structures,YouTube,Video,https://www.youtube.com/watch?v=BBpAmxU_NQo,Beginner,30,4.6,English,TRUE
+React JS Full Course,Frontend,YouTube,Video,https://www.youtube.com/watch?v=bMknfKXIFA8,Intermediate,12,4.5,English,TRUE
+SQL Complete Tutorial,Database,YouTube,Video,https://www.youtube.com/watch?v=HXV3zeQKqGY,Beginner,4,4.7,English,TRUE
+Digital Marketing Course,Marketing,Google,Course,https://learndigital.withgoogle.com/digitalunlocked,Beginner,40,4.5,English,TRUE
+AWS Cloud Practitioner,Cloud Computing,AWS,Course,https://aws.amazon.com/training/,Beginner,15,4.6,English,TRUE
+Graphic Design Masterclass,Design,Udemy,Course,https://www.udemy.com/course/graphic-design-masterclass/,Beginner,35,4.5,English,FALSE
+Excel for Data Analysis,Excel,YouTube,Video,https://www.youtube.com/watch?v=Vl0H-qTclOg,Beginner,8,4.6,English,TRUE
+Introduction to Cybersecurity,Cybersecurity,Cisco,Course,https://www.netacad.com/courses/cybersecurity,Beginner,15,4.5,English,TRUE
+Git and GitHub for Beginners,Version Control,YouTube,Video,https://www.youtube.com/watch?v=RGOj5yH7evk,Beginner,1,4.7,English,TRUE
+Communication Skills Course,Soft Skills,Coursera,Course,https://www.coursera.org/learn/wharton-communication-skills,Beginner,20,4.6,English,FALSE
+Financial Planning Basics,Finance,YouTube,Video,https://www.youtube.com/watch?v=gFPN3R-P4IA,Beginner,5,4.5,English,TRUE
+```
+
+**Save karo as:** `data/resources.csv`
+
+---
+
+## **OPTION 2: AI Se Generate Karwao (Fast)**
+
+Agar manually typing nahi karna:
+
+### **ChatGPT/Claude ko yeh prompt de:**
+```
+Generate a CSV file with 30 diverse career options for Indian students. Include these columns:
+- title (career name)
+- category (Technology/Business/Creative/Engineering/Healthcare/etc)
+- description (1 line)
+- required_skills (semicolon separated, 3-5 skills)
+- avg_salary_inr (realistic Indian salary)
+- growth_rate (Low/Medium/High/Very High)
+- difficulty_level (Easy/Medium/Hard/Very Hard)
+- education_required (degree needed)
+- top_colleges (semicolon separated, 2-3 colleges)
+- job_roles (semicolon separated, 2-3 related roles)
+
+Give complete CSV format with header row.

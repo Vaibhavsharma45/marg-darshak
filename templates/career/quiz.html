@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Quiz - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <!-- Quiz Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">🎯 Career Discovery Quiz</h1>
+                <p class="lead">Answer a few questions to find your perfect career match</p>
+                <div class="progress" style="height: 5px;">
+                    <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                <small class="text-muted">Question <span id="currentQ">1</span> of <span id="totalQ">10</span></small>
+            </div>
+            
+            <!-- Quiz Form -->
+            <div id="quizContainer" class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    
+                    <!-- Question 1 -->
+                    <div class="question-slide active" data-question="1">
+                        <h4 class="mb-4">What excites you the most?</h4>
+                        <div class="option-group">
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="technical" data-category="technical">
+                                <div class="option-content">
+                                    <i class="fas fa-laptop-code fa-2x mb-2"></i>
+                                    <h6>Building & Creating</h6>
+                                    <p class="small text-muted">Coding, developing apps, solving technical problems</p>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="creative" data-category="creative">
+                                <div class="option-content">
+                                    <i class="fas fa-palette fa-2x mb-2"></i>
+                                    <h6>Designing & Expressing</h6>
+                                    <p class="small text-muted">Art, design, content creation, visual storytelling</p>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="social" data-category="social">
+                                <div class="option-content">
+                                    <i class="fas fa-users fa-2x mb-2"></i>
+                                    <h6>Helping & Connecting</h6>
+                                    <p class="small text-muted">Working with people, teaching, counseling</p>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="analytical" data-category="analytical">
+                                <div class="option-content">
+                                    <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                    <h6>Analyzing & Strategizing</h6>
+                                    <p class="small text-muted">Data analysis, research, problem-solving</p>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q1" value="entrepreneurial" data-category="entrepreneurial">
+                                <div class="option-content">
+                                    <i class="fas fa-rocket fa-2x mb-2"></i>
+                                    <h6>Leading & Innovating</h6>
+                                    <p class="small text-muted">Starting businesses, managing teams, taking risks</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 2 -->
+                    <div class="question-slide" data-question="2">
+                        <h4 class="mb-4">How do you prefer to work?</h4>
+                        <div class="option-group">
+                            <label class="option-card">
+                                <input type="radio" name="q2" value="technical">
+                                <div class="option-content">
+                                    <i class="fas fa-desktop fa-2x mb-2"></i>
+                                    <h6>Independently with Technology</h6>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q2" value="social">
+                                <div class="option-content">
+                                    <i class="fas fa-user-friends fa-2x mb-2"></i>
+                                    <h6>Collaborating with Teams</h6>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q2" value="creative">
+                                <div class="option-content">
+                                    <i class="fas fa-lightbulb fa-2x mb-2"></i>
+                                    <h6>Creatively and Flexibly</h6>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q2" value="analytical">
+                                <div class="option-content">
+                                    <i class="fas fa-brain fa-2x mb-2"></i>
+                                    <h6>Methodically with Data</h6>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 3 -->
+                    <div class="question-slide" data-question="3">
+                        <h4 class="mb-4">What's your ideal work environment?</h4>
+                        <div class="option-group">
+                            <label class="option-card">
+                                <input type="radio" name="q3" value="technical">
+                                <div class="option-content">
+                                    <i class="fas fa-building fa-2x mb-2"></i>
+                                    <h6>Tech Office / Remote</h6>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q3" value="creative">
+                                <div class="option-content">
+                                    <i class="fas fa-paint-brush fa-2x mb-2"></i>
+                                    <h6>Studio / Creative Space</h6>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q3" value="social">
+                                <div class="option-content">
+                                    <i class="fas fa-hospital fa-2x mb-2"></i>
+                                    <h6>Field Work / Community</h6>
+                                </div>
+                            </label>
+                            
+                            <label class="option-card">
+                                <input type="radio" name="q3" value="entrepreneurial">
+                                <div class="option-content">
+                                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                    <h6>Dynamic Business Setting</h6>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Add more questions similarly... -->
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="previousQuestion()" disabled>
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-success" id="submitBtn" onclick="submitQuiz()" style="display: none;">
+                            Get Results <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center my-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Analyzing your responses...</p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+    .question-slide {
+        display: none;
+    }
+    
+    .question-slide.active {
+        display: block;
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .option-group {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .option-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: block;
+    }
+    
+    .option-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .option-card input[type="radio"] {
+        display: none;
+    }
+    
+    .option-card input[type="radio"]:checked + .option-content {
+        color: #667eea;
+    }
+    
+    .option-card input[type="radio"]:checked ~ * {
+        border-color: #667eea;
+    }
+    
+    .option-card:has(input[type="radio"]:checked) {
+        border-color: #667eea;
+        background-color: #f0f3ff;
+    }
+    
+    .option-content {
+        text-align: center;
+    }
+    
+    .progress {
+        background-color: #e9ecef;
+    }
+    
+    .progress-bar {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.5s ease;
+    }
+</style>
+
+<script>
+let currentQuestion = 1;
+const totalQuestions = 3; // Update this based on actual questions
+let responses = {};
+
+document.getElementById('totalQ').textContent = totalQuestions;
+
+// Enable next button when option selected
+document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById('nextBtn').disabled = false;
+    });
+});
+
+function nextQuestion() {
+    // Save current answer
+    const currentSlide = document.querySelector(`.question-slide[data-question="${currentQuestion}"]`);
+    const selected = currentSlide.querySelector('input[type="radio"]:checked');
+    
+    if (selected) {
+        responses[`q${currentQuestion}`] = selected.value;
+        
+        // Hide current question
+        currentSlide.classList.remove('active');
+        
+        // Move to next
+        currentQuestion++;
+        
+        if (currentQuestion <= totalQuestions) {
+            // Show next question
+            document.querySelector(`.question-slide[data-question="${currentQuestion}"]`).classList.add('active');
+            document.getElementById('currentQ').textContent = currentQuestion;
+            
+            // Update progress bar
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = false;
+            document.getElementById('nextBtn').disabled = true;
+            
+            // Check if answer already selected
+            const nextSlide = document.querySelector(`.question-slide[data-question="${currentQuestion}"]`);
+            if (nextSlide.querySelector('input[type="radio"]:checked')) {
+                document.getElementById('nextBtn').disabled = false;
+            }
+            
+            // Show submit button on last question
+            if (currentQuestion === totalQuestions) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'block';
+            }
+        }
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestion > 1) {
+        // Hide current question
+        document.querySelector(`.question-slide[data-question="${currentQuestion}"]`).classList.remove('active');
+        
+        // Move to previous
+        currentQuestion--;
+        
+        // Show previous question
+        document.querySelector(`.question-slide[data-question="${currentQuestion}"]`).classList.add('active');
+        document.getElementById('currentQ').textContent = currentQuestion;
+        
+        // Update progress bar
+        const progress = (currentQuestion / totalQuestions) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+        
+        // Update buttons
+        document.getElementById('nextBtn').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('nextBtn').disabled = false;
+        
+        if (currentQuestion === 1) {
+            document.getElementById('prevBtn').disabled = true;
+        }
+    }
+}
+
+function submitQuiz() {
+    // Save last answer
+    const currentSlide = document.querySelector(`.question-slide[data-question="${currentQuestion}"]`);
+    const selected = currentSlide.querySelector('input[type="radio"]:checked');
+    
+    if (!selected) {
+        alert('Please select an option');
+        return;
+    }
+    
+    responses[`q${currentQuestion}`] = selected.value;
+    
+    // Count category frequencies
+    const categoryScores = {
+        technical: 0,
+        creative: 0,
+        social: 0,
+        analytical: 0,
+        entrepreneurial: 0
+    };
+    
+    Object.values(responses).forEach(value => {
+        if (categoryScores.hasOwnProperty(value)) {
+            categoryScores[value]++;
+        }
+    });
+    
+    // Show loading
+    document.getElementById('quizContainer').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    
+    // Send to backend
+    fetch('/career/quiz', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(categoryScores)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Redirect to results page with data
+        sessionStorage.setItem('quizResults', JSON.stringify(data));
+        window.location.href = '/career/results';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+        document.getElementById('quizContainer').style.display = 'block';
+        document.getElementById('loadingState').style.display = 'none';
+    });
+}
+</script>
+{% endblock %}

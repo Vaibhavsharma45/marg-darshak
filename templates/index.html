@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">🧭 Marg Darshak</h1>
+        <h2 class="h4 mb-4" style="font-family: 'Noto Sans Devanagari', sans-serif;">
+            "जीवन के हर पड़ाव पर सही दिशा"
+        </h2>
+        <p class="lead mb-4">Your Complete Guide to Career, Wisdom & Learning</p>
+        
+        <!-- Stats -->
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <h3 class="display-4">{{ stats.careers }}</h3>
+                    <p>Career Paths</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <h3 class="display-4">{{ stats.shlokas }}</h3>
+                    <p>Wisdom Verses</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <h3 class="display-4">{{ stats.resources }}</h3>
+                    <p>Learning Resources</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Three Modules Section -->
+<div class="container my-5">
+    <div class="row g-4">
+        
+        <!-- Career Compass -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <div class="icon-box mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3 class="card-title">Career Compass</h3>
+                    <p class="card-text">
+                        Discover your perfect career path with AI-powered recommendations, 
+                        personalized roadmaps, and skill guidance.
+                    </p>
+                    <a href="/career" class="btn btn-primary">Start Quiz <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gyan Kosh -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <div class="icon-box mb-3" style="font-size: 3rem; color: #f093fb;">
+                        <i class="fas fa-om"></i>
+                    </div>
+                    <h3 class="card-title">Gyan Kosh</h3>
+                    <h6 style="font-family: 'Noto Sans Devanagari', sans-serif;">ज्ञान कोश</h6>
+                    <p class="card-text">
+                        Daily spiritual wisdom from Bhagavad Gita and ancient scriptures 
+                        with practical applications for modern life.
+                    </p>
+                    <a href="/gyan" class="btn btn-primary">Daily Wisdom <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Skill Saathi -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body text-center">
+                    <div class="icon-box mb-3" style="font-size: 3rem; color: #4facfe;">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="card-title">Skill Saathi</h3>
+                    <p class="card-text">
+                        Curated learning resources from top platforms - YouTube, Coursera, 
+                        Udemy and more, all in one place.
+                    </p>
+                    <a href="/skill" class="btn btn-primary">Browse Resources <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How Marg Darshak Helps You</h2>
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <div class="step-number">1</div>
+                <h5>Discover</h5>
+                <p>Take the career quiz or explore wisdom</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number">2</div>
+                <h5>Learn</h5>
+                <p>Get personalized recommendations</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number">3</div>
+                <h5>Grow</h5>
+                <p>Access curated learning resources</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number">4</div>
+                <h5>Succeed</h5>
+                <p>Achieve your goals with guidance</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="container text-center my-5">
+    <h2 class="mb-4">Ready to Find Your Path?</h2>
+    <p class="lead mb-4">Join thousands of students discovering their direction</p>
+    <a href="/career" class="btn btn-lg btn-primary me-3">Start Career Quiz</a>
+    <a href="/gyan" class="btn btn-lg btn-outline-primary">Get Daily Wisdom</a>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .step-number {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        border-radius: 50%;
+        background: #667eea;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+    }
+    .stat-box h3, .stat-box p {
+        margin: 0;
+    }
+</style>
+{% endblock %}
