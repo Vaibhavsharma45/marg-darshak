@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ career.title }} - Career Detail{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="/career/browse" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Browse
+        </a>
+    </div>
+    
+    <div class="row">
+        <!-- Left: Career Info Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h2 class="card-title mb-3">{{ career.title }}</h2>
+                    <span class="badge bg-primary mb-3">{{ career.category }}</span>
+                    
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-money-bill-wave text-success me-2"></i>
+                            <strong>Average Salary</strong>
+                        </div>
+                        <h4 class="text-primary mb-0">₹{{ (career.avg_salary_inr / 100000)|round(1) }} LPA</h4>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-chart-line text-info me-2"></i>
+                            <strong>Growth Rate</strong>
+                        </div>
+                        <span class="badge bg-success fs-6">{{ career.growth_rate }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-signal text-warning me-2"></i>
+                            <strong>Difficulty Level</strong>
+                        </div>
+                        <span class="badge bg-warning text-dark fs-6">{{ career.difficulty_level }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-graduation-cap text-primary me-2"></i>
+                            <strong>Education Required</strong>
+                        </div>
+                        <p class="mb-0 small">{{ career.education_required }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right: Detailed Information -->
+        <div class="col-lg-8">
+            
+            <!-- About -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> About This Career</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ career.description }}</p>
+                </div>
+            </div>
+            
+            <!-- Required Skills -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-tools"></i> Required Skills</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for skill in career.required_skills.split(';') %}
+                        <div class="col-md-6">
+                            <div class="skill-badge p-3 bg-light rounded">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>{{ skill.strip() }}</strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Colleges -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-university"></i> Top Colleges</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for college in career.top_colleges.split(';') %}
+                        <li class="list-group-item">
+                            <i class="fas fa-building text-primary me-2"></i>
+                            {{ college.strip() }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Job Roles -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-briefcase"></i> Possible Job Roles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for role in career.job_roles.split(';') %}
+                        <div class="col-md-6">
+                            <div class="job-role-card p-3 border rounded">
+                                <i class="fas fa-user-tie text-primary me-2"></i>
+                                <strong>{{ role.strip() }}</strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Career Roadmap -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-road"></i> Career Roadmap</h5>
+                </div>
+                <div class="card-body">
+                    <div class="roadmap-timeline">
+                        
+                        <div class="timeline-step mb-4">
+                            <div class="step-number bg-primary">1</div>
+                            <div class="step-content">
+                                <h6>Foundation Building</h6>
+                                <p>Complete: {{ career.education_required }}</p>
+                                <small class="text-muted">Duration: 3-4 years</small>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step mb-4">
+                            <div class="step-number bg-success">2</div>
+                            <div class="step-content">
+                                <h6>Skill Development</h6>
+                                <p>Master key skills: {{ career.required_skills.split(';')[0] }}{% if career.required_skills.split(';')|length > 1 %}, {{ career.required_skills.split(';')[1] }}{% endif %}</p>
+                                <small class="text-muted">Duration: 6-12 months</small>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step mb-4">
+                            <div class="step-number bg-info">3</div>
+                            <div class="step-content">
+                                <h6>Build Portfolio</h6>
+                                <p>Create 3-5 real-world projects showcasing your skills</p>
+                                <small class="text-muted">Duration: 3-6 months</small>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step">
+                            <div class="step-number bg-warning">4</div>
+                            <div class="step-content">
+                                <h6>Job Ready</h6>
+                                <p>Apply for {{ career.job_roles.split(';')[0] }} positions</p>
+                                <small class="text-muted">Start your career!</small>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA Buttons -->
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-primary btn-lg me-2 mb-2" onclick="shareCareer()">
+                    <i class="fas fa-share-alt"></i> Share This Career
+                </button>
+                <a href="/skill?topic={{ career.category }}" class="btn btn-primary btn-lg mb-2">
+                    <i class="fas fa-book-open"></i> Find Learning Resources
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification for Share -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="shareToast" class="toast hide" role="alert">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Link copied to clipboard!
+        </div>
+    </div>
+</div>
+
+<style>
+    .skill-badge:hover {
+        background-color: #e3f2fd !important;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .job-role-card:hover {
+        border-color: #667eea !important;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .roadmap-timeline {
+        position: relative;
+        padding-left: 50px;
+    }
+    
+    .timeline-step {
+        position: relative;
+        padding-bottom: 30px;
+        border-left: 3px solid #e0e0e0;
+    }
+    
+    .timeline-step:last-child {
+        border-left: none;
+    }
+    
+    .step-number {
+        position: absolute;
+        left: -25px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border: 4px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .step-content {
+        margin-left: 30px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .sticky-top {
+            position: relative !important;
+            top: 0 !important;
+        }
+    }
+</style>
+
+<script>
+// Share Career Function
+function shareCareer() {
+    const url = window.location.href;
+    const title = '{{ career.title }} Career Path - Marg Darshak';
+    const text = 'Check out this career: {{ career.title }} with average salary ₹{{ (career.avg_salary_inr / 100000)|round(1) }} LPA';
+    
+    // Check if Web Share API is supported (mobile)
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: text,
+            url: url
+        })
+        .then(() => console.log('Shared successfully'))
+        .catch((error) => {
+            console.log('Share failed:', error);
+            fallbackCopy(url);
+        });
+    } else {
+        // Fallback - Copy to clipboard (desktop)
+        fallbackCopy(url);
+    }
+}
+
+// Fallback copy function
+function fallbackCopy(url) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                showToast();
+            })
+            .catch(() => {
+                // Old method fallback
+                oldCopyMethod(url);
+            });
+    } else {
+        oldCopyMethod(url);
+    }
+}
+
+// Old copy method for older browsers
+function oldCopyMethod(url) {
+    const textarea = document.createElement('textarea');
+    textarea.value = url;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        showToast();
+    } catch (err) {
+        alert('Could not copy. Please copy manually: ' + url);
+    }
+    
+    document.body.removeChild(textarea);
+}
+
+// Show toast notification
+function showToast() {
+    const toastEl = document.getElementById('shareToast');
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+}
+</script>
+{% endblock %}

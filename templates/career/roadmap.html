@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Roadmap - {{ career.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="/career/browse" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Careers
+        </a>
+    </div>
+    
+    <div class="row">
+        <!-- Left: Career Info -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h3 class="card-title">{{ career.title }}</h3>
+                    <span class="badge bg-primary mb-3">{{ career.category }}</span>
+                    
+                    <div class="mb-3">
+                        <strong>💰 Average Salary:</strong><br>
+                        <h4 class="text-primary">₹{{ (career.avg_salary_inr / 100000)|round(1) }} LPA</h4>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>📈 Growth Rate:</strong><br>
+                        <span class="badge bg-success">{{ career.growth_rate }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>🎯 Difficulty:</strong><br>
+                        <span class="badge bg-warning text-dark">{{ career.difficulty_level }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>🎓 Education:</strong><br>
+                        <p class="small mb-0">{{ career.education_required }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right: Roadmap -->
+        <div class="col-lg-8">
+            <h2 class="mb-4">🗺️ Career Roadmap</h2>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>📋 About This Career</h5>
+                    <p>{{ career.description }}</p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>🛠️ Required Skills</h5>
+                    <div class="row">
+                        {% for skill in career.required_skills.split(';') %}
+                        <div class="col-md-6 mb-2">
+                            <span class="badge bg-primary me-2">✓</span> {{ skill }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>🏛️ Top Colleges</h5>
+                    <ul class="list-unstyled">
+                        {% for college in career.top_colleges.split(';') %}
+                        <li class="mb-2"><i class="fas fa-university text-primary"></i> {{ college }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5>💼 Job Roles You Can Get</h5>
+                    <div class="row">
+                        {% for role in career.job_roles.split(';') %}
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-briefcase text-success"></i> {{ role }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Learning Path -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>📚 Suggested Learning Path</h5>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6>Step 1: Foundation</h6>
+                                <p>Complete {{ career.education_required }}</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>Step 2: Skill Building</h6>
+                                <p>Learn: {{ career.required_skills.split(';')[0] }}, {{ career.required_skills.split(';')[1] if career.required_skills.split(';')|length > 1 }}</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6>Step 3: Projects & Portfolio</h6>
+                                <p>Build real-world projects to showcase skills</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6>Step 4: Job Ready</h6>
+                                <p>Apply for {{ career.job_roles.split(';')[0] }} positions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="/skill" class="btn btn-primary btn-lg">
+                    <i class="fas fa-book"></i> Find Learning Resources
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-item {
+        position: relative;
+        padding-bottom: 30px;
+        border-left: 2px solid #e0e0e0;
+    }
+    .timeline-item:last-child {
+        border-left: none;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -8px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+    .timeline-content {
+        margin-left: 20px;
+    }
+</style>
+{% endblock %}
