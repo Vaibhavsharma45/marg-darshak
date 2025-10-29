@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Careers - Career Compass{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5">🎯 Explore Career Options</h1>
+    
+    <!-- Category Filter -->
+    <div class="text-center mb-4">
+        <a href="/career/browse?category=all" class="btn btn-sm {% if selected_category == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">All</a>
+        {% for cat in categories %}
+        <a href="/career/browse?category={{ cat }}" class="btn btn-sm {% if selected_category == cat %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">{{ cat }}</a>
+        {% endfor %}
+    </div>
+    
+    <!-- Careers Grid -->
+    <div class="row">
+        {% for career in careers %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 hover-card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ career.title }}</h5>
+                    <span class="badge bg-info mb-3">{{ career.category }}</span>
+                    <p class="card-text small">{{ career.description }}</p>
+                    
+                    <div class="mb-2">
+                        <strong>💰</strong> ₹{{ (career.avg_salary_inr / 100000)|round(1) }} LPA
+                    </div>
+                    <div class="mb-2">
+                        <strong>📈</strong> {{ career.growth_rate }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>🎓</strong> {{ career.difficulty_level }}
+                    </div>
+                    
+                    <a href="/career/results/{{ career.id }}" class="btn btn-primary w-100">
+                        View Details <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
