@@ -129,6 +129,17 @@ def career_results():
     """Display career quiz results"""
     return render_template('career/results.html')
 
+@app.route('/career/roadmap/<int:career_id>')
+def career_roadmap(career_id):
+    """Career roadmap details"""
+    conn = get_db_connection()
+    career = conn.execute('SELECT * FROM careers WHERE id = ?', (career_id,)).fetchone()
+    conn.close()
+    
+    if career:
+        return render_template('career/roadmap.html', career=dict(career))
+    return "Career not found", 404
+
 # ==================== GYAN KOSH MODULE ====================
 @app.route('/gyan')
 def gyan_home():
