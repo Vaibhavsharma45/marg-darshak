@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Results - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Results Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">🎯 Your Career Matches</h1>
+        <p class="lead">Based on your interests and preferences</p>
+    </div>
+    
+    <!-- Top 3 Career Recommendations -->
+    <div class="row mb-5" id="careerResults">
+        <!-- Will be populated by JavaScript -->
+    </div>
+    
+    <!-- Browse All Careers -->
+    <div class="text-center mb-5">
+        <h3 class="mb-4">Want to explore more options?</h3>
+        <a href="/career/browse" class="btn btn-outline-primary btn-lg">
+            Browse All Careers <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    
+    <!-- Retake Quiz -->
+    <div class="text-center">
+        <a href="/career" class="btn btn-link">
+            <i class="fas fa-redo"></i> Retake Quiz
+        </a>
+    </div>
+    
+</div>
+
+<script>
+// Get results from sessionStorage
+const results = JSON.parse(sessionStorage.getItem('quizResults'));
+
+if (results && results.careers) {
+    const container = document.getElementById('careerResults');
+    
+    results.careers.forEach((career, index) => {
+        const badge = index === 0 ? '<span class="badge bg-success">Best Match</span>' : '';
+        
+        const careerCard = `
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm hover-card">
+                    <div class="card-body">
+                        ${badge}
+                        <h4 class="card-title mt-2">${career.title}</h4>
+                        <p class="text-muted small">${career.category}</p>
+                        <p class="card-text">${career.description}</p>
+                        
+                        <div class="mb-3">
+                            <strong>💰 Avg Salary:</strong> ₹${(career.avg_salary_inr / 100000).toFixed(1)} LPA
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>📈 Growth:</strong> 
+                            <span class="badge bg-info">${career.growth_rate}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>🎓 Education:</strong><br>
+                            <small>${career.education_required}</small>
+                        </div>
+                        
+                        <a href="/career/roadmap/${career.id}" class="btn btn-primary w-100 mt-3">
+                            View Roadmap <i class="fas fa-map"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML += careerCard;
+    });
+} else {
+    window.location.href = '/career';
+}
+</script>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-10px);
+    }
+</style>
+{% endblock %}
