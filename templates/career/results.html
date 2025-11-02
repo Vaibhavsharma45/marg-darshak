@@ -1,37 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Results - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <!-- Results Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">🎯 Your Career Matches</h1>
+        <p class="lead">Based on your interests and preferences</p>
+    </div>
+    
+    <!-- Top Career Recommendations -->
+    <div class="row mb-5" id="careerResults">
+        <!-- Will be populated by JavaScript -->
+        <div class="col-12 text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading your results...</p>
+        </div>
+    </div>
+    
+    <!-- Browse All Careers -->
+    <div class="text-center mb-5">
+        <h3 class="mb-4">Want to explore more options?</h3>
+        <a href="/career/browse" class="btn btn-outline-primary btn-lg">
+            Browse All Careers <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    
+    <!-- Retake Quiz -->
+    <div class="text-center">
+        <a href="/career" class="btn btn-link">
+            <i class="fas fa-redo"></i> Retake Quiz
+        </a>
+    </div>
+    
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+</style>
+
 <script>
 // Get results from sessionStorage
-const results = JSON.parse(sessionStorage.getItem('quizResults'));
+console.log('Checking for quiz results...');
 
-if (results && results.careers) {
+const resultsData = sessionStorage.getItem('quizResults');
+console.log('Raw data:', resultsData);
+
+if (resultsData) {
+    try {
+        const results = JSON.parse(resultsData);
+        console.log('Parsed results:', results);
+        
+        if (results && results.careers && results.careers.length > 0) {
+            displayResults(results.careers);
+        } else {
+            console.error('No careers in results');
+            showError('No career matches found. Please retake the quiz.');
+        }
+    } catch (e) {
+        console.error('Error parsing results:', e);
+        showError('Error loading results. Please retake the quiz.');
+    }
+} else {
+    console.log('No results found, redirecting...');
+    // No results, redirect to quiz
+    setTimeout(() => {
+        window.location.href = '/career';
+    }, 1000);
+}
+
+function displayResults(careers) {
     const container = document.getElementById('careerResults');
+    container.innerHTML = ''; // Clear loading spinner
     
-    results.careers.forEach((career, index) => {
-        const badge = index === 0 ? '<span class="badge bg-success mb-2">Best Match</span>' : '';
+    console.log('Displaying careers:', careers);
+    
+    careers.forEach((career, index) => {
+        const badge = index === 0 ? '<span class="badge bg-success mb-2">🏆 Best Match</span>' : '';
+        
+        // Safely get values with fallbacks
+        const title = career.title || 'Unknown Career';
+        const category = career.category || 'General';
+        const description = career.description || 'No description available';
+        const salary = career.avg_salary_inr ? (career.avg_salary_inr / 100000).toFixed(1) : 'N/A';
+        const growth = career.growth_rate || 'N/A';
+        const education = career.education_required || 'N/A';
+        const careerId = career.id || index + 1;
         
         const careerCard = `
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm hover-card">
                     <div class="card-body">
                         ${badge}
-                        <h4 class="card-title mt-2">${career.title}</h4>
-                        <p class="text-muted small">${career.category}</p>
-                        <p class="card-text">${career.description.substring(0, 100)}...</p>
+                        <h4 class="card-title mt-2">${title}</h4>
+                        <p class="text-muted small mb-3">${category}</p>
+                        <p class="card-text">${description.substring(0, 120)}...</p>
                         
-                        <div class="mb-3">
-                            <strong>💰 Avg Salary:</strong> ₹${(career.avg_salary_inr / 100000).toFixed(1)} LPA
+                        <div class="mb-2">
+                            <strong>💰 Avg Salary:</strong> ₹${salary} LPA
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <strong>📈 Growth:</strong> 
-                            <span class="badge bg-info">${career.growth_rate}</span>
+                            <span class="badge bg-info">${growth}</span>
                         </div>
                         
                         <div class="mb-3">
                             <strong>🎓 Education:</strong><br>
-                            <small>${career.education_required}</small>
+                            <small>${education}</small>
                         </div>
                         
-                        <a href="/career/detail/${career.id}" class="btn btn-primary w-100 mt-3">
+                        <a href="/career/detail/${careerId}" class="btn btn-primary w-100 mt-3">
                             View Full Details <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -41,8 +132,23 @@ if (results && results.careers) {
         
         container.innerHTML += careerCard;
     });
-} else {
-    // No results, redirect to quiz
-    window.location.href = '/career';
+    
+    console.log('Results displayed successfully!');
+}
+
+function showError(message) {
+    const container = document.getElementById('careerResults');
+    container.innerHTML = `
+        <div class="col-12">
+            <div class="alert alert-warning text-center" role="alert">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                <h4>${message}</h4>
+                <a href="/career" class="btn btn-primary mt-3">
+                    <i class="fas fa-redo"></i> Retake Quiz
+                </a>
+            </div>
+        </div>
+    `;
 }
 </script>
+{% endblock %}
