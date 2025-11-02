@@ -1,7 +1,13 @@
+import os
+import sqlite3
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
 # create_tables.py
 import sqlite3
 
-conn = sqlite3.connect('database.db')
+conn = sqlite3.connect('DB_PATH')
 c = conn.cursor()
 
 # Create the careers table (same structure as your main code)
