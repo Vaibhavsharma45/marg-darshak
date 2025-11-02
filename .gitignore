@@ -1,6 +1,6 @@
 echo "venv/
 __pycache__/
 *.pyc
-*.db
+#*.db
 .env
 .DS_Store" > .gitignore

@@ -137,14 +137,14 @@ def career_quiz():
                     unique_careers.append(career)
                     seen_ids.add(career['id'])
             
-            return jsonify({
+            return({
                 'success': True,
                 'interests': interests,
                 'careers': unique_careers[:5]
             })
         except Exception as e:
             print(f"Quiz error: {e}")
-            return jsonify({'success': False, 'error': str(e)}), 500
+            return ({'success': False, 'error': str(e)}), 500
     
     return render_template('career/quiz.html')
 
@@ -396,9 +396,9 @@ def api_stats():
         
         conn.close()
         
-        return jsonify(stats)
+        return (stats)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return ({'error': str(e)}), 500
 
 # ==================== ERROR HANDLERS ====================
 @app.errorhandler(404)
