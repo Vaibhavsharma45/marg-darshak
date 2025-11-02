@@ -1,26 +1,63 @@
 import os
 import sqlite3
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "database.db")
-
-from flask import Flask, render_template, request, jsonify
-import sqlite3
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '4e2dead963bab8f59c771f2d98efc815'
 
-# ADD THIS - Make request available in templates
-@app.context_processor
-def inject_request():
-    return dict(request=request)
+# ✅ Correct absolute path for DB inside "database" folder
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database", "marg_darshak.db")
 
-# Database connection helper
+# ✅ Auto-create tables if not exist
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+
+    # --- Careers Table ---
+    c.execute('''CREATE TABLE IF NOT EXISTS careers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        category TEXT,
+        description TEXT,
+        roadmap TEXT,
+        skills TEXT,
+        youtube_links TEXT
+    )''')
+
+    # --- Gyan Kosh Table ---
+    c.execute('''CREATE TABLE IF NOT EXISTS gyan_kosh (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        chapter INTEGER,
+        verse_number INTEGER,
+        hindi_meaning TEXT,
+        english_meaning TEXT,
+        practical_application TEXT,
+        tags TEXT
+    )''')
+
+    # --- Learning Resources Table ---
+    c.execute('''CREATE TABLE IF NOT EXISTS learning_resources (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        topic TEXT,
+        title TEXT,
+        url TEXT,
+        difficulty TEXT,
+        is_free INTEGER,
+        quality_score REAL
+    )''')
+
+    conn.commit()
+    conn.close()
+
+# ✅ Run table creation before app starts
+init_db()
+
+
+# ✅ Connection helper
 def get_db_connection():
-    conn = sqlite3.connect('database/marg_darshak.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
-
 # ... rest of your routes
 
 # ==================== HOME PAGE ====================
