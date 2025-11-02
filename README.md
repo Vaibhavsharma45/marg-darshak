@@ -265,7 +265,7 @@ This is a college project, but contributions are welcome!
 
 ### Homepage
 ![Homepage](<img width="1902" height="906" alt="Screenshot 2025-11-02 134710" src="https://github.com/user-attachments/assets/3941d634-42f4-44c0-9b10-7021bae056ca" />
-)
+1)
 
 ### Career Quiz
 ![Career Quiz](<img width="1851" height="876" alt="Screenshot 2025-11-02 133702" src="https://github.com/user-attachments/assets/22267423-c9e7-4c36-8ddd-fac45a276d82" />
@@ -273,11 +273,11 @@ This is a college project, but contributions are welcome!
 
 ### Gyan Kosh
 ![Gyan Kosh](<img width="1725" height="911" alt="Screenshot 2025-11-02 133754" src="https://github.com/user-attachments/assets/7ad3b459-2c7d-48ad-8be9-009475900079" />
-)
+3)
 
 ### Career Details
 ![Career Details](<img width="1884" height="894" alt="Screenshot 2025-11-02 134742" src="https://github.com/user-attachments/assets/4c48d4fd-6b54-44e2-9e9f-5988c29e63ee" />
-)
+4)
 
 </div>
 
@@ -305,7 +305,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Vaibhav Sharma**
 
-- GitHub: [@Vaibhavsharma045](https://github.com/Vaibhavsharma045)
+- GitHub: [@Vaibhavsharma045](https://github.com/Vaibhavsharma45)
 - LinkedIn: [https://www.linkedin.com/in/vaibhav-0sharma?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3Bw1fD%2F6EQSLWXkxdEGNkIxw%3D%3D]
 - Email: [vaibhavsharma95124v@gmail.com]
 
@@ -314,8 +314,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact & Feedback
 
 Have questions or suggestions? Feel free to:
-- Open an [Issue](https://github.com/Vaibhavsharma045/marg-darshak/issues)
-- Submit a [Pull Request](https://github.com/Vaibhavsharma045/marg-darshak/pulls)
+- Open an [Issue](https://github.com/Vaibhavsharma45/marg-darshak/issues)
+- Submit a [Pull Request](https://github.com/Vaibhavsharma45/marg-darshak/pulls)
 - Connect on LinkedIn
 
 ---
