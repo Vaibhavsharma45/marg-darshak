@@ -3,501 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Marg Darshak - जीवन के हर पड़ाव पर सही दिशा{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
+    <title>{% block title %}Marg Darshak — जीवन के हर पड़ाव पर सही दिशा{% endblock %}</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
+
     {% block extra_css %}{% endblock %}
-    
+
     <style>
-        /* ========== DARK MODE STYLES ========== */
-        body {
-            transition: background-color 0.3s ease, color 0.3s ease;
+        :root {
+            --primary: #667eea;
+            --primary-end: #764ba2;
+            --bg: #f7f8fc;
+            --surface: #ffffff;
+            --border: #e8eaf2;
+            --text: #1a1a2e;
+            --muted: #6b7280;
+            --shadow: 0 4px 24px rgba(102,126,234,0.10);
+            --shadow-lg: 0 12px 48px rgba(102,126,234,0.18);
         }
-        
         body.dark-mode {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
+            --bg: #0a0a0f; --surface: #13131a; --border: rgba(255,255,255,0.08);
+            --text: #f0f0f5; --muted: rgba(240,240,245,0.5);
+            --shadow: 0 4px 24px rgba(0,0,0,0.4); --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
         }
-        
-        body.dark-mode .card {
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            border-color: #3a3a3a;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s ease, color 0.3s ease; }
+
+        /* NAVBAR */
+        .main-nav {
+            position: sticky; top: 0; z-index: 500;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px); padding: 0 1.5rem;
+            height: 64px; display: flex; align-items: center; gap: 1.5rem;
+            box-shadow: var(--shadow);
         }
-        
-        body.dark-mode .navbar {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        .nav-brand {
+            display: flex; align-items: center; gap: 0.6rem;
+            text-decoration: none; font-family: 'Playfair Display', serif;
+            font-weight: 700; font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-end));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; flex-shrink: 0;
         }
-        
-        body.dark-mode .bg-light {
-            background-color: #2a2a2a !important;
+        .brand-icon {
+            width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--primary-end));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1rem; flex-shrink: 0;
         }
-        
-        body.dark-mode .text-muted {
-            color: #aaa !important;
+        .nav-links { display: flex; align-items: center; gap: 0.25rem; list-style: none; flex: 1; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 0.4rem;
+            padding: 0.5rem 0.9rem; border-radius: 10px; text-decoration: none;
+            color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease;
         }
-        
-        body.dark-mode .sidebar {
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        .nav-links a:hover, .nav-links a.active { background: rgba(102,126,234,0.1); color: var(--primary); }
+        .nav-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+
+        .level-pill {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; border: 1px solid; transition: all 0.2s ease; text-decoration: none;
         }
-        
-        body.dark-mode footer {
-            background-color: #0d0d0d !important;
+        .level-pill.school { background: rgba(67,233,123,0.1); color: #27ae60; border-color: rgba(67,233,123,0.3); }
+        .level-pill.college { background: rgba(102,126,234,0.1); color: var(--primary); border-color: rgba(102,126,234,0.3); }
+        .level-pill.professional { background: rgba(240,147,251,0.1); color: #c040d8; border-color: rgba(240,147,251,0.3); }
+        body.dark-mode .level-pill.school { color: #43e97b; }
+        body.dark-mode .level-pill.college { color: #a0aaff; }
+        body.dark-mode .level-pill.professional { color: #f093fb; }
+        .level-pill:hover { transform: scale(1.05); }
+
+        .icon-btn {
+            width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--surface); color: var(--muted);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; font-size: 0.95rem;
         }
-        
-        body.dark-mode .form-control,
-        body.dark-mode .form-select {
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            border-color: #3a3a3a;
-        }
-        
-        /* ========== SIDEBAR STYLES ========== */
+        .icon-btn:hover { background: rgba(102,126,234,0.1); color: var(--primary); border-color: rgba(102,126,234,0.3); }
+
+        /* SIDEBAR */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; display: none; backdrop-filter: blur(4px); }
+        .sidebar-overlay.active { display: block; }
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100vh;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            transition: left 0.3s ease;
-            z-index: 1050;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            position: fixed; top: 0; left: -300px; width: 300px; height: 100vh;
+            background: var(--surface); border-right: 1px solid var(--border);
+            z-index: 1000; transition: left 0.35s cubic-bezier(0.4,0,0.2,1);
+            display: flex; flex-direction: column; overflow: hidden;
         }
-        
-        .sidebar.active {
-            left: 0;
-        }
-        
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1040;
-            display: none;
-        }
-        
-        .sidebar-overlay.active {
-            display: block;
-        }
-        
-        .sidebar-header {
-            color: white;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .sidebar-header h4 {
-            margin: 10px 0 0 0;
-            font-weight: 700;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .sidebar-menu li {
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(5px);
-        }
-        
-        .sidebar-menu a i {
-            margin-right: 15px;
-            font-size: 1.2rem;
-            width: 25px;
-            text-align: center;
-        }
-        
-        /* ========== FLOATING BUTTONS ========== */
-        .floating-buttons {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .floating-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
+        .sidebar.active { left: 0; }
+        .sidebar-top {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-end));
             color: white;
         }
-        
-        .floating-btn:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        .sidebar-top .brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+        .sidebar-top .tagline { font-family: 'Noto Sans Devanagari', sans-serif; font-size: 0.85rem; opacity: 0.85; margin-top: 0.25rem; }
+        .sidebar-level { margin: 1rem 0 0; padding: 0.6rem 1rem; background: rgba(255,255,255,0.15); border-radius: 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 1rem; }
+        .sidebar-section { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 0.75rem 0.5rem 0.4rem; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.75rem;
+            border-radius: 12px; color: var(--text); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; margin-bottom: 2px;
         }
-        
-        .dark-mode-toggle {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .sidebar-nav a:hover { background: rgba(102,126,234,0.1); color: var(--primary); transform: translateX(4px); }
+        .sidebar-nav a i { width: 20px; text-align: center; font-size: 0.95rem; opacity: 0.8; }
+        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); text-align: center; }
+
+        /* AI CHATBOT */
+        .chat-fab {
+            position: fixed; bottom: 28px; right: 28px; width: 60px; height: 60px;
+            border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none; cursor: pointer;
+            box-shadow: 0 8px 32px rgba(102,126,234,0.5);
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+            z-index: 800; transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
         }
-        
-        .scroll-to-top {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            display: none;
+        .chat-fab:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 12px 40px rgba(102,126,234,0.6); }
+        .chat-badge {
+            position: absolute; top: -3px; right: -3px; width: 18px; height: 18px;
+            background: #43e97b; border-radius: 50%; font-size: 0.6rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            color: #0a1f15; border: 2px solid var(--bg);
         }
-        
-        .sidebar-toggle-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+        .chat-window {
+            position: fixed; bottom: 100px; right: 28px; width: 380px; height: 560px;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+            box-shadow: var(--shadow-lg); z-index: 800;
+            display: none; flex-direction: column; overflow: hidden;
         }
-        
-        /* ========== BACK BUTTON ========== */
-        .back-button {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            z-index: 999;
-            padding: 10px 20px;
-            border-radius: 25px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        .chat-window.active { display: flex; animation: chatIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
+        @keyframes chatIn { from { opacity:0; transform:translateY(20px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+        .chat-header {
+            padding: 1rem 1.25rem; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; display: flex; align-items: center; gap: 0.75rem;
         }
-        
-        .back-button:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        .chat-avatar { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .chat-header-info { flex: 1; }
+        .chat-header-info .name { font-weight: 700; font-size: 1rem; }
+        .chat-header-info .status { font-size: 0.75rem; opacity: 0.85; }
+        .chat-close { background: none; border: none; color: white; cursor: pointer; font-size: 1.1rem; opacity: 0.8; }
+        .chat-close:hover { opacity: 1; }
+
+        .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; scroll-behavior: smooth; }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .msg { max-width: 85%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.875rem; line-height: 1.6; animation: msgIn 0.2s ease; }
+        @keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .msg.bot { align-self: flex-start; background: rgba(102,126,234,0.1); border-bottom-left-radius: 6px; color: var(--text); }
+        .msg.user { align-self: flex-end; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-bottom-right-radius: 6px; }
+
+        .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 0.75rem 1rem; background: rgba(102,126,234,0.1); border-radius: 16px; border-bottom-left-radius: 6px; width: fit-content; align-self: flex-start; }
+        .typing-dot { width: 7px; height: 7px; background: var(--primary); border-radius: 50%; animation: typingBounce 1.2s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-8px); } }
+
+        .chat-footer { padding: 0.75rem 1rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; align-items: flex-end; }
+        .chat-input {
+            flex: 1; border: 1px solid var(--border); border-radius: 12px;
+            padding: 0.65rem 0.9rem; font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+            background: var(--bg); color: var(--text); resize: none; max-height: 100px;
+            outline: none; transition: border-color 0.2s;
         }
-        
-        body.dark-mode .back-button {
-            background: #2a2a2a;
-            color: #667eea;
-            border-color: #667eea;
+        .chat-input:focus { border-color: var(--primary); }
+        .chat-send {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
         }
-        
-        body.dark-mode .back-button:hover {
-            background: #667eea;
-            color: white;
+        .chat-send:hover { transform: scale(1.05); }
+        .chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .quick-prompts { padding: 0 1rem 0.5rem; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .qp-btn {
+            font-size: 0.75rem; padding: 0.3rem 0.8rem; border-radius: 100px;
+            border: 1px solid rgba(102,126,234,0.3); background: rgba(102,126,234,0.08);
+            color: var(--primary); cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
-        
-        /* ========== ANIMATIONS ========== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .qp-btn:hover { background: rgba(102,126,234,0.15); }
+
+        /* PAGE LOADER */
+        .page-loader { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .page-loader.hidden { opacity: 0; pointer-events: none; }
+        .loader-ring { width: 56px; height: 56px; border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* SCROLL TOP */
+        .scroll-top-btn {
+            position: fixed; bottom: 100px; right: 28px; width: 44px; height: 44px;
+            border-radius: 12px; background: var(--surface); border: 1px solid var(--border);
+            color: var(--muted); display: none; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 700; box-shadow: var(--shadow); transition: all 0.2s ease; font-size: 0.9rem;
         }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease;
-        }
-        
-        /* ========== SCROLL BAR CUSTOM ========== */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        body.dark-mode ::-webkit-scrollbar-track {
-            background: #2a2a2a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
-        
-        /* ========== RESPONSIVE ========== */
+        .scroll-top-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        main { min-height: calc(100vh - 64px); }
+        footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+        body.dark-mode .main-nav { background: rgba(19,19,26,0.95); }
+
         @media (max-width: 768px) {
-            .sidebar {
-                width: 250px;
-                left: -250px;
-            }
-            
-            .floating-buttons {
-                bottom: 20px;
-                right: 20px;
-                gap: 10px;
-            }
-            
-            .floating-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1.2rem;
-            }
-            
-            .back-button {
-                top: 65px;
-                right: 10px;
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        /* ========== LOADING SPINNER ========== */
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        
-        body.dark-mode .page-loader {
-            background: rgba(26, 26, 26, 0.95);
-        }
-        
-        .page-loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loader-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            .nav-links { display: none; }
+            .chat-window { width: calc(100vw - 32px); right: 16px; bottom: 90px; }
+            .chat-fab { bottom: 20px; right: 20px; }
         }
     </style>
 </head>
 <body>
-    
-    <!-- Page Loader -->
-    <div class="page-loader" id="pageLoader">
-        <div class="loader-spinner"></div>
-    </div>
-    
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-compass fa-3x"></i>
-            <h4>Marg Darshak</h4>
-            <small>मार्गदर्शक</small>
+
+<div class="page-loader" id="pageLoader"><div class="loader-ring"></div></div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+        <div class="brand">🧭 Marg Darshak</div>
+        <div class="tagline">जीवन के हर पड़ाव पर सही दिशा</div>
+        {% if level_info is defined %}
+        <div class="sidebar-level">
+            <i class="{{ level_info.icon }}"></i>
+            <span>{{ level_info.label }} — {{ level_info.hindi }}</span>
         </div>
-        
-        <ul class="sidebar-menu">
-            <li><a href="/"><i class="fas fa-home"></i><span>Home</span></a></li>
-            <li><a href="/career"><i class="fas fa-briefcase"></i><span>Career Quiz</span></a></li>
-            <li><a href="/career/browse"><i class="fas fa-search"></i><span>Browse Careers</span></a></li>
-            <li><a href="/gyan"><i class="fas fa-om"></i><span>Daily Wisdom</span></a></li>
-            <li><a href="/gyan/search"><i class="fas fa-book-open"></i><span>Search Verses</span></a></li>
-            <li><a href="/skill"><i class="fas fa-graduation-cap"></i><span>Learning Resources</span></a></li>
-            <li><a href="/api/stats" target="_blank"><i class="fas fa-chart-bar"></i><span>Statistics</span></a></li>
-        </ul>
-        
-        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; color: white; opacity: 0.8;">
-            <small>Made with ❤️</small><br>
-            <small>v1.0.0</small>
-        </div>
+        {% endif %}
     </div>
-    
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    
-    <!-- Floating Buttons -->
-    <div class="floating-buttons">
-        <button class="floating-btn sidebar-toggle-btn" onclick="toggleSidebar()" title="Menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        <button class="floating-btn dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="darkModeBtn">
-            <i class="fas fa-moon"></i>
-        </button>
-        <button class="floating-btn scroll-to-top" onclick="scrollToTop()" id="scrollTopBtn" title="Scroll to Top">
-            <i class="fas fa-arrow-up"></i>
-        </button>
+    <div class="sidebar-nav">
+        {% set lq = '?level=' + level if level is defined else '' %}
+        <div class="sidebar-section">Main</div>
+        <a href="/"><i class="fas fa-home"></i> Home</a>
+        <a href="/select-level"><i class="fas fa-layer-group"></i> Change Level</a>
+        <div class="sidebar-section">Career</div>
+        <a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career Quiz</a>
+        <a href="/career/browse{{ lq }}"><i class="fas fa-th-large"></i> Browse Careers</a>
+        <div class="sidebar-section">Wisdom</div>
+        <a href="/gyan{{ lq }}"><i class="fas fa-om"></i> Daily Shloka</a>
+        <a href="/gyan/search{{ lq }}"><i class="fas fa-search"></i> Search Verses</a>
+        <div class="sidebar-section">Skills</div>
+        <a href="/skill{{ lq }}"><i class="fas fa-graduation-cap"></i> Learning Resources</a>
+        <div class="sidebar-section">More</div>
+        <a href="/api/stats" target="_blank"><i class="fas fa-chart-bar"></i> Statistics</a>
     </div>
-    
-    <!-- Back Button (shows on non-home pages) -->
-    {% if request and request.path != '/' %}
-    <a href="javascript:history.back()" class="back-button">
-        <i class="fas fa-arrow-left"></i> Back
+    <div class="sidebar-footer">Made with ❤️ for India's students · v2.0</div>
+</div>
+
+<nav class="main-nav">
+    <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <a href="/" class="nav-brand">
+        <div class="brand-icon">🧭</div>
+        Marg Darshak
     </a>
-    {% endif %}
-    
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-compass"></i> Marg Darshak
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/career"><i class="fas fa-briefcase"></i> Career</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/gyan"><i class="fas fa-om"></i> Gyan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/skill"><i class="fas fa-book"></i> Skills</a></li>
-                </ul>
-            </div>
+    <ul class="nav-links">
+        {% set lq = '?level=' + level if level is defined else '' %}
+        <li><a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career</a></li>
+        <li><a href="/gyan{{ lq }}"><i class="fas fa-om"></i> Gyan Kosh</a></li>
+        <li><a href="/skill{{ lq }}"><i class="fas fa-graduation-cap"></i> Skills</a></li>
+    </ul>
+    <div class="nav-right">
+        {% if level is defined and level_info is defined %}
+        <a href="/select-level" class="level-pill {{ level }}">
+            <i class="{{ level_info.icon }}"></i> {{ level_info.label }}
+        </a>
+        {% else %}
+        <a href="/select-level" class="level-pill college"><i class="fas fa-layer-group"></i> Choose Level</a>
+        {% endif %}
+        <button class="icon-btn" id="darkModeBtn" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+    </div>
+</nav>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>
+    <p>🧭 <strong>Marg Darshak</strong> — "जीवन के हर पड़ाव पर सही दिशा"</p>
+    <p style="margin-top:0.25rem;">Made with ❤️ for India's students</p>
+</footer>
+
+<button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">
+    <i class="fas fa-robot" id="chatFabIcon"></i>
+    <span class="chat-badge">AI</span>
+</button>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <div class="chat-avatar">🧘</div>
+        <div class="chat-header-info">
+            <div class="name">Marg Darshak AI Guru</div>
+            <div class="status">● Online · Powered by Claude</div>
         </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="container">
-            <p class="mb-2">🧭 Marg Darshak - "जीवन के हर पड़ाव पर सही दिशा"</p>
-            <p class="mb-0">Made with ❤️ for helping people find their path</p>
-            <small class="text-muted">© 2025 | Minor Project</small>
-        </div>
-    </footer>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
-    <script>
-        // ========== PAGE LOADER ==========
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.getElementById('pageLoader').classList.add('hidden');
-            }, 500);
+        <button class="chat-close" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="msg bot">🙏 Namaste! Main hoon <strong>Marg Darshak AI Guru</strong>.<br><br>Career guidance, Bhagavad Gita wisdom, ya skill development — koi bhi sawaal puchho! ✨</div>
+    </div>
+    <div class="quick-prompts" id="quickPrompts">
+        <button class="qp-btn" onclick="sendQuickPrompt('Mujhe apna career choose karne mein help chahiye')">🎯 Career Help</button>
+        <button class="qp-btn" onclick="sendQuickPrompt('Aaj ke liye ek Bhagavad Gita shloka batao')">📿 Shloka</button>
+        <button class="qp-btn" onclick="sendQuickPrompt('Mujhe coding sikhni hai kahan se shuru karun')">💻 Coding</button>
+        <button class="qp-btn" onclick="sendQuickPrompt('Main exams ke liye stressed hoon kya karun')">😌 Stress</button>
+    </div>
+    <div class="chat-footer">
+        <textarea class="chat-input" id="chatInput" placeholder="Kuch bhi puchhiye... 🙏" rows="1"
+            onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="chat-send" id="chatSendBtn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+window.addEventListener('load', () => setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 400));
+
+function toggleDarkMode() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDark ? '1' : '0');
+    document.querySelector('#darkModeBtn i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+}
+(function() {
+    if (localStorage.getItem('darkMode') === '1') {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('#darkModeBtn i');
+        if (btn) btn.className = 'fas fa-sun';
+    }
+})();
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+
+window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTopBtn');
+    if (btn) btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+});
+
+// AI CHATBOT
+let chatHistory = [], isTyping = false;
+const CURRENT_LEVEL = '{{ level if level is defined else "college" }}';
+
+function toggleChat() {
+    const win = document.getElementById('chatWindow');
+    const isActive = win.classList.toggle('active');
+    document.getElementById('chatFabIcon').className = isActive ? 'fas fa-times' : 'fas fa-robot';
+    if (isActive) setTimeout(() => document.getElementById('chatInput').focus(), 300);
+}
+
+function handleChatKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+
+function sendQuickPrompt(text) {
+    document.getElementById('chatInput').value = text;
+    document.getElementById('quickPrompts').style.display = 'none';
+    sendMessage();
+}
+
+function addMsg(text, role) {
+    const msgs = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    div.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+    const msgs = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'typing-indicator'; div.id = 'typingIndicator';
+    div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping() { const t = document.getElementById('typingIndicator'); if (t) t.remove(); }
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg || isTyping) return;
+    input.value = ''; input.style.height = 'auto';
+    document.getElementById('chatSendBtn').disabled = true;
+    isTyping = true;
+    addMsg(msg, 'user');
+    chatHistory.push({ role: 'user', content: msg });
+    showTyping();
+
+    try {
+        const configRes = await fetch('/api/chat-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ level: CURRENT_LEVEL })
         });
-        
-        // ========== DARK MODE ==========
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            
-            // Save preference
-            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-            
-            // Update icon
-            const icon = document.querySelector('#darkModeBtn i');
-            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        const config = await configRes.json();
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                system: config.system,
+                messages: chatHistory.slice(-10)
+            })
+        });
+        const data = await response.json();
+        hideTyping();
+        if (data.content && data.content[0]) {
+            const reply = data.content[0].text;
+            addMsg(reply, 'bot');
+            chatHistory.push({ role: 'assistant', content: reply });
+        } else {
+            addMsg('Maafi chahta hoon, abhi kuch technical issue hai. 🙏', 'bot');
         }
-        
-        // Load dark mode preference
-        window.addEventListener('DOMContentLoaded', function() {
-            const darkMode = localStorage.getItem('darkMode');
-            if (darkMode === 'enabled') {
-                document.body.classList.add('dark-mode');
-                document.querySelector('#darkModeBtn i').className = 'fas fa-sun';
-            }
-        });
-        
-        // ========== SIDEBAR ==========
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-        }
-        
-        // Close sidebar on link click
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                setTimeout(toggleSidebar, 200);
-            });
-        });
-        
-        // Close sidebar on ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('sidebar').classList.contains('active')) {
-                toggleSidebar();
-            }
-        });
-        
-        // ========== SCROLL TO TOP ==========
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-        
-        // Show/hide scroll to top button
-        window.addEventListener('scroll', function() {
-            const scrollBtn = document.getElementById('scrollTopBtn');
-            if (window.pageYOffset > 300) {
-                scrollBtn.style.display = 'flex';
-            } else {
-                scrollBtn.style.display = 'none';
-            }
-        });
-        
-        
-        // ========== CONSOLE MESSAGE ==========
-        console.log('%c🧭 Marg Darshak', 'color: #667eea; font-size: 24px; font-weight: bold;');
-        console.log('%cFinding your path to success!', 'color: #764ba2; font-size: 14px;');
-    </script>
-    
-    {% block extra_js %}{% endblock %}
+    } catch (err) {
+        hideTyping();
+        addMsg('Network error. Please check connection. 🙏', 'bot');
+    }
+    isTyping = false;
+    document.getElementById('chatSendBtn').disabled = false;
+}
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

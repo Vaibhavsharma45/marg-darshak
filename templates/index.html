@@ -1,169 +1,433 @@
 {% extends 'base.html' %}
 
+{% block title %}Marg Darshak — जीवन के हर पड़ाव पर सही दिशा{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* HERO */
+    .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 5rem 0 4rem;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+    }
+    .hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background:
+            radial-gradient(ellipse 70% 60% at 10% 30%, rgba(102,126,234,0.12) 0%, transparent 60%),
+            radial-gradient(ellipse 50% 50% at 90% 70%, rgba(118,75,162,0.10) 0%, transparent 60%);
+        pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .level-tag {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.45rem 1.2rem; border-radius: 100px;
+        font-size: 0.82rem; font-weight: 600; margin-bottom: 1.5rem;
+        border: 1px solid;
+    }
+    .level-tag.school { background: rgba(67,233,123,0.1); color: #27ae60; border-color: rgba(67,233,123,0.3); }
+    .level-tag.college { background: rgba(102,126,234,0.1); color: #667eea; border-color: rgba(102,126,234,0.3); }
+    .level-tag.professional { background: rgba(240,147,251,0.1); color: #c040d8; border-color: rgba(240,147,251,0.3); }
+    body.dark-mode .level-tag.school { color: #43e97b; }
+    body.dark-mode .level-tag.college { color: #a0aaff; }
+    body.dark-mode .level-tag.professional { color: #f093fb; }
+
+    .hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+    }
+
+    .hero h1 .highlight {
+        background: linear-gradient(135deg, var(--primary), var(--primary-end));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-tagline {
+        font-family: 'Noto Sans Devanagari', sans-serif;
+        font-size: 1.2rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-sub {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+        max-width: 480px;
+    }
+
+    .hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    .btn-primary-grad {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.8rem 2rem; border-radius: 100px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-end));
+        color: white; font-weight: 600; font-size: 0.95rem;
+        text-decoration: none; border: none; cursor: pointer;
+        transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(102,126,234,0.35);
+    }
+    .btn-primary-grad:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(102,126,234,0.5); color: white; }
+
+    .btn-outline-grad {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.8rem 2rem; border-radius: 100px;
+        background: transparent; color: var(--primary);
+        border: 1.5px solid rgba(102,126,234,0.4);
+        font-weight: 600; font-size: 0.95rem;
+        text-decoration: none; cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-outline-grad:hover { background: rgba(102,126,234,0.1); color: var(--primary); transform: translateY(-2px); }
+
+    /* STATS STRIP */
+    .stats-strip {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-end) 100%);
+        color: white; padding: 1.5rem 0;
+    }
+    .stat-item { text-align: center; }
+    .stat-item .num { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; display: block; }
+    .stat-item .label { font-size: 0.85rem; opacity: 0.85; }
+
+    /* LEVEL SWITCH BANNER */
+    .level-switch-banner {
+        margin: 2rem auto; max-width: 900px; padding: 0 1rem;
+    }
+    .level-cards-row {
+        display: flex; gap: 1rem; justify-content: center;
+    }
+    .mini-level-card {
+        flex: 1; max-width: 260px;
+        padding: 1rem 1.25rem; border-radius: 16px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        text-decoration: none; color: var(--text);
+        transition: all 0.3s ease;
+        display: flex; align-items: center; gap: 0.75rem;
+    }
+    .mini-level-card.active-level { border-color: var(--primary); background: rgba(102,126,234,0.05); }
+    .mini-level-card.active-level.school { border-color: #43e97b; background: rgba(67,233,123,0.06); }
+    .mini-level-card.active-level.professional { border-color: #f093fb; background: rgba(240,147,251,0.06); }
+    .mini-level-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .mlc-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .mlc-icon.school { background: rgba(67,233,123,0.15); color: #27ae60; }
+    .mlc-icon.college { background: rgba(102,126,234,0.15); color: #667eea; }
+    .mlc-icon.professional { background: rgba(240,147,251,0.15); color: #c040d8; }
+    body.dark-mode .mlc-icon.school { color: #43e97b; }
+    body.dark-mode .mlc-icon.college { color: #a0aaff; }
+    body.dark-mode .mlc-icon.professional { color: #f093fb; }
+    .mlc-info .mlc-title { font-weight: 600; font-size: 0.9rem; }
+    .mlc-info .mlc-sub { font-size: 0.75rem; color: var(--muted); }
+    .mlc-check { margin-left: auto; color: var(--primary); font-size: 1rem; }
+
+    /* MODULES */
+    .modules-section { padding: 4rem 0; }
+    .section-label {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em;
+        text-transform: uppercase; color: var(--primary); margin-bottom: 0.5rem;
+    }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .section-sub { color: var(--muted); font-size: 0.95rem; }
+
+    .module-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+        text-decoration: none;
+        color: var(--text);
+        display: block;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    .module-card::after {
+        content: '';
+        position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s;
+        border-radius: 20px;
+    }
+    .module-card.career::after { background: linear-gradient(135deg, rgba(102,126,234,0.06), transparent); }
+    .module-card.gyan::after { background: linear-gradient(135deg, rgba(240,147,251,0.06), transparent); }
+    .module-card.skill::after { background: linear-gradient(135deg, rgba(79,172,254,0.06), transparent); }
+    .module-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+    .module-card:hover::after { opacity: 1; }
+    .module-card:hover { border-color: rgba(102,126,234,0.3); }
+
+    .mod-icon {
+        width: 64px; height: 64px; border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; margin-bottom: 1.25rem;
+    }
+    .mod-icon.career { background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.1)); color: var(--primary); }
+    .mod-icon.gyan { background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.1)); color: #d040d8; }
+    .mod-icon.skill { background: linear-gradient(135deg, rgba(79,172,254,0.15), rgba(0,242,254,0.1)); color: #2196F3; }
+    body.dark-mode .mod-icon.gyan { color: #f093fb; }
+
+    .mod-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .mod-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .mod-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .mod-tag { font-size: 0.73rem; padding: 0.25rem 0.7rem; border-radius: 100px; background: rgba(102,126,234,0.08); border: 1px solid rgba(102,126,234,0.15); color: var(--muted); }
+    .mod-cta {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        font-size: 0.875rem; font-weight: 600; color: var(--primary);
+        transition: gap 0.2s ease;
+    }
+    .module-card:hover .mod-cta { gap: 0.75rem; }
+
+    /* HOW IT WORKS */
+    .hiw-section { padding: 4rem 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .step-card { text-align: center; padding: 1.5rem; }
+    .step-num {
+        width: 52px; height: 52px; border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-end));
+        color: white; font-family: 'Playfair Display', serif;
+        font-size: 1.4rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;
+        box-shadow: 0 4px 16px rgba(102,126,234,0.35);
+    }
+    .step-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+    .step-sub { font-size: 0.85rem; color: var(--muted); }
+
+    /* CTA */
+    .cta-section {
+        padding: 5rem 0; text-align: center;
+        background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05));
+    }
+    .cta-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem; }
+    .cta-sub { color: var(--muted); margin-bottom: 2rem; font-size: 1rem; }
+
+    @media (max-width: 768px) {
+        .hero { padding: 3rem 0 2.5rem; }
+        .hero h1 { font-size: 2rem; }
+        .level-cards-row { flex-direction: column; align-items: center; }
+        .mini-level-card { max-width: 100%; width: 100%; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-    <div class="container">
-        <h1 class="display-3 fw-bold mb-3">🧭 Marg Darshak</h1>
-        <h2 class="h4 mb-4" style="font-family: 'Noto Sans Devanagari', sans-serif;">
-            "जीवन के हर पड़ाव पर सही दिशा"
-        </h2>
-        <p class="lead mb-4">Your Complete Guide to Career, Wisdom & Learning</p>
-        
-        <!-- Stats -->
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <div class="stat-box">
-                    <h3 class="display-4">{{ stats.careers }}</h3>
-                    <p>Career Paths</p>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                {% set curr_level = level if level is defined else 'college' %}
+                {% set li = level_info if level_info is defined else {'label': 'College Student', 'hindi': 'कॉलेज छात्र', 'icon': 'fas fa-university'} %}
+
+                <div class="level-tag {{ curr_level }}">
+                    <i class="{{ li.icon }}"></i>
+                    {{ li.label }} · {{ li.hindi }}
+                </div>
+
+                <h1>Your Complete Guide to<br><span class="highlight">Career, Wisdom</span><br>&amp; Learning</h1>
+                <p class="hero-tagline">"जीवन के हर पड़ाव पर सही दिशा"</p>
+                <p class="hero-sub">Personalized guidance tailored for you — from career exploration to Bhagavad Gita wisdom to curated learning paths.</p>
+
+                <div class="hero-btns">
+                    <a href="/career?level={{ curr_level }}" class="btn-primary-grad">
+                        <i class="fas fa-compass"></i> Start Career Quiz
+                    </a>
+                    <a href="/gyan?level={{ curr_level }}" class="btn-outline-grad">
+                        <i class="fas fa-om"></i> Daily Wisdom
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="stat-box">
-                    <h3 class="display-4">{{ stats.shlokas }}</h3>
-                    <p>Wisdom Verses</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-box">
-                    <h3 class="display-4">{{ stats.resources }}</h3>
-                    <p>Learning Resources</p>
+            <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center">
+                <div style="position:relative; text-align:center;">
+                    <div style="font-size:8rem; line-height:1; filter: drop-shadow(0 20px 40px rgba(102,126,234,0.3));">🧭</div>
+                    <div style="position:absolute; top:10px; right:-20px; background:white; border-radius:16px; padding:0.75rem 1rem; box-shadow:0 8px 32px rgba(0,0,0,0.1); font-size:0.85rem; font-weight:600; white-space:nowrap; animation: float1 3s ease-in-out infinite;">
+                        🎯 25+ Careers
+                    </div>
+                    <div style="position:absolute; bottom:20px; left:-30px; background:white; border-radius:16px; padding:0.75rem 1rem; box-shadow:0 8px 32px rgba(0,0,0,0.1); font-size:0.85rem; font-weight:600; white-space:nowrap; animation: float2 3.5s ease-in-out infinite;">
+                        📿 Gita Wisdom
+                    </div>
+                    <div style="position:absolute; top:50%; left:-50px; background:white; border-radius:16px; padding:0.75rem 1rem; box-shadow:0 8px 32px rgba(0,0,0,0.1); font-size:0.85rem; font-weight:600; white-space:nowrap; animation: float3 4s ease-in-out infinite;">
+                        🤖 AI Guru
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Three Modules Section -->
-<div class="container my-5">
-    <div class="row g-4">
-        
-        <!-- Career Compass -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center">
-                    <div class="icon-box mb-3" style="font-size: 3rem; color: #667eea;">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h3 class="card-title">Career Compass</h3>
-                    <p class="card-text">
-                        Discover your perfect career path with AI-powered recommendations, 
-                        personalized roadmaps, and skill guidance.
-                    </p>
-                    <a href="/career" class="btn btn-primary">Start Quiz <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Gyan Kosh -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center">
-                    <div class="icon-box mb-3" style="font-size: 3rem; color: #f093fb;">
-                        <i class="fas fa-om"></i>
-                    </div>
-                    <h3 class="card-title">Gyan Kosh</h3>
-                    <h6 style="font-family: 'Noto Sans Devanagari', sans-serif;">ज्ञान कोश</h6>
-                    <p class="card-text">
-                        Daily spiritual wisdom from Bhagavad Gita and ancient scriptures 
-                        with practical applications for modern life.
-                    </p>
-                    <a href="/gyan" class="btn btn-primary">Daily Wisdom <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Skill Saathi -->
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center">
-                    <div class="icon-box mb-3" style="font-size: 3rem; color: #4facfe;">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h3 class="card-title">Skill Saathi</h3>
-                    <p class="card-text">
-                        Curated learning resources from top platforms - YouTube, Coursera, 
-                        Udemy and more, all in one place.
-                    </p>
-                    <a href="/skill" class="btn btn-primary">Browse Resources <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-</div>
-
-<!-- How It Works -->
-<div class="bg-light py-5">
-    <div class="container">
-        <h2 class="text-center mb-5">How Marg Darshak Helps You</h2>
-        <div class="row">
-            <div class="col-md-3 text-center">
-                <div class="step-number">1</div>
-                <h5>Discover</h5>
-                <p>Take the career quiz or explore wisdom</p>
-            </div>
-            <div class="col-md-3 text-center">
-                <div class="step-number">2</div>
-                <h5>Learn</h5>
-                <p>Get personalized recommendations</p>
-            </div>
-            <div class="col-md-3 text-center">
-                <div class="step-number">3</div>
-                <h5>Grow</h5>
-                <p>Access curated learning resources</p>
-            </div>
-            <div class="col-md-3 text-center">
-                <div class="step-number">4</div>
-                <h5>Succeed</h5>
-                <p>Achieve your goals with guidance</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- CTA Section -->
-<div class="container text-center my-5">
-    <h2 class="mb-4">Ready to Find Your Path?</h2>
-    <p class="lead mb-4">Join thousands of students discovering their direction</p>
-    <a href="/career" class="btn btn-lg btn-primary me-3">Start Career Quiz</a>
-    <a href="/gyan" class="btn btn-lg btn-outline-primary">Get Daily Wisdom</a>
-</div>
+</section>
 
 <style>
-    .hover-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .hover-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    .step-number {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        border-radius: 50%;
-        background: #667eea;
-        color: white;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 0 auto 1rem;
-    }
-    .stat-box h3, .stat-box p {
-        margin: 0;
-    }
-@keyframes countUp {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.stat-box h3 {
-    animation: countUp 0.6s ease-out;
-}
-
-.stat-box:nth-child(1) h3 { animation-delay: 0.1s; }
-.stat-box:nth-child(2) h3 { animation-delay: 0.2s; }
-.stat-box:nth-child(3) h3 { animation-delay: 0.3s; }
-
+@keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+body.dark-mode .hero { background: var(--surface); }
+body.dark-mode [style*="background:white"] { background: #1e1e2a !important; color: var(--text); }
 </style>
+
+<!-- STATS -->
+<div class="stats-strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <div class="stat-item">
+                    <span class="num">{{ stats.careers }}+</span>
+                    <span class="label">Career Paths</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-item">
+                    <span class="num">{{ stats.shlokas }}+</span>
+                    <span class="label">Wisdom Verses</span>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-item">
+                    <span class="num">{{ stats.resources }}+</span>
+                    <span class="label">Learning Resources</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LEVEL SWITCHER -->
+<div class="level-switch-banner">
+    <p style="text-align:center; color:var(--muted); font-size:0.85rem; margin-bottom:0.75rem; margin-top:1.5rem;">
+        Browsing as — <strong>switch anytime</strong>
+    </p>
+    <div class="level-cards-row">
+        {% for key, li in levels.items() %}
+        <a href="/?level={{ key }}" class="mini-level-card {{ key }} {% if (level if level is defined else 'college') == key %}active-level{% endif %}">
+            <div class="mlc-icon {{ key }}"><i class="{{ li.icon }}"></i></div>
+            <div class="mlc-info">
+                <div class="mlc-title">{{ li.label }}</div>
+                <div class="mlc-sub">{{ li.desc }}</div>
+            </div>
+            {% if (level if level is defined else 'college') == key %}
+            <i class="fas fa-check-circle mlc-check"></i>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- THREE MODULES -->
+<section class="modules-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="section-label">Explore</p>
+            <h2 class="section-title">Three Pillars of Guidance</h2>
+            <p class="section-sub">Everything you need to find your path — in one place</p>
+        </div>
+        {% set curr_level = level if level is defined else 'college' %}
+        <div class="row g-4">
+
+            <!-- Career Compass -->
+            <div class="col-md-4">
+                <a href="/career?level={{ curr_level }}" class="module-card career">
+                    <div class="mod-icon career"><i class="fas fa-compass"></i></div>
+                    <h3 class="mod-title">Career Compass</h3>
+                    <p class="mod-sub">Discover your perfect career path with AI-powered recommendations, detailed roadmaps, and skill guidance tailored to your level.</p>
+                    <div class="mod-tags">
+                        <span class="mod-tag">🎯 Quiz</span>
+                        <span class="mod-tag">🗺 Roadmaps</span>
+                        <span class="mod-tag">💼 25+ Careers</span>
+                    </div>
+                    <span class="mod-cta">Start Exploring <i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+
+            <!-- Gyan Kosh -->
+            <div class="col-md-4">
+                <a href="/gyan?level={{ curr_level }}" class="module-card gyan">
+                    <div class="mod-icon gyan"><i class="fas fa-om"></i></div>
+                    <h3 class="mod-title">Gyan Kosh</h3>
+                    <p class="mod-sub" style="font-family:'Noto Sans Devanagari',sans-serif;">ज्ञान कोश — Daily spiritual wisdom from Bhagavad Gita with practical applications for modern life.</p>
+                    <div class="mod-tags">
+                        <span class="mod-tag">📿 Daily Shloka</span>
+                        <span class="mod-tag">🔍 Search</span>
+                        <span class="mod-tag">🌟 Practical Tips</span>
+                    </div>
+                    <span class="mod-cta">Get Wisdom <i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+
+            <!-- Skill Saathi -->
+            <div class="col-md-4">
+                <a href="/skill?level={{ curr_level }}" class="module-card skill">
+                    <div class="mod-icon skill"><i class="fas fa-graduation-cap"></i></div>
+                    <h3 class="mod-title">Skill Saathi</h3>
+                    <p class="mod-sub">Curated learning resources from YouTube, Coursera, Udemy — filtered and ranked for your level and goals.</p>
+                    <div class="mod-tags">
+                        <span class="mod-tag">🎓 Curated</span>
+                        <span class="mod-tag">⭐ Quality Rated</span>
+                        <span class="mod-tag">🆓 Free + Paid</span>
+                    </div>
+                    <span class="mod-cta">Browse Resources <i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="hiw-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <p class="section-label">How It Works</p>
+            <h2 class="section-title">Your Path in 4 Steps</h2>
+        </div>
+        <div class="row g-3 mt-2">
+            <div class="col-6 col-md-3">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Choose Level</div>
+                    <div class="step-sub">School, College, or Professional</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Take Quiz</div>
+                    <div class="step-sub">Discover your interests & strengths</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Get Guidance</div>
+                    <div class="step-sub">Personalized roadmap + wisdom</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <div class="step-title">Learn & Grow</div>
+                    <div class="step-sub">Resources matched to your path</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Ready to Find Your Path? 🧭</h2>
+        <p class="cta-sub">Chat with our AI Guru — or jump straight into the quiz!</p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+            {% set curr_level = level if level is defined else 'college' %}
+            <a href="/career?level={{ curr_level }}" class="btn-primary-grad">
+                <i class="fas fa-compass"></i> Start Career Quiz
+            </a>
+            <button onclick="toggleChat()" class="btn-outline-grad">
+                <i class="fas fa-robot"></i> Chat with AI Guru
+            </button>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

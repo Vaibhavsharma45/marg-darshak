@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Path — Marg Darshak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --school-color: #43e97b;
+            --school-end: #38f9d7;
+            --college-color: #667eea;
+            --college-end: #764ba2;
+            --pro-color: #f093fb;
+            --pro-end: #f5576c;
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --border: rgba(255,255,255,0.08);
+            --text: #f0f0f5;
+            --muted: rgba(240,240,245,0.5);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(102,126,234,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(240,147,251,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 50% 50%, rgba(67,233,123,0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1100px;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+            animation: fadeDown 0.8s ease;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 1.1rem;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle-en {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        /* Level Cards */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .level-card {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: var(--text);
+            display: block;
+            overflow: hidden;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .level-card:nth-child(1) { animation-delay: 0.1s; }
+        .level-card:nth-child(2) { animation-delay: 0.2s; }
+        .level-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            border-radius: 24px;
+        }
+
+        .level-card.school::before { background: linear-gradient(135deg, rgba(67,233,123,0.15), rgba(56,249,215,0.08)); }
+        .level-card.college::before { background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.08)); }
+        .level-card.professional::before { background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.08)); }
+
+        .level-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .level-card:hover::before { opacity: 1; }
+
+        .level-card.school:hover { box-shadow: 0 20px 60px rgba(67,233,123,0.2); }
+        .level-card.college:hover { box-shadow: 0 20px 60px rgba(102,126,234,0.2); }
+        .level-card.professional:hover { box-shadow: 0 20px 60px rgba(240,147,251,0.2); }
+
+        /* Glow ring on hover */
+        .level-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 25px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        .level-card.school::after { background: linear-gradient(135deg, #43e97b, #38f9d7); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 1px; }
+        .level-card:hover::after { opacity: 1; }
+
+        .card-icon-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .school .card-icon-wrap { background: linear-gradient(135deg, #43e97b22, #38f9d722); color: #43e97b; }
+        .college .card-icon-wrap { background: linear-gradient(135deg, #667eea22, #764ba222); color: #667eea; }
+        .professional .card-icon-wrap { background: linear-gradient(135deg, #f093fb22, #f5576c22); color: #f093fb; }
+
+        .card-level-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .school .card-level-badge { background: rgba(67,233,123,0.15); color: #43e97b; }
+        .college .card-level-badge { background: rgba(102,126,234,0.15); color: #a0aaff; }
+        .professional .card-level-badge { background: rgba(240,147,251,0.15); color: #f093fb; }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-desc {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            border: none;
+            cursor: pointer;
+        }
+
+        .school .card-cta { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #0a1f15; }
+        .college .card-cta { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .professional .card-cta { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+
+        .level-card:hover .card-cta {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Recommended badge */
+        .recommended {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.35rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .skip-link {
+            margin-top: 2rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            animation: fadeUp 0.6s ease 0.5s both;
+        }
+
+        .skip-link a {
+            color: rgba(102,126,234,0.8);
+            text-decoration: none;
+            border-bottom: 1px dashed;
+            transition: color 0.2s;
+        }
+        .skip-link a:hover { color: #667eea; }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+            .levels-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 2rem 1.2rem; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🧭</div>
+                <span class="logo-text">Marg Darshak</span>
+            </div>
+            <h1>Choose Your Path</h1>
+            <p class="subtitle">आप कौन हैं? अपनी राह चुनिए।</p>
+            <p class="subtitle-en">Select your level for a personalized experience</p>
+        </div>
+
+        <div class="levels-grid">
+            <!-- School -->
+            <a href="/?level=school" class="level-card school" onclick="setLevel('school')">
+                <div class="card-icon-wrap">
+                    <i class="fas fa-school"></i>
+                </div>
+                <span class="card-level-badge">Level 1</span>
+                <h2 class="card-title">School Student</h2>
+                <p class="card-hindi">स्कूल छात्र</p>
+                <p class="card-desc">Class 8–12 | Discover career options, explore your interests, and build a foundation for your future.</p>
+                <div class="card-features">
+                    <span class="feature-tag">🎯 Career Discovery</span>
+                    <span class="feature-tag">📚 Beginner Resources</span>
+                    <span class="feature-tag">🌱 Gyan Kosh</span>
+                </div>
+                <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
+            </a>
+
+            <!-- College -->
+            <a href="/?level=college" class="level-card college" onclick="setLevel('college')" style="margin-top: 1rem;">
+                <div class="recommended">⭐ Most Popular</div>
+                <div class="card-icon-wrap">
+                    <i class="fas fa-university"></i>
+                </div>
+                <span class="card-level-badge">Level 2</span>
+                <h2 class="card-title">College Student</h2>
+                <p class="card-hindi">कॉलेज छात्र</p>
+                <p class="card-desc">UG/PG | Build in-demand skills, explore specializations, and plan your professional journey.</p>
+                <div class="card-features">
+                    <span class="feature-tag">🚀 Skill Building</span>
+                    <span class="feature-tag">📊 Career Roadmaps</span>
+                    <span class="feature-tag">🎓 All Resources</span>
+                </div>
+                <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Professional -->
+            <a href="/?level=professional" class="level-card professional" onclick="setLevel('professional')">
+                <div class="card-icon-wrap">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <span class="card-level-badge">Level 3</span>
+                <h2 class="card-title">Professional</h2>
+                <p class="card-hindi">पेशेवर</p>
+                <p class="card-desc">Working professional | Level up your career, explore transitions, and find wisdom for leadership.</p>
+                <div class="card-features">
+                    <span class="feature-tag">📈 Career Growth</span>
+                    <span class="feature-tag">🧠 Advanced Skills</span>
+                    <span class="feature-tag">⚡ Leadership Wisdom</span>
+                </div>
+                <span class="card-cta">Get Started <i class="fas fa-arrow-right"></i></span>
+            </a>
+        </div>
+
+        <p class="skip-link">
+            Already know the platform? <a href="/">Go to Homepage →</a>
+        </p>
+    </div>
+
+    <script>
+        function setLevel(level) {
+            localStorage.setItem('userLevel', level);
+            document.cookie = `user_level=${level}; path=/; max-age=2592000`; // 30 days
+        }
+
+        // Auto-detect returning users
+        const savedLevel = localStorage.getItem('userLevel');
+        if (savedLevel) {
+            document.querySelectorAll('.level-card').forEach(card => {
+                if (card.classList.contains(savedLevel)) {
+                    const badge = document.createElement('div');
+                    badge.style.cssText = 'position:absolute;top:-12px;right:15px;background:#333;color:#aaa;padding:0.3rem 0.9rem;border-radius:100px;font-size:0.7rem;font-weight:600;';
+                    badge.textContent = 'Last Used';
+                    card.appendChild(badge);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
