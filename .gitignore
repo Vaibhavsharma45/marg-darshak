@@ -1,7 +1,12 @@
-echo "venv/
 venv/
 __pycache__/
 *.pyc
-#*.db
+*.pyo
 .env
-.DS_Store" > .gitignore
+.DS_Store
+*.db
+instance/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
