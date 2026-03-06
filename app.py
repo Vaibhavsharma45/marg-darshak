@@ -916,6 +916,117 @@ def scripture():
 
 
 
+
+# ═══════════════════════════════════════════════
+#  AI RECOMMENDATION
+# ═══════════════════════════════════════════════
+@app.route('/ai-recommendation')
+@login_required
+@onboarding_required
+def ai_recommendation():
+    try:
+        quiz_result = None
+        if not session.get('guest'):
+            db = get_db()
+            row = db.execute(
+                'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
+                (session['user_id'],)
+            ).fetchone()
+            if row:
+                qr = dict(row)
+                # Parse top_careers JSON
+                try:
+                    tc = json.loads(qr.get('top_careers','[]'))
+                except:
+                    tc = []
+                qr['top_careers_list'] = tc
+                quiz_result = qr
+        return render_template('ai_recommendation.html', quiz_result=quiz_result)
+    except Exception as e:
+        return f'Error: {e}', 500
+
+@app.route('/api/save-recommendation', methods=['POST'])
+@login_required
+def save_recommendation():
+    try:
+        if session.get('guest'):
+            return jsonify({'success': True})
+        data = request.json
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS ai_recommendations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, recommendation TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )''')
+        db.execute(
+            'INSERT INTO ai_recommendations(user_id, recommendation) VALUES(?,?)',
+            (session['user_id'], data.get('recommendation',''))
+        )
+        db.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ═══════════════════════════════════════════════
+#  PROGRESS DASHBOARD
+# ═══════════════════════════════════════════════
+@app.route('/progress')
+@login_required
+@onboarding_required
+def progress_dashboard():
+    try:
+        quiz_result = None
+        if not session.get('guest'):
+            db = get_db()
+            row = db.execute(
+                'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
+                (session['user_id'],)
+            ).fetchone()
+            if row:
+                qr = dict(row)
+                quiz_result = qr
+        return render_template('progress_dashboard.html', quiz_result=quiz_result)
+    except Exception as e:
+        return f'Error: {e}', 500
+
+# ═══════════════════════════════════════════════
+#  MOCK TEST
+# ═══════════════════════════════════════════════
+@app.route('/mock-test')
+@login_required
+@onboarding_required
+def mock_test():
+    return render_template('mock_test.html')
+
+@app.route('/api/save-test-result', methods=['POST'])
+@login_required
+def save_test_result():
+    try:
+        if session.get('guest'):
+            return jsonify({'success': True})
+        data = request.json
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS test_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, subject TEXT, score INTEGER,
+            correct INTEGER, wrong INTEGER, skipped INTEGER,
+            total INTEGER, time_taken INTEGER,
+            taken_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )''')
+        db.execute(
+            '''INSERT INTO test_results
+               (user_id,subject,score,correct,wrong,skipped,total,time_taken)
+               VALUES(?,?,?,?,?,?,?,?)''',
+            (session['user_id'], data.get('subject',''),
+             data.get('score',0), data.get('correct',0),
+             data.get('wrong',0), data.get('skipped',0),
+             data.get('total',0), data.get('time_taken',0))
+        )
+        db.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ═══════════════════════════════════════════════
 #  ERROR HANDLERS
 # ═══════════════════════════════════════════════

@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+{% block title %}AI Career Recommendation — Marg Darshak{% endblock %}
+
+{% block extra_css %}
+<style>
+.ai-rec-wrap{max-width:860px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* HERO */
+.air-hero{
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  color:white;border-radius:24px;padding:2.5rem 2rem;margin-bottom:2rem;
+  position:relative;overflow:hidden;text-align:center;
+}
+.air-hero::before{
+  content:'✦';font-size:14rem;position:absolute;opacity:.04;
+  top:50%;left:50%;transform:translate(-50%,-55%);pointer-events:none;
+}
+.air-hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;margin-bottom:.5rem;position:relative;}
+.air-hero p{font-size:.9rem;opacity:.7;max-width:480px;margin:0 auto;position:relative;}
+.air-hero-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(124,111,247,.25);border:1px solid rgba(124,111,247,.4);
+  padding:.3rem .9rem;border-radius:100px;font-size:.72rem;font-weight:700;
+  margin-bottom:.85rem;position:relative;
+}
+
+/* PROFILE SUMMARY CARD */
+.profile-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:1.5rem;margin-bottom:1.5rem;
+}
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;margin-top:1rem;}
+.profile-item{
+  background:var(--bg);border:1px solid var(--border);border-radius:12px;
+  padding:.85rem;text-align:center;
+}
+.pi-icon{font-size:1.4rem;margin-bottom:.35rem;}
+.pi-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.2rem;}
+.pi-value{font-size:.88rem;font-weight:700;}
+
+/* QUIZ RESULT BANNER */
+.quiz-banner{
+  background:linear-gradient(135deg,rgba(124,111,247,.1),rgba(67,233,123,.06));
+  border:1px solid rgba(124,111,247,.2);border-radius:14px;
+  padding:1rem 1.25rem;margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.qb-code{
+  font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;
+  color:var(--accent);flex-shrink:0;
+}
+.qb-info{flex:1;min-width:160px;}
+.qb-title{font-weight:700;font-size:.9rem;margin-bottom:.2rem;}
+.qb-desc{font-size:.8rem;color:var(--muted);}
+.qb-retake{
+  font-size:.78rem;color:var(--accent);font-weight:600;text-decoration:none;
+  padding:.35rem .85rem;border:1px solid rgba(124,111,247,.3);border-radius:100px;
+  transition:all .2s;white-space:nowrap;
+}
+.qb-retake:hover{background:rgba(124,111,247,.1);}
+
+/* GENERATE BUTTON */
+.gen-btn{
+  width:100%;padding:1rem;border-radius:16px;border:none;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);
+  color:white;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;
+  cursor:pointer;transition:all .3s;
+  box-shadow:0 8px 32px rgba(124,111,247,.35);
+  display:flex;align-items:center;justify-content:center;gap:.75rem;
+  margin-bottom:1.5rem;
+}
+.gen-btn:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(124,111,247,.5);}
+.gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+.gen-btn .btn-icon{font-size:1.3rem;transition:transform .3s;}
+.gen-btn:not(:disabled):hover .btn-icon{transform:scale(1.2) rotate(15deg);}
+
+/* LOADING STATE */
+.loading-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:2.5rem;text-align:center;display:none;
+}
+.loading-card.active{display:block;animation:fadeUp .3s ease;}
+.ai-thinking{display:flex;flex-direction:column;align-items:center;gap:1.25rem;}
+.thinking-orbs{display:flex;gap:.5rem;justify-content:center;}
+.t-orb{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--accent);animation:orbPulse 1.4s ease-in-out infinite;
+}
+.t-orb:nth-child(2){animation-delay:.2s;background:#5b4fdf;}
+.t-orb:nth-child(3){animation-delay:.4s;background:#43e97b;}
+@keyframes orbPulse{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+.thinking-text{font-size:.9rem;color:var(--muted);}
+.thinking-steps{display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem;}
+.ts-step{
+  font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;
+  transition:all .3s;
+}
+.ts-step.done{color:#43e97b;}
+.ts-step.active{color:var(--text);font-weight:600;}
+.ts-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* RESULT CARD */
+.result-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;display:none;
+}
+.result-card.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.rc-header{
+  background:linear-gradient(135deg,rgba(124,111,247,.12),rgba(67,233,123,.06));
+  border-bottom:1px solid var(--border);padding:1.25rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;
+}
+.rc-header-left{display:flex;align-items:center;gap:.75rem;}
+.rc-ai-badge{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.rc-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+.rc-subtitle{font-size:.75rem;color:var(--muted);}
+.rc-actions{display:flex;gap:.5rem;}
+.rc-action-btn{
+  padding:.4rem .9rem;border-radius:100px;font-size:.75rem;font-weight:600;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.rc-action-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+.rc-body{padding:1.5rem;}
+
+/* AI RESPONSE RENDERING */
+.ai-response{font-size:.92rem;line-height:1.8;color:var(--text);}
+.ai-response h3{
+  font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;
+  margin:1.5rem 0 .5rem;color:var(--accent);display:flex;align-items:center;gap:.5rem;
+}
+.ai-response h3:first-child{margin-top:0;}
+.ai-response p{margin-bottom:.85rem;}
+.ai-response ul{padding-left:1.25rem;margin-bottom:.85rem;}
+.ai-response li{margin-bottom:.4rem;}
+.ai-response strong{color:var(--text);font-weight:700;}
+.ai-response .highlight-box{
+  background:linear-gradient(135deg,rgba(124,111,247,.08),rgba(67,233,123,.04));
+  border:1px solid rgba(124,111,247,.2);border-radius:12px;
+  padding:1rem 1.1rem;margin:1rem 0;font-size:.88rem;
+}
+.ai-response .exam-tag{
+  display:inline-flex;align-items:center;gap:.3rem;
+  background:rgba(67,233,123,.1);border:1px solid rgba(67,233,123,.25);
+  color:#27ae60;padding:.2rem .65rem;border-radius:100px;font-size:.75rem;font-weight:700;
+  margin:.2rem;
+}
+body.dark-mode .ai-response .exam-tag{color:#43e97b;}
+
+/* QUICK ACTIONS POST-RESULT */
+.post-actions{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;
+  padding:1.25rem 1.5rem;border-top:1px solid var(--border);
+}
+.pa-btn{
+  padding:.85rem;border-radius:14px;background:var(--bg);border:1px solid var(--border);
+  text-align:center;text-decoration:none;color:var(--text);cursor:pointer;
+  transition:all .2s;font-size:.82rem;font-weight:600;
+}
+.pa-btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+.pa-btn .pa-icon{font-size:1.3rem;display:block;margin-bottom:.3rem;}
+
+/* NO QUIZ STATE */
+.no-quiz-card{
+  background:var(--surface);border:1px solid rgba(255,193,7,.2);border-radius:18px;
+  padding:2rem;text-align:center;margin-bottom:1.5rem;
+}
+
+@media(max-width:600px){
+  .ai-rec-wrap{padding:1rem 1rem 5rem;}
+  .profile-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ai-rec-wrap">
+
+  <!-- HERO -->
+  <div class="air-hero">
+    <div class="air-hero-badge">🤖 Powered by Claude AI</div>
+    <h1>AI Career Recommendation</h1>
+    <p>Tera interest quiz result + profile dekh ke Claude AI tumhare liye ek personalized career roadmap banayega.</p>
+  </div>
+
+  <!-- PROFILE SUMMARY -->
+  <div class="profile-card">
+    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.5rem;">
+      👤 Tera Profile
+    </div>
+    <div class="profile-grid">
+      {% if current_user %}
+      <div class="profile-item">
+        <div class="pi-icon">🎓</div>
+        <div class="pi-label">Level</div>
+        <div class="pi-value">{{ level_info.label if level_info else 'Not set' }}</div>
+      </div>
+      {% if current_user.class_std %}
+      <div class="profile-item">
+        <div class="pi-icon">📚</div>
+        <div class="pi-label">Class</div>
+        <div class="pi-value">Class {{ current_user.class_std }}</div>
+      </div>
+      {% endif %}
+      {% if current_user.board %}
+      <div class="profile-item">
+        <div class="pi-icon">🏫</div>
+        <div class="pi-label">Board</div>
+        <div class="pi-value">{{ current_user.board }}</div>
+      </div>
+      {% endif %}
+      {% if current_user.stream %}
+      <div class="profile-item">
+        <div class="pi-icon">📖</div>
+        <div class="pi-label">Stream</div>
+        <div class="pi-value">{{ current_user.stream }}</div>
+      </div>
+      {% endif %}
+      {% if current_user.goal %}
+      <div class="profile-item">
+        <div class="pi-icon">🎯</div>
+        <div class="pi-label">Goal</div>
+        <div class="pi-value">{{ current_user.goal | replace('_',' ') | title }}</div>
+      </div>
+      {% endif %}
+      {% if current_user.language %}
+      <div class="profile-item">
+        <div class="pi-icon">🌐</div>
+        <div class="pi-label">Language</div>
+        <div class="pi-value">{{ 'हिंदी-Hinglish' if current_user.language == 'hi' else 'English' }}</div>
+      </div>
+      {% endif %}
+      {% endif %}
+    </div>
+    <div style="margin-top:.75rem;text-align:right;">
+      <a href="/onboarding" style="font-size:.78rem;color:var(--accent);font-weight:600;">
+        ✏️ Profile update karo
+      </a>
+    </div>
+  </div>
+
+  <!-- QUIZ RESULT OR PROMPT -->
+  <div id="quizBanner">
+    {% if quiz_result %}
+    <div class="quiz-banner">
+      <div class="qb-code">{{ quiz_result.holland_code }}</div>
+      <div class="qb-info">
+        <div class="qb-title">Holland Code: {{ quiz_result.holland_code }} — Quiz result hai!</div>
+        <div class="qb-desc">
+          Top careers: {{ quiz_result.top_careers_list | join(', ') }}
+        </div>
+      </div>
+      <a href="/career/interest-quiz" class="qb-retake">🔄 Dobara do</a>
+    </div>
+    {% else %}
+    <div class="no-quiz-card">
+      <div style="font-size:2.5rem;margin-bottom:.75rem;">🧠</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.4rem;">
+        Interest Quiz nahi diya abhi tak
+      </div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;">
+        Quiz dene se AI recommendation aur zyaada accurate hogi — sirf 8 minutes lagenge!
+      </div>
+      <a href="/career/interest-quiz"
+        style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;
+        border-radius:100px;background:linear-gradient(135deg,var(--accent),#5b4fdf);
+        color:white;font-weight:700;font-size:.875rem;text-decoration:none;">
+        🎯 Quiz Abhi Do
+      </a>
+      <div style="margin-top:.75rem;font-size:.75rem;color:var(--muted);">
+        Ya seedha recommendation generate karo profile se
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- GENERATE BUTTON -->
+  <button class="gen-btn" id="genBtn" onclick="generateRecommendation()">
+    <span class="btn-icon">✨</span>
+    <span id="genBtnText">AI Career Recommendation Generate Karo</span>
+  </button>
+
+  <!-- LOADING -->
+  <div class="loading-card" id="loadingCard">
+    <div class="ai-thinking">
+      <div style="font-size:2rem;">🧭</div>
+      <div class="thinking-orbs">
+        <div class="t-orb"></div>
+        <div class="t-orb"></div>
+        <div class="t-orb"></div>
+      </div>
+      <div class="thinking-text">Marg Darshak AI Guru soch raha hai...</div>
+      <div class="thinking-steps" id="thinkingSteps">
+        <div class="ts-step active" id="step1"><span class="ts-dot"></span> Tera profile analyze kar raha hoon</div>
+        <div class="ts-step" id="step2"><span class="ts-dot"></span> Quiz results process kar raha hoon</div>
+        <div class="ts-step" id="step3"><span class="ts-dot"></span> India ke career landscape se match kar raha hoon</div>
+        <div class="ts-step" id="step4"><span class="ts-dot"></span> Personalized roadmap likh raha hoon</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="resultCard">
+    <div class="rc-header">
+      <div class="rc-header-left">
+        <div class="rc-ai-badge">🧭</div>
+        <div>
+          <div class="rc-title">Tera Personalized Career Roadmap</div>
+          <div class="rc-subtitle">Claude AI — Generated just for you ✨</div>
+        </div>
+      </div>
+      <div class="rc-actions">
+        <button class="rc-action-btn" onclick="copyResult()"><i class="fas fa-copy"></i> Copy</button>
+        <button class="rc-action-btn" onclick="regenerate()"><i class="fas fa-redo"></i> Regenerate</button>
+      </div>
+    </div>
+    <div class="rc-body">
+      <div class="ai-response" id="aiResponse"></div>
+    </div>
+    <div class="post-actions">
+      <a href="/career/browse" class="pa-btn">
+        <span class="pa-icon">🗺</span>Browse Careers
+      </a>
+      <a href="/career/interest-quiz" class="pa-btn">
+        <span class="pa-icon">🧠</span>Retake Quiz
+      </a>
+      <a href="/resources" class="pa-btn">
+        <span class="pa-icon">📚</span>Resources
+      </a>
+      <a href="/granth" class="pa-btn">
+        <span class="pa-icon">📿</span>Granth Kosh
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── User profile from Jinja ──
+const USER_PROFILE = {
+  level:     '{{ level or "" }}',
+  class_std: '{{ current_user.class_std if current_user else "" }}',
+  board:     '{{ current_user.board if current_user else "" }}',
+  stream:    '{{ current_user.stream if current_user else "" }}',
+  goal:      '{{ current_user.goal if current_user else "" }}',
+  experience:'{{ current_user.experience if current_user else "" }}',
+  domain:    '{{ current_user.domain if current_user else "" }}',
+  lang:      '{{ current_user.language if current_user else "en" }}',
+  name:      '{{ current_user.username.title() if current_user else "Friend" }}',
+};
+
+const QUIZ_RESULT = {{ quiz_result | tojson if quiz_result else 'null' }};
+const LANG = USER_PROFILE.lang;
+
+let lastResult = '';
+
+function buildPrompt() {
+  const p = USER_PROFILE;
+  const isHindi = LANG === 'hi';
+
+  let profileStr = `Student: ${p.name}\n`;
+  profileStr += `Level: ${p.level}\n`;
+  if (p.class_std) profileStr += `Class: ${p.class_std}\n`;
+  if (p.board)     profileStr += `Board: ${p.board}\n`;
+  if (p.stream)    profileStr += `Stream: ${p.stream}\n`;
+  if (p.goal)      profileStr += `Career Goal: ${p.goal.replace(/_/g,' ')}\n`;
+  if (p.experience)profileStr += `Experience: ${p.experience}\n`;
+  if (p.domain)    profileStr += `Domain: ${p.domain}\n`;
+
+  if (QUIZ_RESULT) {
+    profileStr += `\nInterest Quiz Result:\n`;
+    profileStr += `Holland Code: ${QUIZ_RESULT.holland_code}\n`;
+    if (QUIZ_RESULT.scores) {
+      const s = typeof QUIZ_RESULT.scores === 'string'
+        ? JSON.parse(QUIZ_RESULT.scores) : QUIZ_RESULT.scores;
+      profileStr += `RIASEC Scores: ${JSON.stringify(s)}\n`;
+    }
+    if (QUIZ_RESULT.top_careers) {
+      const tc = typeof QUIZ_RESULT.top_careers === 'string'
+        ? JSON.parse(QUIZ_RESULT.top_careers) : QUIZ_RESULT.top_careers;
+      profileStr += `Quiz-matched careers: ${tc.join(', ')}\n`;
+    }
+  }
+
+  const langInstr = isHindi
+    ? 'Respond in Hinglish (Hindi + English mix, use Devanagari for Hindi words). Address as "bhai/yaar" warmly.'
+    : 'Respond in clear, warm English.';
+
+  return `You are Marg Darshak AI Guru — a brilliant career counsellor for Indian students.
+
+${langInstr}
+
+Here is the student's complete profile:
+${profileStr}
+
+Write a comprehensive, PERSONALIZED career recommendation. Structure your response EXACTLY with these sections using ### headings:
+
+### 🎯 Tera Career Match
+(Based on their profile + quiz, recommend 2-3 best-fit careers with short reason why each fits them specifically)
+
+### 🗺 6-Month Action Plan  
+(Concrete, specific steps for the next 6 months. Month by month. Mention real exams, real resources like PW/Unacademy/NCERT, real deadlines)
+
+### 📚 Must-Learn Skills
+(5-7 specific skills they need. For each: what it is + how to learn it free in India)
+
+### 🏆 Top Colleges / Paths
+(Real Indian colleges/paths for their goal. IIT/NIT/AIIMS/IIM etc. with entrance exams)
+
+### ⚡ One Powerful Advice
+(One profound piece of advice from Bhagavad Gita — give the Sanskrit shloka, meaning, and how it applies to their specific situation)
+
+Be SPECIFIC to their profile — mention their class/board/goal/stream explicitly.
+Total length: 500-700 words. Use **bold** for important terms.
+End with an encouraging line personalized to their name.`;
+}
+
+async function generateRecommendation() {
+  const btn = document.getElementById('genBtn');
+  const loading = document.getElementById('loadingCard');
+  const result = document.getElementById('resultCard');
+
+  btn.disabled = true;
+  result.classList.remove('active');
+  loading.classList.add('active');
+
+  // Animate thinking steps
+  const steps = ['step1','step2','step3','step4'];
+  let stepIdx = 0;
+  const stepTimer = setInterval(() => {
+    if (stepIdx > 0) {
+      document.getElementById(steps[stepIdx-1]).classList.remove('active');
+      document.getElementById(steps[stepIdx-1]).classList.add('done');
+    }
+    if (stepIdx < steps.length) {
+      document.getElementById(steps[stepIdx]).classList.add('active');
+      stepIdx++;
+    }
+  }, 1500);
+
+  try {
+    // Get chat config for system prompt
+    const cfgRes = await fetch('/api/chat-config', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({level: USER_PROFILE.level})
+    });
+    const cfg = await cfgRes.json();
+
+    const prompt = buildPrompt();
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: cfg.system,
+        messages: [{role:'user', content: prompt}]
+      })
+    });
+
+    const data = await res.json();
+    clearInterval(stepTimer);
+
+    // Mark all steps done
+    steps.forEach(s => {
+      document.getElementById(s).classList.remove('active');
+      document.getElementById(s).classList.add('done');
+    });
+
+    await new Promise(r => setTimeout(r, 400));
+    loading.classList.remove('active');
+
+    if (data.content && data.content[0]) {
+      lastResult = data.content[0].text;
+      renderResult(lastResult);
+
+      // Save to server
+      fetch('/api/save-recommendation', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({recommendation: lastResult})
+      }).catch(()=>{});
+
+    } else {
+      showError('AI response nahi aaya. Thodi der baad try karo.');
+    }
+  } catch(e) {
+    clearInterval(stepTimer);
+    loading.classList.remove('active');
+    showError('Network error: ' + e.message);
+  }
+
+  btn.disabled = false;
+  document.getElementById('genBtnText').textContent = '✨ Regenerate Recommendation';
+}
+
+function renderResult(text) {
+  // Convert markdown to HTML
+  let html = text
+    // Headers
+    .replace(/### (.*)/g, '<h3>$1</h3>')
+    .replace(/## (.*)/g, '<h3>$1</h3>')
+    // Bold
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Bullet points
+    .replace(/^\s*[-•]\s+(.+)/gm, '<li>$1</li>')
+    // Numbered lists
+    .replace(/^\d+\.\s+(.+)/gm, '<li>$1</li>')
+    // Wrap consecutive li items
+    .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+    // Line breaks
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Wrap in paragraphs if not already structured
+  if (!html.startsWith('<h3>') && !html.startsWith('<ul>')) {
+    html = '<p>' + html + '</p>';
+  }
+
+  document.getElementById('aiResponse').innerHTML = html;
+  document.getElementById('resultCard').classList.add('active');
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function showError(msg) {
+  document.getElementById('aiResponse').innerHTML =
+    `<div style="color:#ef4444;padding:1rem;background:rgba(239,68,68,.08);border-radius:10px;">
+      ⚠️ ${msg}
+    </div>`;
+  document.getElementById('resultCard').classList.add('active');
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(lastResult).then(() => {
+    const btn = event.target.closest('.rc-action-btn');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    btn.style.color = '#43e97b';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+      btn.style.color = '';
+    }, 2000);
+  });
+}
+
+function regenerate() {
+  document.getElementById('resultCard').classList.remove('active');
+  generateRecommendation();
+}
+</script>
+{% endblock %}
