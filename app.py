@@ -1,749 +1,699 @@
 import os
-import sqlite3
 import json
+import sqlite3
 import hashlib
 import secrets
 from datetime import datetime
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
                    url_for, jsonify, session, g)
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH  = os.path.join(BASE_DIR, 'database', 'marg_darshak.db')
 
-# ═══════════════════════════════════════════════
-#  CONSTANTS
-# ═══════════════════════════════════════════════
-LEVELS = {
-    'school': {
-        'label': 'School Student', 'hindi': 'स्कूल छात्र',
-        'icon': 'fas fa-school', 'color': '#43e97b',
-        'gradient': 'linear-gradient(135deg,#43e97b,#38f9d7)',
-        'desc': 'Class 6–12 | Explore, Discover, Dream',
-        'classes': {
-            '6':  'Class 6',  '7':  'Class 7',  '8':  'Class 8',
-            '9':  'Class 9',  '10': 'Class 10',
-            '11': 'Class 11', '12': 'Class 12',
-        },
-        'boards': ['CBSE','ICSE','State Board','IB','NIOS'],
-    },
-    'college': {
-        'label': 'College Student', 'hindi': 'कॉलेज छात्र',
-        'icon': 'fas fa-university', 'color': '#667eea',
-        'gradient': 'linear-gradient(135deg,#667eea,#764ba2)',
-        'desc': 'UG / PG | Build Skills, Shape Future',
-        'streams': ['Engineering','Medical','Commerce','Arts','Science',
-                    'Law','Design','Management','Other'],
-        'years':   ['1st Year','2nd Year','3rd Year','4th Year','PG'],
-    },
-    'professional': {
-        'label': 'Professional', 'hindi': 'पेशेवर',
-        'icon': 'fas fa-briefcase', 'color': '#f093fb',
-        'gradient': 'linear-gradient(135deg,#f093fb,#f5576c)',
-        'desc': 'Working Professional | Level Up, Lead',
-        'experience': ['0–1 yr','1–3 yrs','3–5 yrs','5–10 yrs','10+ yrs'],
-        'domains':    ['Technology','Finance','Healthcare','Marketing',
-                       'Education','Legal','Design','Operations','Other'],
-    },
-}
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
 
-SCHOOL_GOALS = {
-    'doctor':    {'label':'Doctor / Medical','icon':'🩺',
-                  'subjects':['Biology','Chemistry','Physics'],
-                  'exam':'NEET','path':'PCB → MBBS / BDS / BAMS'},
-    'engineer':  {'label':'Engineer','icon':'⚙️',
-                  'subjects':['Maths','Physics','Chemistry'],
-                  'exam':'JEE','path':'PCM → BTech / BE'},
-    'ca':        {'label':'CA / Finance','icon':'📊',
-                  'subjects':['Accountancy','Economics','Maths'],
-                  'exam':'CA Foundation','path':'Commerce → CA / CMA'},
-    'lawyer':    {'label':'Lawyer','icon':'⚖️',
-                  'subjects':['Social Science','English','Political Science'],
-                  'exam':'CLAT','path':'Any Stream → LLB / BA LLB'},
-    'designer':  {'label':'Designer / Artist','icon':'🎨',
-                  'subjects':['Fine Arts','Computer','English'],
-                  'exam':'NID / NIFT','path':'Any Stream → Design Degree'},
-    'scientist':  {'label':'Scientist / Researcher','icon':'🔬',
-                  'subjects':['Science','Maths'],
-                  'exam':'KVPY / IISc','path':'PCM/PCB → BSc Research'},
-    'entrepreneur':{'label':'Entrepreneur','icon':'🚀',
-                  'subjects':['Business Studies','Economics'],
-                  'exam':'None specific','path':'Any → MBA / Self Build'},
-    'teacher':   {'label':'Teacher / Professor','icon':'📚',
-                  'subjects':['Any core subject'],
-                  'exam':'CTET / NET','path':'Any → BEd / NET'},
-    'ias':       {'label':'IAS / Civil Services','icon':'🏛️',
-                  'subjects':['History','Geography','Polity'],
-                  'exam':'UPSC','path':'Any → Graduation → UPSC'},
-    'athlete':   {'label':'Athlete / Sports','icon':'🏆',
-                  'subjects':['Physical Education'],
-                  'exam':'SAI / State trials','path':'Any → Sports Academy'},
-}
-
-COLLEGE_GOALS = {
-    'software_engineer': '💻 Software Engineer',
-    'data_scientist':    '📊 Data Scientist / ML Engineer',
-    'product_manager':   '🎯 Product Manager',
-    'startup_founder':   '🚀 Startup Founder',
-    'finance_analyst':   '💰 Finance / Investment Analyst',
-    'doctor_pg':         '🩺 Doctor (PG / Specialisation)',
-    'civil_services':    '🏛️ Civil Services (UPSC)',
-    'researcher':        '🔬 Researcher / PhD',
-    'designer_ux':       '🎨 UX / Product Designer',
-    'content_creator':   '🎬 Content Creator / YouTuber',
-    'lawyer_practice':   '⚖️ Practicing Lawyer',
-    'ngo_social':        '🌱 NGO / Social Impact',
-}
-
-PROFESSIONAL_GOALS = {
-    'senior_role':     '📈 Get Senior / Lead Role',
-    'switch_domain':   '🔄 Switch Domain / Industry',
-    'start_business':  '🚀 Start Own Business',
-    'higher_studies':  '🎓 Higher Studies / MBA',
-    'work_abroad':     '✈️  Work Abroad',
-    'freelance':       '💼 Go Freelance',
-    'certification':   '📜 Get Certified / Upskill',
-    'leadership':      '👑 Move into Leadership',
-}
-
-LANGUAGES = {
-    'en': {'label': 'English', 'flag': '🇬🇧'},
-    'hi': {'label': 'हिंदी / Hinglish', 'flag': '🇮🇳'},
-}
-
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 #  DB HELPERS
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 def get_db():
-    if 'db' not in g:
+    db = getattr(g, '_database', None)
+    if db is None:
         os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row
-        g.db.execute('PRAGMA journal_mode=WAL')
-    return g.db
+        db = g._database = sqlite3.connect(DB_PATH)
+        db.row_factory = sqlite3.Row
+    return db
 
 @app.teardown_appcontext
-def close_db(e=None):
-    db = g.pop('db', None)
+def close_db(exc):
+    db = getattr(g, '_database', None)
     if db: db.close()
 
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    # Users
     c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id        INTEGER PRIMARY KEY AUTOINCREMENT,
-        username  TEXT UNIQUE NOT NULL,
-        password  TEXT NOT NULL,
-        level     TEXT DEFAULT 'college',
-        class_std TEXT,
-        board     TEXT,
-        stream    TEXT,
-        year      TEXT,
-        experience TEXT,
-        domain    TEXT,
-        goal      TEXT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        email    TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        level    TEXT DEFAULT 'school',
+        goal     TEXT DEFAULT '',
+        class_std TEXT DEFAULT '',
+        board     TEXT DEFAULT '',
+        stream    TEXT DEFAULT '',
+        experience TEXT DEFAULT '',
+        domain    TEXT DEFAULT '',
         language  TEXT DEFAULT 'en',
         onboarded INTEGER DEFAULT 0,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )''')
 
-    # Careers
     c.execute('''CREATE TABLE IF NOT EXISTS careers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT, category TEXT, description TEXT,
-        required_skills TEXT, avg_salary_inr INTEGER,
-        growth_rate TEXT, difficulty_level TEXT,
-        education_required TEXT, top_colleges TEXT, job_roles TEXT
+        roadmap TEXT, skills TEXT, colleges TEXT,
+        avg_salary_inr INTEGER, growth_rate TEXT,
+        difficulty TEXT, education TEXT, job_roles TEXT
     )''')
 
-    # Gyan Kosh
     c.execute('''CREATE TABLE IF NOT EXISTS gyan_kosh (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        source TEXT, chapter INTEGER, verse_number INTEGER,
-        sanskrit_text TEXT, hindi_meaning TEXT, english_meaning TEXT,
-        practical_application TEXT, tags TEXT, audio_url TEXT
+        source TEXT DEFAULT 'gita',
+        chapter INTEGER, verse_number INTEGER,
+        sanskrit TEXT, hindi_meaning TEXT,
+        english_meaning TEXT, practical_application TEXT, tags TEXT
     )''')
 
-    # Learning Resources
     c.execute('''CREATE TABLE IF NOT EXISTS learning_resources (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT, topic TEXT, platform TEXT, resource_type TEXT,
-        url TEXT, difficulty TEXT, duration_hours INTEGER,
-        quality_score REAL, language TEXT, is_free INTEGER,
-        board TEXT, class_std TEXT, level TEXT
+        topic TEXT, title TEXT, url TEXT,
+        platform TEXT, difficulty TEXT,
+        is_free INTEGER DEFAULT 1, quality_score REAL DEFAULT 4.0,
+        subject TEXT, level TEXT
     )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS saved_careers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER, career_id INTEGER, saved_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, career_id)
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS quiz_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER, holland_code TEXT, scores TEXT,
+        top_careers TEXT, taken_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS test_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER, subject TEXT, score INTEGER,
+        correct INTEGER, wrong INTEGER, skipped INTEGER,
+        total INTEGER, time_taken INTEGER,
+        taken_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS user_progress (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER, subject TEXT, class_std TEXT,
+        progress INTEGER DEFAULT 0,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, subject, class_std)
+    )''')
+
+    # Seed careers if empty
+    if not conn.execute('SELECT id FROM careers LIMIT 1').fetchone():
+        careers = [
+            ('Software Engineer','Technology',
+             'Build software products used by millions. India\'s most in-demand career.',
+             'Learn programming basics→DSA→Projects→Internship→Job',
+             'Python;JavaScript;DSA;System Design;Git',
+             'IIT;NIT;BITS;VIT;DTU',
+             1200000,'35%','Medium','B.Tech/BE Computer Science','Backend Dev;Frontend Dev;Full Stack;DevOps'),
+            ('Doctor (MBBS)','Healthcare',
+             'Diagnose and treat patients. One of the most respected professions in India.',
+             'Class 11 PCB→NEET preparation→MBBS→Internship→MD/MS',
+             'Biology;Chemistry;Clinical Skills;Patient Communication',
+             'AIIMS;JIPMER;CMC Vellore;MAMC;GMC',
+             800000,'25%','High','MBBS (5.5 yrs)','General Physician;Specialist;Surgeon;Researcher'),
+            ('IAS Officer','Government',
+             'Lead India\'s administrative machinery. Shape policy for 1.4 billion people.',
+             'Graduation→UPSC Prelims→Mains→Interview→Training',
+             'GK;Current Affairs;Essay Writing;Leadership;Management',
+             'Any top University',
+             1400000,'Stable','Very High','Any Graduation','DM;SDM;Secretary;Ambassador'),
+            ('CA (Chartered Accountant)','Finance',
+             'India\'s most respected finance professional. High demand in every sector.',
+             'Class 12 Commerce→CA Foundation→Intermediate→Final',
+             'Accountancy;Taxation;Audit;Finance;Law',
+             'ICAI (national body)',
+             1500000,'20%','High','CA Program (4-5 yrs)','Auditor;Tax Consultant;CFO;Finance Manager'),
+            ('Data Scientist','Technology',
+             'Extract insights from data using AI/ML. Fastest growing field globally.',
+             'Maths/Stats foundation→Python→ML algorithms→Projects→Job',
+             'Python;Statistics;Machine Learning;SQL;Tableau',
+             'IIT;IISc;BITS;NIT;Top private colleges',
+             1800000,'45%','Medium-High','B.Tech/B.Sc + ML courses','ML Engineer;Data Analyst;AI Researcher;BI Analyst'),
+            ('Lawyer','Legal',
+             'Advocate for justice in courts and boardrooms across India.',
+             'Class 12→CLAT→LLB (5yr integrated) or BA+LLB→Practice',
+             'Legal Research;Argumentation;Contract Drafting;Criminal Law;Corporate Law',
+             'NLU Delhi;NLSIU;NALSAR;Symbiosis Law',
+             900000,'18%','High','LLB / BA LLB / BBA LLB','Advocate;Corporate Lawyer;Judge;Legal Advisor'),
+            ('Architect','Design',
+             'Design buildings and spaces that shape how people live and work.',
+             'Class 12 PCM→NATA→B.Arch (5yr)→Internship→Practice',
+             'AutoCAD;3D Modelling;Design Thinking;Structural Knowledge',
+             'SPA Delhi;CEPT;IIT Roorkee;JNAFAU',
+             900000,'15%','High','B.Arch (5 yrs)','Building Architect;Interior Designer;Urban Planner'),
+            ('Entrepreneur','Business',
+             'Build companies from scratch. Create jobs and solve real problems.',
+             'Learn a skill→Identify problem→Build MVP→Get users→Scale',
+             'Business Development;Sales;Product Thinking;Leadership;Finance',
+             'IIM;ISB;IIT;Or skip college entirely',
+             0,'Unlimited','Very High','Any / MBA preferred','Founder;CEO;Business Owner'),
+            ('UI/UX Designer','Design',
+             'Create digital products people love to use. Combines art and psychology.',
+             'Learn design tools→Portfolio→Freelance/Internship→Full-time',
+             'Figma;User Research;Prototyping;Visual Design;HTML/CSS',
+             'NID;NIFT;MIT Institute of Design;Symbiosis',
+             1100000,'40%','Medium','BDes/MDes or self-taught','Product Designer;UX Researcher;Design Lead'),
+            ('Research Scientist','Science',
+             'Push the boundaries of human knowledge through research and experiments.',
+             'Strong academics→IIT/IISc/IISER→PhD→Post-doc→Research Position',
+             'Research Methodology;Data Analysis;Scientific Writing;Domain Expertise',
+             'IISc;IIT;IISER;TIFR;CSIR Labs',
+             800000,'20%','Very High','PhD required','Research Scientist;Professor;R&D Lead'),
+        ]
+        conn.executemany(
+            '''INSERT INTO careers(title,category,description,roadmap,skills,colleges,
+               avg_salary_inr,growth_rate,difficulty,education,job_roles) VALUES(?,?,?,?,?,?,?,?,?,?,?)''',
+            careers)
+
+    # Seed shlokas if empty
+    if not conn.execute('SELECT id FROM gyan_kosh LIMIT 1').fetchone():
+        shlokas = [
+            ('gita',2,47,
+             'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।',
+             'You have the right to perform your duties, but never to the results.',
+             'Focus only on your work — exams, job applications, projects. Results will follow.',
+             'karma,work,focus'),
+            ('gita',6,5,
+             'उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।',
+             'Elevate yourself through your own effort; do not degrade yourself.',
+             'No one else will build your career for you. Self-discipline is the only superpower.',
+             'self,discipline,growth'),
+            ('gita',3,27,
+             'प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः।',
+             'All actions are performed by nature\'s qualities; the ego-deluded think "I am the doer."',
+             'Stay humble in success. Great teams and leaders understand collective effort.',
+             'ego,humility,leadership'),
+            ('gita',18,46,
+             'स्वकर्मणा तमभ्यर्च्य सिद्धिं विन्दति मानवः।',
+             'A person attains perfection by worshipping through their own natural work.',
+             'Choose a career aligned with your natural strengths — that is where excellence lives.',
+             'purpose,career,dharma'),
+            ('gita',2,14,
+             'मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदुःखदाः।',
+             'Contacts of senses with objects give rise to cold/heat, pleasure/pain. Endure them.',
+             'Exam failure, job rejection — these are temporary. Resilience defines your career.',
+             'resilience,stress,mindset'),
+            ('chanakya',1,1,
+             'काक चेष्टा, बको ध्यानम्, श्वान निद्रा तथैव च।',
+             'Effort of a crow, focus of a heron, light sleep of a dog — these mark a true student.',
+             'Serious study demands serious sacrifice. Eliminate distractions ruthlessly.',
+             'focus,study,discipline'),
+            ('upanishad',1,1,
+             'तत्त्वमसि — Tat Tvam Asi',
+             'That art Thou — you are the infinite, boundless potential itself.',
+             'Your biggest limitations are self-imposed beliefs. You are capable of far more.',
+             'mindset,potential,self'),
+            ('vedas',1,1,
+             'आ नो भद्राः क्रतवो यन्तु विश्वतः',
+             'Let noble thoughts come to us from all directions.',
+             'Learn from every source — books, mentors, failures, nature. Wisdom is everywhere.',
+             'learning,knowledge,wisdom'),
+        ]
+        conn.executemany(
+            '''INSERT INTO gyan_kosh(source,chapter,verse_number,sanskrit,
+               english_meaning,practical_application,tags) VALUES(?,?,?,?,?,?,?)''',
+            shlokas)
 
     conn.commit()
     conn.close()
 
-def hash_pw(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+# ─────────────────────────────────────────────
+#  AUTH HELPERS
+# ─────────────────────────────────────────────
+def hash_password(pw): return hashlib.sha256(pw.encode()).hexdigest()
 
-def get_user(user_id):
-    return get_db().execute('SELECT * FROM users WHERE id=?', (user_id,)).fetchone()
+def get_user(uid):
+    row = get_db().execute('SELECT * FROM users WHERE id=?', (uid,)).fetchone()
+    return dict(row) if row else None
 
-# ═══════════════════════════════════════════════
-#  AUTH DECORATOR
-# ═══════════════════════════════════════════════
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if 'user_id' not in session and not session.get('guest'):
-            return redirect(url_for('auth'))
+        if 'user_id' not in session:
+            return redirect(url_for('login', next=request.path))
         return f(*args, **kwargs)
     return decorated
 
 def onboarding_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if session.get('guest'):
-            return f(*args, **kwargs)
-        if 'user_id' in session:
+        if 'user_id' in session and not session.get('guest'):
             user = get_user(session['user_id'])
-            if user and not user['onboarded']:
+            if user and not user.get('onboarded'):
                 return redirect(url_for('onboarding'))
         return f(*args, **kwargs)
     return decorated
 
-# ═══════════════════════════════════════════════
-#  CONTEXT PROCESSOR — injects user into all templates
-# ═══════════════════════════════════════════════
-@app.context_processor
 def inject_user():
-    user = None
-    if 'user_id' in session:
-        user = get_user(session['user_id'])
-    is_guest = session.get('guest', False)
-    lang = (dict(user)['language'] if user else session.get('lang', 'en'))
-    level_key = (dict(user)['level'] if user else session.get('level', 'college'))
-    level_info = LEVELS.get(level_key, LEVELS['college'])
+    """Returns current user dict or None — used in templates via g"""
+    if 'user_id' in session and not session.get('guest'):
+        return get_user(session['user_id'])
+    return None
+
+@app.context_processor
+def inject_globals():
+    user = inject_user()
     return dict(
-        current_user=dict(user) if user else None,
-        is_guest=is_guest,
-        lang=lang,
-        levels=LEVELS,
-        level=level_key,
-        level_info=level_info,
-        languages=LANGUAGES,
+        current_user=user,
+        level=user['level'] if user else session.get('level','school'),
+        lang=user['language'] if user else session.get('lang','en'),
+        is_authenticated='user_id' in session,
+        is_guest=session.get('guest', False),
     )
 
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 #  AUTH ROUTES
-# ═══════════════════════════════════════════════
-@app.route('/auth', methods=['GET', 'POST'])
-def auth():
-    if 'user_id' in session or session.get('guest'):
-        return redirect(url_for('index'))
-
+# ─────────────────────────────────────────────
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
-        action   = request.form.get('action')
-        username = request.form.get('username', '').strip().lower()
-        password = request.form.get('password', '')
-
+        data = request.json or request.form
+        identifier = data.get('identifier','').strip()
+        password   = data.get('password','').strip()
+        if not identifier or not password:
+            return jsonify({'success':False,'error':'Please fill all fields.'}), 400
         db = get_db()
+        user = db.execute(
+            'SELECT * FROM users WHERE email=? OR username=?',
+            (identifier, identifier)
+        ).fetchone()
+        if not user or dict(user)['password'] != hash_password(password):
+            return jsonify({'success':False,'error':'Invalid credentials. Please try again.'}), 401
+        u = dict(user)
+        session.clear()
+        session['user_id'] = u['id']
+        session.permanent = True
+        return jsonify({'success':True,'redirect': url_for('dashboard')})
+    return render_template('auth.html', mode='login')
 
-        if action == 'login':
-            user = db.execute(
-                'SELECT * FROM users WHERE username=? AND password=?',
-                (username, hash_pw(password))
-            ).fetchone()
-            if user:
-                session['user_id'] = user['id']
-                session.pop('guest', None)
-                if not user['onboarded']:
-                    return redirect(url_for('onboarding'))
-                return redirect(url_for('dashboard'))
-            return render_template('auth.html', error='login',
-                                   msg='Galat username ya password! 🙈')
-
-        elif action == 'signup':
-            if len(username) < 3:
-                return render_template('auth.html', error='signup',
-                                       msg='Username kam se kam 3 characters ka hona chahiye')
-            if len(password) < 6:
-                return render_template('auth.html', error='signup',
-                                       msg='Password 6+ characters ka hona chahiye')
-            existing = db.execute('SELECT id FROM users WHERE username=?', (username,)).fetchone()
-            if existing:
-                return render_template('auth.html', error='signup',
-                                       msg='Yeh username already le liya gaya hai! Try another.')
-            db.execute(
-                'INSERT INTO users (username, password) VALUES (?,?)',
-                (username, hash_pw(password))
-            )
-            db.commit()
-            user = db.execute('SELECT * FROM users WHERE username=?', (username,)).fetchone()
-            session['user_id'] = user['id']
-            session.pop('guest', None)
-            return redirect(url_for('onboarding'))
-
-    return render_template('auth.html')
-
-@app.route('/guest')
-def guest_login():
-    session.clear()
-    session['guest'] = True
-    session['level'] = 'college'
-    session['lang']  = 'en'
-    return redirect(url_for('onboarding'))
+@app.route('/register', methods=['GET','POST'])
+def register():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        data     = request.json or request.form
+        username = data.get('username','').strip()
+        email    = data.get('email','').strip()
+        password = data.get('password','').strip()
+        if not all([username, email, password]):
+            return jsonify({'success':False,'error':'All fields are required.'}), 400
+        if len(password) < 6:
+            return jsonify({'success':False,'error':'Password must be at least 6 characters.'}), 400
+        db = get_db()
+        if db.execute('SELECT id FROM users WHERE email=?',(email,)).fetchone():
+            return jsonify({'success':False,'error':'This email is already registered.'}), 409
+        if db.execute('SELECT id FROM users WHERE username=?',(username,)).fetchone():
+            return jsonify({'success':False,'error':'This username is taken.'}), 409
+        db.execute(
+            'INSERT INTO users(username,email,password) VALUES(?,?,?)',
+            (username, email, hash_password(password))
+        )
+        db.commit()
+        user = db.execute('SELECT * FROM users WHERE email=?',(email,)).fetchone()
+        session.clear()
+        session['user_id'] = dict(user)['id']
+        session.permanent = True
+        return jsonify({'success':True,'redirect': url_for('onboarding')})
+    return render_template('auth.html', mode='register')
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('auth'))
+    return redirect(url_for('login'))
 
-# ═══════════════════════════════════════════════
+@app.route('/guest')
+def guest_login():
+    session.clear()
+    session['guest']    = True
+    session['user_id']  = 0
+    session['level']    = 'school'
+    session['lang']     = 'en'
+    return redirect(url_for('dashboard'))
+
+# ─────────────────────────────────────────────
 #  ONBOARDING
-# ═══════════════════════════════════════════════
-@app.route('/onboarding', methods=['GET', 'POST'])
+# ─────────────────────────────────────────────
+@app.route('/onboarding', methods=['GET','POST'])
 @login_required
 def onboarding():
     if request.method == 'POST':
         data = request.json or request.form
-        level      = data.get('level', 'college')
-        class_std  = data.get('class_std', '')
-        board      = data.get('board', '')
-        stream     = data.get('stream', '')
-        year       = data.get('year', '')
-        experience = data.get('experience', '')
-        domain     = data.get('domain', '')
-        goal       = data.get('goal', '')
-        language   = data.get('language', 'en')
-
         if session.get('guest'):
-            session.update({'level': level, 'class_std': class_std,
-                            'board': board, 'stream': stream,
-                            'goal': goal, 'lang': language,
-                            'guest_onboarded': True})
-            return jsonify({'success': True, 'redirect': url_for('dashboard')})
-
+            session['level'] = data.get('level','school')
+            return jsonify({'success':True,'redirect': url_for('dashboard')})
         db = get_db()
-        db.execute('''UPDATE users SET level=?,class_std=?,board=?,stream=?,
-                      year=?,experience=?,domain=?,goal=?,language=?,onboarded=1
-                      WHERE id=?''',
-                   (level, class_std, board, stream,
-                    year, experience, domain, goal, language,
-                    session['user_id']))
+        db.execute('''UPDATE users SET
+            level=?, goal=?, class_std=?, board=?,
+            stream=?, experience=?, domain=?, language=?, onboarded=1
+            WHERE id=?''', (
+            data.get('level','school'),
+            data.get('goal',''),
+            data.get('class_std',''),
+            data.get('board',''),
+            data.get('stream',''),
+            data.get('experience',''),
+            data.get('domain',''),
+            data.get('language','en'),
+            session['user_id']
+        ))
         db.commit()
-        return jsonify({'success': True, 'redirect': url_for('dashboard')})
+        return jsonify({'success':True,'redirect': url_for('dashboard')})
+    return render_template('onboarding.html')
 
-    return render_template('onboarding.html',
-                           school_goals=SCHOOL_GOALS,
-                           college_goals=COLLEGE_GOALS,
-                           professional_goals=PROFESSIONAL_GOALS)
-
-# ═══════════════════════════════════════════════
-#  DASHBOARD
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
+#  MAIN PAGES
+# ─────────────────────────────────────────────
 @app.route('/')
+def index():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
 @app.route('/dashboard')
 @login_required
 @onboarding_required
 def dashboard():
     db = get_db()
-    try:
-        careers   = db.execute('SELECT COUNT(*) as c FROM careers').fetchone()['c']
-        shlokas   = db.execute('SELECT COUNT(*) as c FROM gyan_kosh').fetchone()['c']
-        resources = db.execute('SELECT COUNT(*) as c FROM learning_resources').fetchone()['c']
-    except Exception:
-        careers = shlokas = resources = 0
-
-    # Get user context
-    if session.get('guest'):
-        level = session.get('level', 'college')
-        goal  = session.get('goal', '')
-        user_name = 'Guest'
-    else:
-        user = get_user(session['user_id'])
-        level = user['level']
-        goal  = user['goal'] or ''
-        user_name = user['username'].title()
-
-    stats = {'careers': careers, 'shlokas': shlokas, 'resources': resources}
-
-    # Daily shloka
-    shloka = None
-    try:
-        shloka = db.execute('SELECT * FROM gyan_kosh ORDER BY RANDOM() LIMIT 1').fetchone()
-        if shloka: shloka = dict(shloka)
-    except Exception:
-        pass
-
+    user = inject_user()
+    career_count   = db.execute('SELECT COUNT(*) FROM careers').fetchone()[0]
+    shloka_count   = db.execute('SELECT COUNT(*) FROM gyan_kosh').fetchone()[0]
+    resource_count = db.execute('SELECT COUNT(*) FROM learning_resources').fetchone()[0]
+    daily_shloka   = db.execute(
+        'SELECT * FROM gyan_kosh ORDER BY RANDOM() LIMIT 1'
+    ).fetchone()
+    saved_count = 0
+    quiz_result = None
+    if user:
+        saved_count = db.execute(
+            'SELECT COUNT(*) FROM saved_careers WHERE user_id=?',(user['id'],)
+        ).fetchone()[0]
+        row = db.execute(
+            'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
+            (user['id'],)
+        ).fetchone()
+        if row: quiz_result = dict(row)
     return render_template('dashboard.html',
-                           stats=stats,
-                           shloka=shloka,
-                           user_name=user_name,
-                           goal=goal,
-                           school_goals=SCHOOL_GOALS,
-                           college_goals=COLLEGE_GOALS,
-                           professional_goals=PROFESSIONAL_GOALS)
+        career_count=career_count, shloka_count=shloka_count,
+        resource_count=resource_count,
+        daily_shloka=dict(daily_shloka) if daily_shloka else None,
+        saved_count=saved_count, quiz_result=quiz_result)
 
-# ═══════════════════════════════════════════════
-#  LANGUAGE TOGGLE
-# ═══════════════════════════════════════════════
-@app.route('/set-language/<lang>')
-def set_language(lang):
-    if lang not in LANGUAGES:
-        lang = 'en'
-    if 'user_id' in session:
-        get_db().execute('UPDATE users SET language=? WHERE id=?',
-                         (lang, session['user_id']))
-        get_db().commit()
-    else:
-        session['lang'] = lang
-    return redirect(request.referrer or url_for('dashboard'))
-
-# ═══════════════════════════════════════════════
-#  CAREER MODULE
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
+#  CAREERS
+# ─────────────────────────────────────────────
 @app.route('/career')
 @login_required
 @onboarding_required
 def career_home():
     return render_template('career/quiz.html')
 
-@app.route('/career/quiz', methods=['GET', 'POST'])
-@login_required
-def career_quiz():
-    if request.method == 'POST':
-        try:
-            data = request.json
-            interests = {k: data.get(k, 0)
-                         for k in ['technical','creative','social','analytical','entrepreneurial']}
-            top2 = sorted(interests.items(), key=lambda x: x[1], reverse=True)[:2]
-            cat_map = {'technical':'Technology','creative':'Creative',
-                       'social':'Business','analytical':'Technology','entrepreneurial':'Business'}
-            db = get_db()
-            careers, seen = [], set()
-            for interest, _ in top2:
-                cat = cat_map.get(interest, 'Technology')
-                for row in db.execute('SELECT * FROM careers WHERE category=? LIMIT 3', (cat,)).fetchall():
-                    d = dict(row)
-                    if d['id'] not in seen:
-                        careers.append(d); seen.add(d['id'])
-            return jsonify({'success': True, 'careers': careers[:5], 'interests': interests})
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)}), 500
-    return render_template('career/quiz.html')
-
 @app.route('/career/browse')
 @login_required
 @onboarding_required
 def career_browse():
-    try:
-        db = get_db()
-        category = request.args.get('category', 'all')
-        if category == 'all':
-            careers = db.execute('SELECT * FROM careers ORDER BY title').fetchall()
-        else:
-            careers = db.execute('SELECT * FROM careers WHERE category=? ORDER BY title',
-                                 (category,)).fetchall()
-        categories = db.execute('SELECT DISTINCT category FROM careers').fetchall()
-        return render_template('career/browse.html',
-                               careers=[dict(r) for r in careers],
-                               categories=[r['category'] for r in categories],
-                               selected_category=category)
-    except Exception as e:
-        return f'Error: {e}', 500
+    db = get_db()
+    category = request.args.get('category','')
+    search   = request.args.get('q','')
+    query = 'SELECT * FROM careers'
+    params = []
+    if category:
+        query += ' WHERE category=?'; params.append(category)
+    elif search:
+        query += ' WHERE title LIKE ? OR description LIKE ?'
+        params += [f'%{search}%', f'%{search}%']
+    careers    = [dict(r) for r in db.execute(query, params).fetchall()]
+    categories = [r[0] for r in db.execute('SELECT DISTINCT category FROM careers').fetchall()]
+    user = inject_user()
+    saved_ids = []
+    if user:
+        saved_ids = [r[0] for r in db.execute(
+            'SELECT career_id FROM saved_careers WHERE user_id=?',(user['id'],)
+        ).fetchall()]
+    return render_template('career/browse.html',
+        careers=careers, categories=categories,
+        saved_ids=saved_ids, current_category=category, search=search)
 
 @app.route('/career/detail/<int:cid>')
 @login_required
+@onboarding_required
 def career_detail(cid):
-    try:
-        career = get_db().execute('SELECT * FROM careers WHERE id=?', (cid,)).fetchone()
-        if not career:
-            return 'Not found', 404
-        c = dict(career)
-        # map category to emoji icon
-        icons = {'Technology':'💻','Business':'📊','Creative':'🎨',
-                 'Healthcare':'🩺','Legal':'⚖️','Education':'📚','Science':'🔬'}
-        career_icon = icons.get(c.get('category',''), '🎯')
-        return render_template('career_detail.html', career=c, career_icon=career_icon)
-    except Exception as e:
-        return f'Error: {e}', 500
+    db = get_db()
+    row = db.execute('SELECT * FROM careers WHERE id=?',(cid,)).fetchone()
+    if not row: return redirect(url_for('career_browse'))
+    career = dict(row)
+    icon_map = {'Technology':'💻','Healthcare':'🩺','Government':'🏛️',
+                'Finance':'📊','Design':'🎨','Legal':'⚖️',
+                'Science':'🔬','Business':'🚀','Education':'📚'}
+    career['icon'] = icon_map.get(career.get('category',''),'🎯')
+    user = inject_user()
+    is_saved = False
+    if user:
+        is_saved = bool(db.execute(
+            'SELECT id FROM saved_careers WHERE user_id=? AND career_id=?',
+            (user['id'], cid)
+        ).fetchone())
+    return render_template('career/detail.html', career=career, is_saved=is_saved)
 
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 #  GYAN KOSH
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 @app.route('/gyan')
 @login_required
 @onboarding_required
 def gyan_home():
-    try:
-        shloka = get_db().execute(
-            'SELECT * FROM gyan_kosh ORDER BY RANDOM() LIMIT 1').fetchone()
-        if shloka:
-            return render_template('gyan/daily.html', shloka=dict(shloka))
-        return 'No shlokas', 500
-    except Exception as e:
-        return f'Error: {e}', 500
+    db = get_db()
+    daily = db.execute('SELECT * FROM gyan_kosh ORDER BY RANDOM() LIMIT 1').fetchone()
+    all_shlokas = [dict(r) for r in db.execute('SELECT * FROM gyan_kosh').fetchall()]
+    return render_template('gyan/home.html',
+        daily=dict(daily) if daily else None, shlokas=all_shlokas)
 
-@app.route('/gyan/search')
-@login_required
-@onboarding_required
-def gyan_search():
-    try:
-        q = request.args.get('q', '').strip()
-        db = get_db()
-        if q:
-            sp = f'%{q}%'
-            shlokas = db.execute('''SELECT * FROM gyan_kosh WHERE
-                hindi_meaning LIKE ? OR english_meaning LIKE ?
-                OR practical_application LIKE ? OR tags LIKE ?''',
-                (sp,sp,sp,sp)).fetchall()
-        else:
-            shlokas = db.execute(
-                'SELECT * FROM gyan_kosh ORDER BY chapter,verse_number LIMIT 20').fetchall()
-        return render_template('gyan/search.html',
-                               shlokas=[dict(r) for r in shlokas], query=q)
-    except Exception as e:
-        return f'Error: {e}', 500
-
-@app.route('/gyan/detail/<int:sid>')
-@login_required
-def gyan_detail(sid):
-    try:
-        s = get_db().execute('SELECT * FROM gyan_kosh WHERE id=?', (sid,)).fetchone()
-        if s:
-            return render_template('gyan/detail.html', shloka=dict(s))
-        return 'Not found', 404
-    except Exception as e:
-        return f'Error: {e}', 500
-
-# ═══════════════════════════════════════════════
-#  SKILL SAATHI
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
+#  RESOURCES
+# ─────────────────────────────────────────────
 @app.route('/skill')
 @login_required
 @onboarding_required
 def skill_home():
-    try:
-        db = get_db()
-        if session.get('guest'):
-            lvl = session.get('level','college')
-            board = class_std = ''
-        else:
-            user = get_user(session['user_id'])
-            lvl   = user['level']
-            board = user['board'] or ''
-            class_std = user['class_std'] or ''
+    db = get_db()
+    resources = [dict(r) for r in db.execute(
+        'SELECT * FROM learning_resources ORDER BY quality_score DESC'
+    ).fetchall()]
+    return render_template('skill/home.html', resources=resources)
 
-        level_info = LEVELS.get(lvl, LEVELS['college'])
-        diff_filter = level_info.get('skill_difficulty',
-                                     ['Beginner','Intermediate'])
-        ph = ','.join(['?']*len(diff_filter))
-        resources = db.execute(
-            f'SELECT * FROM learning_resources WHERE difficulty IN ({ph}) '
-            f'ORDER BY quality_score DESC LIMIT 12', diff_filter).fetchall()
-        if not resources:
-            resources = db.execute(
-                'SELECT * FROM learning_resources ORDER BY quality_score DESC LIMIT 12'
-            ).fetchall()
-        topics = db.execute('SELECT DISTINCT topic FROM learning_resources').fetchall()
-        return render_template('skill/browse.html',
-                               resources=[dict(r) for r in resources],
-                               topics=[r['topic'] for r in topics],
-                               selected_topic='all', selected_difficulty='all',
-                               free_only=False)
-    except Exception as e:
-        return f'Error: {e}', 500
-
-@app.route('/skill/browse')
+# ─────────────────────────────────────────────
+#  AI CHATBOT — server side API call
+# ─────────────────────────────────────────────
+@app.route('/api/chat', methods=['POST'])
 @login_required
-@onboarding_required
-def skill_browse():
+def chat():
+    """Server-side Claude API call — no CORS issues, API key never exposed"""
     try:
-        db   = get_db()
-        topic      = request.args.get('topic', 'all')
-        difficulty = request.args.get('difficulty', 'all')
-        free_only  = request.args.get('free', 'false') == 'true'
-        q, params  = 'SELECT * FROM learning_resources WHERE 1=1', []
-        if topic != 'all':
-            q += ' AND topic=?'; params.append(topic)
-        if difficulty != 'all':
-            q += ' AND difficulty=?'; params.append(difficulty)
-        if free_only:
-            q += ' AND is_free=1'
-        q += ' ORDER BY quality_score DESC'
-        resources = db.execute(q, params).fetchall()
-        topics    = db.execute('SELECT DISTINCT topic FROM learning_resources').fetchall()
-        return render_template('skill/browse.html',
-                               resources=[dict(r) for r in resources],
-                               topics=[r['topic'] for r in topics],
-                               selected_topic=topic,
-                               selected_difficulty=difficulty,
-                               free_only=free_only)
-    except Exception as e:
-        return f'Error: {e}', 500
+        import urllib.request
+        data     = request.json
+        messages = data.get('messages', [])
+        user     = inject_user()
 
-# ═══════════════════════════════════════════════
-#  AI CHATBOT CONFIG
-# ═══════════════════════════════════════════════
-@app.route('/api/chat-config', methods=['POST'])
-@login_required
-def chat_config():
-    try:
-        if session.get('guest'):
-            level = session.get('level', 'college')
-            goal  = session.get('goal', '')
-            class_std = session.get('class_std', '')
-            board     = session.get('board', '')
-            lang      = session.get('lang', 'en')
-            user_name = 'Friend'
+        # Build system prompt from user profile
+        if user:
+            profile = (f"User: {user['username']} | Level: {user['level']}"
+                      + (f" | Class {user['class_std']}" if user.get('class_std') else '')
+                      + (f" | Board: {user['board']}" if user.get('board') else '')
+                      + (f" | Goal: {user['goal']}" if user.get('goal') else ''))
+            lang_note = ('Use Hinglish naturally (mix Hindi+English).'
+                        if user.get('language') == 'hi'
+                        else 'Respond in clear, friendly English.')
         else:
-            user = get_user(session['user_id'])
-            level     = user['level']
-            goal      = user['goal'] or ''
-            class_std = user['class_std'] or ''
-            board     = user['board'] or ''
-            lang      = user['language']
-            user_name = user['username'].title()
+            profile  = 'Guest user exploring career options.'
+            lang_note = 'Respond in clear, friendly English.'
 
-        li = LEVELS.get(level, LEVELS['college'])
-        lang_instruction = (
-            'Respond in natural Hinglish (mix Hindi + English like a dost). '
-            'Use Devanagari script for Hindi words. '
-            'Be warm, use "bhai/yaar/dost" naturally.'
-            if lang == 'hi' else
-            'Respond in clear, friendly English. Be warm and encouraging.'
-        )
+        system = f"""You are Marg Darshak AI Guru 🧭 — a brilliant, caring career guide for Indian students.
 
-        context = f'Level: {li["label"]}'
-        if class_std: context += f', Class {class_std}'
-        if board:     context += f', Board: {board}'
-        if goal:      context += f', Goal: {goal}'
+{profile}
 
-        system = f"""You are Marg Darshak AI Guru 🧭, a brilliant and caring guide for Indian students.
-
-User: {user_name} | {context}
-
-{lang_instruction}
+{lang_note}
 
 Your role:
-- Give personalized career guidance, Bhagavad Gita wisdom, study tips, skill advice
-- Always tailor advice to the user's specific level, class, board, and goal
-- When quoting Gita, give Sanskrit shloka + meaning + modern application
-- Be specific: mention real exams (JEE/NEET/UPSC), real colleges (IIT/AIIMS), real resources
-- Keep responses concise but impactful (2–4 paragraphs max)
-- Use emojis naturally 🙏✨
+- Give personalized career guidance tailored to the user's level, class, board, and goal
+- Mention real Indian exams (JEE, NEET, UPSC, CLAT, CA), real colleges (IIT, AIIMS, NLU, IIM)
+- Quote relevant Bhagavad Gita wisdom when appropriate (Sanskrit + meaning + application)
+- Be warm, specific, and actionable — 2-4 paragraphs max
+- Use emojis naturally
 
-End every response with one short encouraging line."""
+End every response with one short, encouraging line."""
 
-        return jsonify({'success': True, 'system': system})
+        payload = json.dumps({
+            'model': 'claude-sonnet-4-20250514',
+            'max_tokens': 1000,
+            'system': system,
+            'messages': messages
+        }).encode('utf-8')
+
+        req = urllib.request.Request(
+            'https://api.anthropic.com/v1/messages',
+            data=payload,
+            headers={
+                'Content-Type': 'application/json',
+                'x-api-key': ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            },
+            method='POST'
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read())
+
+        text = result['content'][0]['text'] if result.get('content') else 'Sorry, try again.'
+        return jsonify({'success': True, 'message': text})
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ═══════════════════════════════════════════════
-#  AI GOAL PREDICTION (school)
-# ═══════════════════════════════════════════════
-@app.route('/api/predict-goal', methods=['POST'])
+@app.route('/api/ai-recommend', methods=['POST'])
 @login_required
-def predict_goal():
-    """Returns AI-generated roadmap based on current class + board + goal"""
+def ai_recommend():
+    """Server-side AI career recommendation"""
     try:
-        data      = request.json
-        goal_key  = data.get('goal', '')
-        class_std = data.get('class_std', '10')
-        board     = data.get('board', 'CBSE')
+        import urllib.request
+        user = inject_user()
+        data = request.json or {}
 
-        goal_info = SCHOOL_GOALS.get(goal_key)
-        if not goal_info:
-            return jsonify({'success': False, 'error': 'Unknown goal'}), 400
+        profile_parts = []
+        if user:
+            profile_parts.append(f"Name: {user['username']}")
+            profile_parts.append(f"Level: {user['level']}")
+            if user.get('class_std'): profile_parts.append(f"Class: {user['class_std']}")
+            if user.get('board'):     profile_parts.append(f"Board: {user['board']}")
+            if user.get('stream'):    profile_parts.append(f"Stream: {user['stream']}")
+            if user.get('goal'):      profile_parts.append(f"Goal: {user['goal'].replace('_',' ')}")
+        if data.get('holland_code'):
+            profile_parts.append(f"Holland Code (RIASEC): {data['holland_code']}")
+        if data.get('top_careers'):
+            profile_parts.append(f"Quiz matches: {', '.join(data['top_careers'])}")
 
-        years_left = max(0, 12 - int(class_std)) if class_std.isdigit() else 2
+        profile_str = '\n'.join(profile_parts) or 'Student exploring career options.'
+        lang_note = ('Respond in Hinglish (natural Hindi+English mix).'
+                    if (user and user.get('language') == 'hi') else
+                    'Respond in clear English.')
 
-        roadmap = {
-            'goal': goal_info['label'],
-            'icon': goal_info['icon'],
-            'exam': goal_info['exam'],
-            'path': goal_info['path'],
-            'subjects': goal_info['subjects'],
-            'years_left': years_left,
-            'board': board,
-            'milestones': _build_milestones(goal_key, int(class_std) if class_std.isdigit() else 10, board),
-        }
-        return jsonify({'success': True, 'roadmap': roadmap})
+        prompt = f"""You are Marg Darshak AI Guru — an expert career counsellor for Indian students.
+
+{lang_note}
+
+Student Profile:
+{profile_str}
+
+Write a PERSONALIZED career recommendation with these exact sections (use ### headings):
+
+### 🎯 Your Best Career Matches
+(2-3 careers that fit this specific profile, with clear reason for each)
+
+### 🗺 6-Month Action Plan
+(Concrete month-by-month steps. Mention real exams, resources like PW/NCERT/Unacademy, deadlines)
+
+### 📚 Must-Learn Skills
+(5-6 specific skills + how to learn each one free in India)
+
+### 🏆 Top Colleges & Paths
+(Real Indian colleges/paths with entrance exams for their goal)
+
+### ⚡ Wisdom for Your Journey
+(One Bhagavad Gita shloka — Sanskrit + meaning + how it applies to their specific situation)
+
+Be SPECIFIC to their profile. Total: 500-700 words. Use **bold** for key terms.
+End with an encouraging line addressed to them by name."""
+
+        payload = json.dumps({
+            'model': 'claude-sonnet-4-20250514',
+            'max_tokens': 1500,
+            'messages': [{'role':'user','content': prompt}]
+        }).encode('utf-8')
+
+        req = urllib.request.Request(
+            'https://api.anthropic.com/v1/messages',
+            data=payload,
+            headers={
+                'Content-Type': 'application/json',
+                'x-api-key': ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            },
+            method='POST'
+        )
+        with urllib.request.urlopen(req, timeout=45) as resp:
+            result = json.loads(resp.read())
+
+        text = result['content'][0]['text'] if result.get('content') else 'Sorry, try again.'
+
+        # Save to DB
+        if user:
+            db = get_db()
+            db.execute('''CREATE TABLE IF NOT EXISTS ai_recommendations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER, recommendation TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP)''')
+            db.execute('INSERT INTO ai_recommendations(user_id,recommendation) VALUES(?,?)',
+                       (user['id'], text))
+            db.commit()
+
+        return jsonify({'success': True, 'recommendation': text})
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-def _build_milestones(goal, cls, board):
-    base = []
-    if goal == 'doctor':
-        if cls <= 9:  base.append({'class':'9-10','task':'Focus on Science & Maths. Score 85%+ in boards.'})
-        if cls <= 11: base.append({'class':'11-12','task':'Take PCB stream. Start NCERT Biology deep study.'})
-        base += [
-            {'class':'12','task':f'Appear in {board} boards. Target 90%+.'},
-            {'class':'12','task':'Register for NEET. Join a coaching or use NTA Abhyas app.'},
-            {'class':'After 12','task':'Clear NEET → MBBS in Govt Medical College (AIIMS/State).'},
-        ]
-    elif goal == 'engineer':
-        if cls <= 9:  base.append({'class':'9-10','task':'Build strong Maths & Science base. Practice NCERT thoroughly.'})
-        if cls <= 11: base.append({'class':'11-12','task':'Take PCM stream. Focus on Physics, Chemistry, Maths.'})
-        base += [
-            {'class':'11-12','task':'Join JEE coaching / use PW / Unacademy. Solve DPPs daily.'},
-            {'class':'12','task':f'{board} boards + JEE Mains & Advanced preparation.'},
-            {'class':'After 12','task':'Clear JEE → IIT / NIT / IIIT. Alternate: BITSAT, state CETs.'},
-        ]
-    elif goal == 'ias':
-        base += [
-            {'class':f'{cls}-12','task':'Read newspaper daily (The Hindu/IE). Build general awareness.'},
-            {'class':'After 12','task':'Choose graduation wisely (History/Polity/Economics helps).'},
-            {'class':'Graduation','task':'Start UPSC prep in final year. Join test series.'},
-            {'class':'Post Grad','task':'Appear in UPSC CSE. 3 attempts average. Stay consistent.'},
-        ]
-    else:
-        base += [
-            {'class':f'{cls}','task':f'Focus on subjects: {", ".join(SCHOOL_GOALS[goal]["subjects"][:2])}.'},
-            {'class':'11-12','task':f'Choose right stream. Target exam: {SCHOOL_GOALS[goal]["exam"]}.'},
-            {'class':'After 12','task':f'Path: {SCHOOL_GOALS[goal]["path"]}'},
-        ]
-    return base
-
-# ═══════════════════════════════════════════════
-#  API
-# ═══════════════════════════════════════════════
-@app.route('/api/stats')
-def api_stats():
-    try:
-        db = get_db()
-        return jsonify({
-            'careers':   db.execute('SELECT COUNT(*) as c FROM careers').fetchone()['c'],
-            'shlokas':   db.execute('SELECT COUNT(*) as c FROM gyan_kosh').fetchone()['c'],
-            'resources': db.execute('SELECT COUNT(*) as c FROM learning_resources').fetchone()['c'],
-        })
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-
-# ═══════════════════════════════════════════════
-#  INTEREST QUIZ
-# ═══════════════════════════════════════════════
-@app.route('/career/interest-quiz')
+# ─────────────────────────────────────────────
+#  SAVE / PROGRESS APIS
+# ─────────────────────────────────────────────
+@app.route('/api/save-career', methods=['POST'])
 @login_required
-@onboarding_required
-def interest_quiz():
-    return render_template('interest_quiz.html')
-
-@app.route('/api/save-quiz-result', methods=['POST'])
-@login_required
-def save_quiz_result():
+def save_career():
     try:
-        data = request.json
         if session.get('guest'):
-            return jsonify({'success': True})
-        db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS quiz_results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER, holland_code TEXT, scores TEXT,
-            top_careers TEXT, taken_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )''')
+            return jsonify({'success':True})
+        data = request.json
+        db   = get_db()
+        db.execute('INSERT OR IGNORE INTO saved_careers(user_id,career_id) VALUES(?,?)',
+                   (session['user_id'], data.get('career_id')))
+        db.commit()
+        return jsonify({'success':True})
+    except Exception as e:
+        return jsonify({'success':False,'error':str(e)}), 500
+
+@app.route('/api/unsave-career', methods=['POST'])
+@login_required
+def unsave_career():
+    try:
+        if session.get('guest'):
+            return jsonify({'success':True})
+        data = request.json
+        db   = get_db()
+        db.execute('DELETE FROM saved_careers WHERE user_id=? AND career_id=?',
+                   (session['user_id'], data.get('career_id')))
+        db.commit()
+        return jsonify({'success':True})
+    except Exception as e:
+        return jsonify({'success':False,'error':str(e)}), 500
+
+@app.route('/api/save-quiz', methods=['POST'])
+@login_required
+def save_quiz():
+    try:
+        if session.get('guest'):
+            return jsonify({'success':True})
+        data = request.json
+        db   = get_db()
         db.execute(
             'INSERT INTO quiz_results(user_id,holland_code,scores,top_careers) VALUES(?,?,?,?)',
             (session['user_id'],
@@ -752,292 +702,155 @@ def save_quiz_result():
              json.dumps(data.get('top_careers',[])))
         )
         db.commit()
-        return jsonify({'success': True})
+        return jsonify({'success':True})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success':False,'error':str(e)}), 500
 
-# ═══════════════════════════════════════════════
-#  GRANTH KOSH (Scriptures)
-# ═══════════════════════════════════════════════
-@app.route('/granth')
+@app.route('/api/save-test', methods=['POST'])
 @login_required
-@onboarding_required
-def granth_kosh():
-    return render_template('granth_kosh.html')
+def save_test():
+    try:
+        if session.get('guest'):
+            return jsonify({'success':True})
+        data = request.json
+        db   = get_db()
+        db.execute('''INSERT INTO test_results
+            (user_id,subject,score,correct,wrong,skipped,total,time_taken)
+            VALUES(?,?,?,?,?,?,?,?)''',
+            (session['user_id'], data.get('subject',''),
+             data.get('score',0), data.get('correct',0),
+             data.get('wrong',0), data.get('skipped',0),
+             data.get('total',0), data.get('time_taken',0)))
+        db.commit()
+        return jsonify({'success':True})
+    except Exception as e:
+        return jsonify({'success':False,'error':str(e)}), 500
 
-# ═══════════════════════════════════════════════
-#  RESOURCES EXPLORER
-# ═══════════════════════════════════════════════
-@app.route('/resources')
-@login_required
-@onboarding_required
-def resources_explorer():
-    return render_template('resources_explorer.html')
-
-# ═══════════════════════════════════════════════
-#  SCHOOL RESOURCES
-# ═══════════════════════════════════════════════
-@app.route('/school/resources')
-@login_required
-@onboarding_required
-def school_resources():
-    if session.get('guest'):
-        user_class = session.get('class_std', '9')
-        user_board = session.get('board', 'CBSE')
-    else:
-        user = get_user(session['user_id'])
-        user_class = user['class_std'] or '9'
-        user_board = user['board'] or 'CBSE'
-
-    boards = ['CBSE', 'ICSE', 'State Board', 'IB', 'NIOS']
-    return render_template('school_resources.html',
-                           user_class=user_class,
-                           user_board=user_board,
-                           boards=boards)
-
-# ═══════════════════════════════════════════════
-#  PROGRESS TRACKER
-# ═══════════════════════════════════════════════
 @app.route('/api/save-progress', methods=['POST'])
 @login_required
 def save_progress():
     try:
-        data     = request.json
-        subject  = data.get('subject','')
-        class_std = data.get('class_std','')
-        progress = int(data.get('progress', 0))
-
         if session.get('guest'):
-            return jsonify({'success': True, 'note': 'guest mode, not persisted'})
-
-        db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS user_progress (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER, subject TEXT, class_std TEXT,
-            progress INTEGER DEFAULT 0, updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(user_id, subject, class_std)
-        )''')
-        db.execute('''INSERT INTO user_progress(user_id,subject,class_std,progress,updated_at)
-            VALUES(?,?,?,?,CURRENT_TIMESTAMP)
-            ON CONFLICT(user_id,subject,class_std) DO UPDATE SET progress=excluded.progress,
-            updated_at=CURRENT_TIMESTAMP''',
-            (session['user_id'], subject, class_std, progress))
+            return jsonify({'success':True})
+        data = request.json
+        db   = get_db()
+        db.execute('''INSERT INTO user_progress(user_id,subject,class_std,progress)
+            VALUES(?,?,?,?)
+            ON CONFLICT(user_id,subject,class_std) DO UPDATE SET
+            progress=excluded.progress, updated_at=CURRENT_TIMESTAMP''',
+            (session['user_id'], data.get('subject',''),
+             data.get('class_std',''), data.get('progress',0)))
         db.commit()
-        return jsonify({'success': True})
+        return jsonify({'success':True})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success':False,'error':str(e)}), 500
 
 @app.route('/api/get-progress')
 @login_required
 def get_progress():
     try:
         if session.get('guest'):
-            return jsonify({'success': True, 'progress': {}})
-        db = get_db()
+            return jsonify({'success':True,'progress':{}})
+        db   = get_db()
         rows = db.execute(
             'SELECT subject, class_std, progress FROM user_progress WHERE user_id=?',
-            (session['user_id'],)).fetchall()
-        result = {f"{r['class_std']}_{r['subject']}": r['progress'] for r in rows}
-        return jsonify({'success': True, 'progress': result})
+            (session['user_id'],)
+        ).fetchall()
+        return jsonify({'success':True,
+            'progress':{f"{r['class_std']}_{r['subject']}":r['progress'] for r in rows}})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success':False,'error':str(e)}), 500
 
-# ═══════════════════════════════════════════════
-#  SAVE CAREER
-# ═══════════════════════════════════════════════
-@app.route('/api/save-career', methods=['POST'])
-@login_required
-def save_career_api():
-    try:
-        data      = request.json
-        career_id = int(data.get('career_id', 0))
+@app.route('/api/stats')
+def api_stats():
+    db = get_db()
+    return jsonify({
+        'careers':   db.execute('SELECT COUNT(*) FROM careers').fetchone()[0],
+        'shlokas':   db.execute('SELECT COUNT(*) FROM gyan_kosh').fetchone()[0],
+        'resources': db.execute('SELECT COUNT(*) FROM learning_resources').fetchone()[0],
+        'users':     db.execute('SELECT COUNT(*) FROM users').fetchone()[0],
+    })
 
-        if session.get('guest'):
-            return jsonify({'success': True, 'note': 'guest mode'})
-
-        db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS saved_careers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER, career_id INTEGER, saved_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(user_id, career_id)
-        )''')
-        db.execute('''INSERT OR IGNORE INTO saved_careers(user_id, career_id) VALUES(?,?)''',
-                   (session['user_id'], career_id))
-        db.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/saved-careers')
-@login_required
-def get_saved_careers():
-    try:
-        if session.get('guest'):
-            return jsonify({'success': True, 'careers': []})
-        db = get_db()
-        rows = db.execute('''SELECT c.* FROM careers c
-            JOIN saved_careers sc ON sc.career_id = c.id
-            WHERE sc.user_id=? ORDER BY sc.saved_at DESC''',
-            (session['user_id'],)).fetchall()
-        return jsonify({'success': True, 'careers': [dict(r) for r in rows]})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
-# ═══════════════════════════════════════════════
-#  INTEREST QUIZ
-# ═══════════════════════════════════════════════
-@app.route('/quiz')
+# ─────────────────────────────────────────────
+#  NEW FEATURE PAGES
+# ─────────────────────────────────────────────
+@app.route('/granth')
 @login_required
 @onboarding_required
-def quiz():
-    try:
-        db = get_db()
-        careers = db.execute('SELECT * FROM careers ORDER BY title').fetchall()
-        return render_template('quiz.html', careers=[dict(c) for c in careers])
-    except Exception as e:
-        return f'Error: {e}', 500
+def granth_kosh():
+    return render_template('granth.html')
 
-
-
-# ═══════════════════════════════════════════════
-#  SCRIPTURE
-# ═══════════════════════════════════════════════
-@app.route('/scripture')
+@app.route('/resources')
 @login_required
 @onboarding_required
-def scripture():
-    try:
-        db = get_db()
-        shlokas = db.execute('SELECT * FROM gyan_kosh ORDER BY chapter,verse_number').fetchall()
-        return render_template('scripture.html', shlokas=[dict(s) for s in shlokas])
-    except Exception as e:
-        return f'Error: {e}', 500
+def resources_explorer():
+    return render_template('resources.html')
 
+@app.route('/career/interest-quiz')
+@login_required
+@onboarding_required
+def interest_quiz():
+    return render_template('career/interest_quiz.html')
 
-
-
-# ═══════════════════════════════════════════════
-#  AI RECOMMENDATION
-# ═══════════════════════════════════════════════
 @app.route('/ai-recommendation')
 @login_required
 @onboarding_required
 def ai_recommendation():
-    try:
-        quiz_result = None
-        if not session.get('guest'):
-            db = get_db()
-            row = db.execute(
-                'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
-                (session['user_id'],)
-            ).fetchone()
-            if row:
-                qr = dict(row)
-                # Parse top_careers JSON
-                try:
-                    tc = json.loads(qr.get('top_careers','[]'))
-                except:
-                    tc = []
-                qr['top_careers_list'] = tc
-                quiz_result = qr
-        return render_template('ai_recommendation.html', quiz_result=quiz_result)
-    except Exception as e:
-        return f'Error: {e}', 500
+    db = get_db()
+    quiz_result = None
+    user = inject_user()
+    if user:
+        row = db.execute(
+            'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
+            (user['id'],)
+        ).fetchone()
+        if row:
+            qr = dict(row)
+            try: qr['top_careers_list'] = json.loads(qr.get('top_careers','[]'))
+            except: qr['top_careers_list'] = []
+            quiz_result = qr
+    return render_template('ai_recommend.html', quiz_result=quiz_result)
 
-@app.route('/api/save-recommendation', methods=['POST'])
-@login_required
-def save_recommendation():
-    try:
-        if session.get('guest'):
-            return jsonify({'success': True})
-        data = request.json
-        db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS ai_recommendations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER, recommendation TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )''')
-        db.execute(
-            'INSERT INTO ai_recommendations(user_id, recommendation) VALUES(?,?)',
-            (session['user_id'], data.get('recommendation',''))
-        )
-        db.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ═══════════════════════════════════════════════
-#  PROGRESS DASHBOARD
-# ═══════════════════════════════════════════════
-@app.route('/progress')
-@login_required
-@onboarding_required
-def progress_dashboard():
-    try:
-        quiz_result = None
-        if not session.get('guest'):
-            db = get_db()
-            row = db.execute(
-                'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
-                (session['user_id'],)
-            ).fetchone()
-            if row:
-                qr = dict(row)
-                quiz_result = qr
-        return render_template('progress_dashboard.html', quiz_result=quiz_result)
-    except Exception as e:
-        return f'Error: {e}', 500
-
-# ═══════════════════════════════════════════════
-#  MOCK TEST
-# ═══════════════════════════════════════════════
 @app.route('/mock-test')
 @login_required
 @onboarding_required
 def mock_test():
     return render_template('mock_test.html')
 
-@app.route('/api/save-test-result', methods=['POST'])
+@app.route('/progress')
 @login_required
-def save_test_result():
-    try:
-        if session.get('guest'):
-            return jsonify({'success': True})
-        data = request.json
-        db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS test_results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER, subject TEXT, score INTEGER,
-            correct INTEGER, wrong INTEGER, skipped INTEGER,
-            total INTEGER, time_taken INTEGER,
-            taken_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )''')
-        db.execute(
-            '''INSERT INTO test_results
-               (user_id,subject,score,correct,wrong,skipped,total,time_taken)
-               VALUES(?,?,?,?,?,?,?,?)''',
-            (session['user_id'], data.get('subject',''),
-             data.get('score',0), data.get('correct',0),
-             data.get('wrong',0), data.get('skipped',0),
-             data.get('total',0), data.get('time_taken',0))
-        )
-        db.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+@onboarding_required
+def progress_dashboard():
+    db = get_db()
+    user = inject_user()
+    quiz_result = None
+    test_stats  = None
+    if user:
+        row = db.execute(
+            'SELECT * FROM quiz_results WHERE user_id=? ORDER BY taken_at DESC LIMIT 1',
+            (user['id'],)
+        ).fetchone()
+        if row: quiz_result = dict(row)
+        ts = db.execute(
+            'SELECT COUNT(*) as cnt, AVG(score) as avg_score FROM test_results WHERE user_id=?',
+            (user['id'],)
+        ).fetchone()
+        if ts: test_stats = dict(ts)
+    return render_template('progress.html',
+        quiz_result=quiz_result, test_stats=test_stats)
 
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 #  ERROR HANDLERS
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 @app.errorhandler(404)
 def not_found(e): return render_template('404.html'), 404
+
 @app.errorhandler(500)
 def server_error(e): return render_template('500.html'), 500
 
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 #  BOOT
-# ═══════════════════════════════════════════════
+# ─────────────────────────────────────────────
 init_db()
 
 if __name__ == '__main__':

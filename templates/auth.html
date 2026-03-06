@@ -1,311 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marg Darshak — Sign In</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if mode == 'login' %}Login{% else %}Create Account{% endif %} — Marg Darshak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    :root { --primary:#667eea; --secondary:#764ba2; --grad:linear-gradient(135deg,#667eea,#764ba2); }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Poppins', sans-serif; font-size: 15px;
+        min-height: 100vh; margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+    }
 
-:root{
-  --ink:#0d0d14;
-  --surface:rgba(255,255,255,0.04);
-  --border:rgba(255,255,255,0.10);
-  --text:#f0f0f8;
-  --muted:rgba(240,240,248,0.45);
-  --accent:#7c6ff7;
-  --accent2:#43e97b;
-  --danger:#f87171;
-}
+    .auth-card {
+        background: white; border-radius: 20px;
+        width: 100%; max-width: 420px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.25);
+        overflow: hidden;
+    }
 
-html{height:100%}
-body{
-  min-height:100vh;
-  background:var(--ink);
-  color:var(--text);
-  font-family:'DM Sans',sans-serif;
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  position:relative;
-}
+    .auth-header {
+        background: var(--grad); color: white;
+        padding: 30px 32px 24px; text-align: center;
+    }
+    .auth-header .brand-icon {
+        width: 64px; height: 64px; border-radius: 18px;
+        background: rgba(255,255,255,.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; margin: 0 auto 14px;
+    }
+    .auth-header h2 { font-weight: 700; font-size: 1.4rem; margin: 0 0 4px; }
+    .auth-header p { opacity: .8; font-size: .85rem; margin: 0; }
 
-/* ── animated background ── */
-.bg-canvas{
-  position:fixed;inset:0;z-index:0;overflow:hidden;
-}
-.orb{
-  position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;
-  animation:drift 12s ease-in-out infinite alternate;
-}
-.orb-1{width:600px;height:600px;background:#7c6ff7;top:-200px;left:-150px;animation-delay:0s}
-.orb-2{width:500px;height:500px;background:#43e97b;bottom:-200px;right:-100px;animation-delay:-4s}
-.orb-3{width:350px;height:350px;background:#f093fb;top:50%;left:60%;animation-delay:-8s}
+    .auth-body { padding: 28px 32px; }
 
-@keyframes drift{
-  from{transform:translate(0,0) scale(1)}
-  to{transform:translate(40px,30px) scale(1.1)}
-}
+    .form-label { font-size: .83rem; font-weight: 600; color: #374151; margin-bottom: 5px; }
+    .form-control {
+        border-radius: 10px; font-family: 'Poppins',sans-serif;
+        font-size: .875rem; padding: 10px 14px;
+        border: 1.5px solid #e5e7eb; transition: border .2s;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102,126,234,.12); }
+    .input-icon { position: relative; }
+    .input-icon i {
+        position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+        color: #9ca3af; font-size: .9rem;
+    }
+    .input-icon .form-control { padding-left: 38px; }
 
-/* grid dots */
-.bg-canvas::after{
-  content:'';position:absolute;inset:0;
-  background-image:radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px);
-  background-size:32px 32px;
-  pointer-events:none;
-}
+    .btn-auth {
+        width: 100%; padding: 11px; border-radius: 50px; border: none;
+        background: var(--grad); color: white;
+        font-family: 'Poppins',sans-serif; font-size: .9rem; font-weight: 600;
+        cursor: pointer; transition: all .25s;
+        box-shadow: 0 4px 14px rgba(102,126,234,.4);
+    }
+    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,.5); }
+    .btn-auth:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
-/* ── card ── */
-.card{
-  position:relative;z-index:1;
-  width:100%;max-width:440px;
-  padding:2.5rem 2rem;
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border);
-  border-radius:28px;
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  box-shadow:0 32px 80px rgba(0,0,0,0.6);
-  margin:1rem;
-  animation:cardIn .5s cubic-bezier(.17,.85,.32,1.27);
-}
-@keyframes cardIn{
-  from{opacity:0;transform:translateY(30px) scale(.96)}
-  to{opacity:1;transform:translateY(0) scale(1)}
-}
+    .btn-guest {
+        width: 100%; padding: 10px; border-radius: 50px;
+        border: 1.5px solid #e5e7eb; background: transparent;
+        color: #6b7280; font-family: 'Poppins',sans-serif;
+        font-size: .875rem; font-weight: 500; cursor: pointer;
+        transition: all .2s; text-decoration: none; display: block; text-align: center;
+    }
+    .btn-guest:hover { border-color: var(--primary); color: var(--primary); }
 
-/* ── brand ── */
-.brand{
-  text-align:center;margin-bottom:2rem;
-}
-.brand-icon{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:64px;height:64px;border-radius:20px;font-size:1.8rem;margin-bottom:.75rem;
-  background:linear-gradient(135deg,#7c6ff7,#5b4fdf);
-  box-shadow:0 8px 32px rgba(124,111,247,0.4);
-}
-.brand-name{
-  font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;
-  background:linear-gradient(135deg,#a78bfa,#7c6ff7);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.brand-tagline{
-  font-family:'Noto Sans Devanagari',sans-serif;
-  font-size:.85rem;color:var(--muted);margin-top:.25rem;
-}
+    .divider {
+        text-align: center; position: relative; margin: 16px 0;
+        font-size: .78rem; color: #9ca3af;
+    }
+    .divider::before, .divider::after {
+        content: ''; position: absolute; top: 50%;
+        width: 42%; height: 1px; background: #e5e7eb;
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
 
-/* ── tabs ── */
-.tabs{
-  display:flex;background:rgba(255,255,255,0.05);
-  border-radius:14px;padding:4px;margin-bottom:1.75rem;gap:4px;
-}
-.tab-btn{
-  flex:1;padding:.55rem;border-radius:10px;border:none;
-  background:transparent;color:var(--muted);
-  font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;
-  cursor:pointer;transition:all .2s ease;
-}
-.tab-btn.active{
-  background:rgba(124,111,247,0.2);color:#a78bfa;
-  border:1px solid rgba(124,111,247,0.3);
-}
-.tab-btn:hover:not(.active){color:var(--text);}
+    .alert-error {
+        background: #fef2f2; border: 1px solid #fecaca;
+        color: #dc2626; border-radius: 10px;
+        padding: 10px 14px; font-size: .83rem;
+        display: none; margin-bottom: 14px;
+    }
+    .alert-error.show { display: flex; align-items: center; gap: 8px; }
 
-/* ── forms ── */
-.form-panel{display:none;}
-.form-panel.active{display:block;animation:fadeIn .25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .switch-link { text-align: center; font-size: .83rem; color: #6b7280; margin-top: 18px; }
+    .switch-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .switch-link a:hover { text-decoration: underline; }
 
-.field{margin-bottom:1.1rem;}
-.field label{
-  display:block;font-size:.8rem;font-weight:600;color:var(--muted);
-  letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;
-}
-.field-wrap{position:relative;}
-.field-wrap i{
-  position:absolute;left:1rem;top:50%;transform:translateY(-50%);
-  color:var(--muted);font-size:.9rem;pointer-events:none;
-}
-input{
-  width:100%;padding:.75rem 1rem .75rem 2.75rem;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:12px;color:var(--text);
-  font-family:'DM Sans',sans-serif;font-size:.9rem;
-  outline:none;transition:border-color .2s,background .2s;
-}
-input:focus{border-color:rgba(124,111,247,.6);background:rgba(124,111,247,.06);}
-input::placeholder{color:var(--muted);}
+    .tab-btns { display: flex; background: #f3f4f6; border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+    .tab-btn {
+        flex: 1; padding: 8px; border-radius: 8px; border: none;
+        background: transparent; font-family: 'Poppins',sans-serif;
+        font-size: .85rem; font-weight: 600; color: #6b7280; cursor: pointer; transition: all .2s;
+    }
+    .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
 
-.btn-main{
-  width:100%;padding:.85rem;border-radius:14px;border:none;
-  background:linear-gradient(135deg,#7c6ff7,#5b4fdf);
-  color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;
-  cursor:pointer;letter-spacing:.02em;
-  transition:all .2s ease;
-  box-shadow:0 4px 20px rgba(124,111,247,.35);
-  margin-top:.5rem;
-}
-.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,111,247,.5);}
-.btn-main:active{transform:translateY(0);}
+    .strength-bar { height: 4px; border-radius: 4px; background: #e5e7eb; margin-top: 6px; overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 4px; width: 0; transition: all .3s; }
 
-/* ── error ── */
-.error-msg{
-  background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);
-  border-radius:10px;padding:.65rem 1rem;font-size:.85rem;color:var(--danger);
-  margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;
-}
-
-/* ── divider ── */
-.divider{
-  display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;
-  font-size:.8rem;color:var(--muted);
-}
-.divider::before,.divider::after{
-  content:'';flex:1;height:1px;background:var(--border);
-}
-
-/* ── guest button ── */
-.btn-guest{
-  width:100%;padding:.8rem;border-radius:14px;
-  border:1px solid rgba(67,233,123,.25);
-  background:rgba(67,233,123,.07);
-  color:#43e97b;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;
-  cursor:pointer;transition:all .2s ease;
-  display:flex;align-items:center;justify-content:center;gap:.6rem;
-  text-decoration:none;
-}
-.btn-guest:hover{
-  background:rgba(67,233,123,.15);
-  border-color:rgba(67,233,123,.4);
-  transform:translateY(-1px);
-  color:#43e97b;
-}
-
-/* ── features strip ── */
-.features{
-  display:flex;gap:.6rem;margin-top:1.5rem;flex-wrap:wrap;justify-content:center;
-}
-.feat{
-  font-size:.72rem;padding:.3rem .7rem;border-radius:100px;
-  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);
-  white-space:nowrap;
-}
-
-/* mobile */
-@media(max-width:480px){
-  .card{padding:2rem 1.5rem;border-radius:20px;}
-}
-</style>
+    @media(max-width:480px) {
+        .auth-body { padding: 24px 20px; }
+        .auth-header { padding: 24px 20px 20px; }
+    }
+    </style>
 </head>
 <body>
 
-<div class="bg-canvas">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
+<div class="auth-card">
+    <div class="auth-header">
+        <div class="brand-icon"><i class="fas fa-compass"></i></div>
+        <h2>Marg Darshak</h2>
+        <p style="font-family:'Noto Sans Devanagari',sans-serif;">जीवन के हर पड़ाव पर सही दिशा</p>
+    </div>
 
-<div class="card">
-
-  <!-- brand -->
-  <div class="brand">
-    <div class="brand-icon">🧭</div>
-    <div class="brand-name">Marg Darshak</div>
-    <div class="brand-tagline">जीवन के हर पड़ाव पर सही दिशा</div>
-  </div>
-
-  <!-- error flash -->
-  {% if error and msg %}
-  <div class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ msg }}</div>
-  {% endif %}
-
-  <!-- tabs -->
-  <div class="tabs">
-    <button class="tab-btn {% if error=='signup' %}{% else %}active{% endif %}" onclick="switchTab('login')">
-      <i class="fas fa-sign-in-alt"></i> Login
-    </button>
-    <button class="tab-btn {% if error=='signup' %}active{% endif %}" onclick="switchTab('signup')">
-      <i class="fas fa-user-plus"></i> Sign Up
-    </button>
-  </div>
-
-  <!-- LOGIN FORM -->
-  <div class="form-panel {% if error=='signup' %}{% else %}active{% endif %}" id="panel-login">
-    <form method="POST" action="/auth">
-      <input type="hidden" name="action" value="login">
-      <div class="field">
-        <label>Username</label>
-        <div class="field-wrap">
-          <i class="fas fa-user"></i>
-          <input type="text" name="username" placeholder="apna username likho" required autocomplete="username">
+    <div class="auth-body">
+        <!-- TABS -->
+        <div class="tab-btns">
+            <button class="tab-btn {{ 'active' if mode == 'login' }}" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt me-1"></i> Login
+            </button>
+            <button class="tab-btn {{ 'active' if mode == 'register' }}" onclick="switchTab('register')">
+                <i class="fas fa-user-plus me-1"></i> Sign Up
+            </button>
         </div>
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <div class="field-wrap">
-          <i class="fas fa-lock"></i>
-          <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+
+        <!-- ERROR ALERT -->
+        <div class="alert-error" id="authError">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMsg"></span>
         </div>
-      </div>
-      <button type="submit" class="btn-main">
-        <i class="fas fa-arrow-right"></i> Login karo
-      </button>
-    </form>
-  </div>
 
-  <!-- SIGNUP FORM -->
-  <div class="form-panel {% if error=='signup' %}active{% endif %}" id="panel-signup">
-    <form method="POST" action="/auth">
-      <input type="hidden" name="action" value="signup">
-      <div class="field">
-        <label>Username choose karo</label>
-        <div class="field-wrap">
-          <i class="fas fa-user"></i>
-          <input type="text" name="username" placeholder="e.g. rahul_sharma" required minlength="3" autocomplete="username">
+        <!-- LOGIN FORM -->
+        <div id="loginForm" style="{{ '' if mode == 'login' else 'display:none;' }}">
+            <div class="mb-3">
+                <label class="form-label">Email or Username</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-control" id="loginId"
+                        placeholder="Enter email or username" autocomplete="username">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" id="loginPwd"
+                        placeholder="Enter your password" autocomplete="current-password">
+                </div>
+            </div>
+            <button class="btn-auth mt-1" id="loginBtn" onclick="doLogin()">
+                <span id="loginBtnText"><i class="fas fa-sign-in-alt me-2"></i>Login</span>
+            </button>
         </div>
-      </div>
-      <div class="field">
-        <label>Password banao</label>
-        <div class="field-wrap">
-          <i class="fas fa-lock"></i>
-          <input type="password" name="password" placeholder="6+ characters" required minlength="6" autocomplete="new-password">
+
+        <!-- REGISTER FORM -->
+        <div id="registerForm" style="{{ '' if mode == 'register' else 'display:none;' }}">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" class="form-control" id="regUser"
+                        placeholder="Choose a username" autocomplete="username">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <div class="input-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" class="form-control" id="regEmail"
+                        placeholder="your@email.com" autocomplete="email">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" id="regPwd"
+                        placeholder="Min. 6 characters" autocomplete="new-password"
+                        oninput="checkStrength(this.value)">
+                </div>
+                <div class="strength-bar mt-1">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+            </div>
+            <button class="btn-auth mt-1" id="regBtn" onclick="doRegister()">
+                <span id="regBtnText"><i class="fas fa-user-plus me-2"></i>Create Account</span>
+            </button>
         </div>
-      </div>
-      <button type="submit" class="btn-main">
-        <i class="fas fa-rocket"></i> Account banao — Free!
-      </button>
-    </form>
-  </div>
 
-  <!-- divider + guest -->
-  <div class="divider">ya fir</div>
-  <a href="/guest" class="btn-guest">
-    <i class="fas fa-user-secret"></i>
-    Guest ke roop mein explore karo
-    <span style="font-size:.75rem;opacity:.7;font-weight:400">(no signup needed)</span>
-  </a>
+        <div class="divider">or</div>
 
-  <!-- features -->
-  <div class="features">
-    <span class="feat">🎯 Career Quiz</span>
-    <span class="feat">📿 Gyan Kosh</span>
-    <span class="feat">🤖 AI Guru</span>
-    <span class="feat">🆓 Free Always</span>
-  </div>
+        <a href="/guest" class="btn-guest">
+            <i class="fas fa-eye me-2"></i> Continue as Guest
+        </a>
 
+        <div class="switch-link" id="switchHint">
+            {% if mode == 'login' %}
+            Don't have an account? <a href="#" onclick="switchTab('register')">Sign up free</a>
+            {% else %}
+            Already have an account? <a href="#" onclick="switchTab('login')">Login</a>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 <script>
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active', (tab==='login' && i===0)||(tab==='signup' && i===1));
-  });
-  document.getElementById('panel-login').classList.toggle('active', tab==='login');
-  document.getElementById('panel-signup').classList.toggle('active', tab==='signup');
+    document.getElementById('loginForm').style.display    = tab === 'login'    ? '' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+    document.querySelectorAll('.tab-btn').forEach((b,i) =>
+        b.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='register')));
+    document.getElementById('switchHint').innerHTML = tab === 'login'
+        ? 'Don\'t have an account? <a href="#" onclick="switchTab(\'register\')">Sign up free</a>'
+        : 'Already have an account? <a href="#" onclick="switchTab(\'login\')">Login</a>';
+    hideError();
 }
+
+function showError(msg) {
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('authError').classList.add('show');
+}
+function hideError() { document.getElementById('authError').classList.remove('show'); }
+
+function setLoading(btnId, textId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    document.getElementById(textId).innerHTML = loading
+        ? '<span class="spinner-border spinner-border-sm me-2"></span>Please wait...'
+        : (btnId === 'loginBtn'
+            ? '<i class="fas fa-sign-in-alt me-2"></i>Login'
+            : '<i class="fas fa-user-plus me-2"></i>Create Account');
+}
+
+async function doLogin() {
+    hideError();
+    const identifier = document.getElementById('loginId').value.trim();
+    const password   = document.getElementById('loginPwd').value.trim();
+    if (!identifier || !password) { showError('Please fill in all fields.'); return; }
+    setLoading('loginBtn','loginBtnText', true);
+    try {
+        const res  = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, password })
+        });
+        const data = await res.json();
+        if (data.success) window.location.href = data.redirect;
+        else showError(data.error || 'Login failed. Please try again.');
+    } catch { showError('Network error. Please try again.'); }
+    setLoading('loginBtn','loginBtnText', false);
+}
+
+async function doRegister() {
+    hideError();
+    const username = document.getElementById('regUser').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPwd').value.trim();
+    if (!username || !email || !password) { showError('Please fill in all fields.'); return; }
+    if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+    setLoading('regBtn','regBtnText', true);
+    try {
+        const res  = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+        if (data.success) window.location.href = data.redirect;
+        else showError(data.error || 'Registration failed. Please try again.');
+    } catch { showError('Network error. Please try again.'); }
+    setLoading('regBtn','regBtnText', false);
+}
+
+function checkStrength(pw) {
+    const fill = document.getElementById('strengthFill');
+    let score = 0;
+    if (pw.length >= 6) score++;
+    if (pw.length >= 10) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const colors = ['','#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+    const widths = ['0%','20%','40%','60%','80%','100%'];
+    fill.style.background = colors[score] || '#ef4444';
+    fill.style.width = widths[score] || '0%';
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('loginForm').style.display !== 'none') doLogin();
+    else doRegister();
+});
 </script>
 </body>
 </html>

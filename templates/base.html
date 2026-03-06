@@ -1,523 +1,584 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Marg Darshak — जीवन के हर पड़ाव पर सही दिशा{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Marg Darshak — Find Your Path{% endblock %}</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-{% block extra_css %}{% endblock %}
+    <style>
+    /* ── ROOT ── */
+    :root {
+        --primary:   #667eea;
+        --secondary: #764ba2;
+        --accent:    #f093fb;
+        --success:   #4facfe;
+        --grad:      linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+        background: #f4f6fb;
+        transition: background .3s, color .3s;
+    }
 
-<style>
-:root{
-  --accent:#7c6ff7;--accent2:#43e97b;--accent3:#f093fb;
-  --bg:#f5f5fb;--surface:#ffffff;--border:#e8eaf0;
-  --text:#0d0d1a;--muted:#6b7280;
-  --shadow:0 2px 16px rgba(124,111,247,.08);
-  --shadow-lg:0 12px 48px rgba(124,111,247,.15);
-  --radius:16px;
-}
-body.dark-mode{
-  --bg:#0a0a0f;--surface:#13131a;--border:rgba(255,255,255,.08);
-  --text:#f0f0f8;--muted:rgba(240,240,248,.45);
-  --shadow:0 2px 16px rgba(0,0,0,.4);--shadow-lg:0 12px 48px rgba(0,0,0,.5);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;}
-a{color:inherit;text-decoration:none;}
+    /* ── DARK MODE ── */
+    body.dark-mode { background: #111827; color: #e5e7eb; }
+    body.dark-mode .card { background: #1f2937; color: #e5e7eb; border-color: #374151; }
+    body.dark-mode .navbar { background: linear-gradient(135deg,#0f172a,#1e1b4b) !important; }
+    body.dark-mode .bg-light { background: #1f2937 !important; }
+    body.dark-mode .text-muted { color: #9ca3af !important; }
+    body.dark-mode .sidebar { background: linear-gradient(180deg,#0f172a,#1e1b4b); }
+    body.dark-mode footer { background: #0f172a !important; }
+    body.dark-mode .form-control,
+    body.dark-mode .form-select { background: #1f2937; color: #e5e7eb; border-color: #374151; }
+    body.dark-mode .page-loader { background: rgba(17,24,39,.96); }
 
-/* NAVBAR */
-.main-nav{
-  position:sticky;top:0;z-index:500;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  height:60px;display:flex;align-items:center;padding:0 1.5rem;gap:1rem;
-  box-shadow:var(--shadow);
-}
-.nav-brand{
-  display:flex;align-items:center;gap:.55rem;font-family:'Syne',sans-serif;
-  font-size:1.25rem;font-weight:800;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),#5b4fdf);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.brand-icon{
-  width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#5b4fdf);
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  color:white;font-size:.95rem;flex-shrink:0;
-}
-.nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;}
-.nav-links a{
-  display:flex;align-items:center;gap:.35rem;padding:.45rem .8rem;border-radius:10px;
-  color:var(--muted);font-size:.875rem;font-weight:500;transition:all .2s;
-}
-.nav-links a:hover{background:rgba(124,111,247,.1);color:var(--accent);}
-.nav-right{display:flex;align-items:center;gap:.6rem;margin-left:auto;}
+    /* ── NAVBAR ── */
+    .navbar { padding: 10px 0; box-shadow: 0 2px 10px rgba(0,0,0,.15); }
+    .navbar-brand { font-weight: 700; font-size: 1.25rem; }
+    .nav-link { font-size: .9rem; font-weight: 500; }
+    .navbar-dark .navbar-nav .nav-link { color: rgba(255,255,255,.85); }
+    .navbar-dark .navbar-nav .nav-link:hover { color: #fff; }
 
-.level-pill{
-  display:flex;align-items:center;gap:.4rem;padding:.35rem .9rem;border-radius:100px;
-  font-size:.78rem;font-weight:600;border:1px solid;transition:all .2s;
-}
-.level-pill.school{background:rgba(67,233,123,.1);color:#27ae60;border-color:rgba(67,233,123,.3);}
-.level-pill.college{background:rgba(124,111,247,.1);color:var(--accent);border-color:rgba(124,111,247,.3);}
-.level-pill.professional{background:rgba(240,147,251,.1);color:#c040d8;border-color:rgba(240,147,251,.3);}
-body.dark-mode .level-pill.school{color:#43e97b;}
-body.dark-mode .level-pill.college{color:#a78bfa;}
-body.dark-mode .level-pill.professional{color:#f093fb;}
-.level-pill:hover{transform:scale(1.04);}
+    /* User menu dropdown */
+    .user-menu-btn {
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
+        color: white; border-radius: 50px;
+        padding: 5px 14px; font-size: .85rem;
+        cursor: pointer; transition: all .2s;
+        display: flex; align-items: center; gap: 7px;
+    }
+    .user-menu-btn:hover { background: rgba(255,255,255,.25); }
 
-.icon-btn{
-  width:36px;height:36px;border-radius:10px;border:1px solid var(--border);
-  background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .2s;font-size:.9rem;
-}
-.icon-btn:hover{background:rgba(124,111,247,.1);color:var(--accent);border-color:rgba(124,111,247,.3);}
+    /* ── SIDEBAR ── */
+    .sidebar {
+        position: fixed; top: 0; left: -285px;
+        width: 285px; height: 100vh;
+        background: var(--grad);
+        padding: 24px 16px; transition: left .3s ease;
+        z-index: 1050; overflow-y: auto;
+        box-shadow: 2px 0 12px rgba(0,0,0,.25);
+    }
+    .sidebar.active { left: 0; }
+    .sidebar-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,.5); z-index: 1040; display: none;
+    }
+    .sidebar-overlay.active { display: block; }
+    .sidebar-header { color: white; text-align: center; margin-bottom: 28px; }
+    .sidebar-header h5 { margin: 10px 0 2px; font-weight: 700; font-size: 1.1rem; }
+    .sidebar-section {
+        font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: rgba(255,255,255,.5);
+        padding: 12px 12px 4px; margin-top: 4px;
+    }
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+    .sidebar-menu li { margin-bottom: 3px; }
+    .sidebar-menu a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 14px; color: rgba(255,255,255,.9);
+        text-decoration: none; border-radius: 10px;
+        font-size: .88rem; font-weight: 500; transition: all .2s;
+    }
+    .sidebar-menu a:hover { background: rgba(255,255,255,.18); transform: translateX(4px); }
+    .sidebar-menu a.active { background: rgba(255,255,255,.22); color: white; }
+    .sidebar-menu a i { width: 20px; text-align: center; font-size: 1rem; opacity: .85; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,.15); margin: 10px 12px; }
+    .sidebar-user {
+        margin-top: auto; padding: 14px;
+        background: rgba(0,0,0,.2); border-radius: 12px;
+        color: white; font-size: .82rem;
+    }
 
-.user-chip{
-  display:flex;align-items:center;gap:.5rem;padding:.35rem .85rem .35rem .5rem;
-  border-radius:100px;border:1px solid var(--border);background:var(--surface);
-  font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;
-}
-.user-chip .avatar{
-  width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#5b4fdf);
-  display:flex;align-items:center;justify-content:center;color:white;font-size:.65rem;font-weight:700;
-}
-.user-chip:hover{border-color:rgba(124,111,247,.3);}
+    /* ── FLOATING BUTTONS ── */
+    .floating-buttons {
+        position: fixed; bottom: 28px; right: 28px;
+        z-index: 1000; display: flex; flex-direction: column; gap: 12px;
+    }
+    .floating-btn {
+        width: 50px; height: 50px; border-radius: 50%; border: none;
+        box-shadow: 0 4px 14px rgba(0,0,0,.25);
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; color: white; transition: all .25s;
+    }
+    .floating-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+    .btn-sidebar-float { background: linear-gradient(135deg,#4facfe,#00f2fe); }
+    .btn-dark-float { background: var(--grad); }
+    .btn-top-float { background: linear-gradient(135deg,#f093fb,#f5576c); display: none; }
 
-/* SIDEBAR */
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:900;display:none;backdrop-filter:blur(4px);}
-.sidebar-overlay.active{display:block;}
-.sidebar{
-  position:fixed;top:0;left:-300px;width:300px;height:100vh;
-  background:var(--surface);border-right:1px solid var(--border);
-  z-index:1000;transition:left .35s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-.sidebar.active{left:0;}
-.sidebar-top{
-  padding:1.5rem;
-  background:linear-gradient(135deg,var(--accent),#5b4fdf);color:white;
-}
-.sidebar-top .brand{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;}
-.sidebar-top .tagline{font-family:'Noto Sans Devanagari',sans-serif;font-size:.82rem;opacity:.85;margin-top:.2rem;}
-.sidebar-user{margin:.75rem 0 0;padding:.6rem 1rem;background:rgba(255,255,255,.15);border-radius:10px;font-size:.85rem;display:flex;align-items:center;gap:.5rem;}
-.sidebar-nav{flex:1;overflow-y:auto;padding:1rem;}
-.sidebar-section{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.75rem .5rem .35rem;}
-.sidebar-nav a{
-  display:flex;align-items:center;gap:.7rem;padding:.6rem .75rem;border-radius:12px;
-  color:var(--text);font-size:.875rem;font-weight:500;transition:all .2s;margin-bottom:2px;
-}
-.sidebar-nav a:hover{background:rgba(124,111,247,.1);color:var(--accent);transform:translateX(4px);}
-.sidebar-nav a i{width:18px;text-align:center;font-size:.9rem;opacity:.75;}
-.sidebar-footer{padding:.85rem 1.5rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);text-align:center;}
+    /* ── BACK BUTTON ── */
+    .back-btn {
+        position: fixed; top: 68px; right: 20px; z-index: 999;
+        padding: 8px 18px; border-radius: 50px;
+        background: white; color: var(--primary);
+        border: 2px solid var(--primary);
+        font-size: .85rem; font-weight: 600;
+        box-shadow: 0 3px 10px rgba(0,0,0,.15);
+        text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        transition: all .2s;
+    }
+    .back-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+    body.dark-mode .back-btn { background: #1f2937; color: var(--primary); border-color: var(--primary); }
 
-/* AI CHATBOT */
-.chat-fab{
-  position:fixed;bottom:28px;right:28px;width:58px;height:58px;border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),#5b4fdf);color:white;border:none;cursor:pointer;
-  box-shadow:0 8px 28px rgba(124,111,247,.5);display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;z-index:800;transition:all .3s cubic-bezier(.175,.885,.32,1.275);
-}
-.chat-fab:hover{transform:scale(1.12) rotate(8deg);box-shadow:0 12px 36px rgba(124,111,247,.6);}
-.chat-badge{position:absolute;top:-2px;right:-2px;width:17px;height:17px;background:#43e97b;border-radius:50%;font-size:.58rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:#0a1f15;border:2px solid var(--bg);}
+    /* ── CARDS ── */
+    .card {
+        border: none; border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.07);
+        transition: all .25s;
+    }
+    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+    .card-hover-lift:hover { transform: translateY(-4px); }
 
-.chat-window{
-  position:fixed;bottom:96px;right:28px;width:375px;height:550px;
-  background:var(--surface);border:1px solid var(--border);border-radius:22px;
-  box-shadow:var(--shadow-lg);z-index:800;display:none;flex-direction:column;overflow:hidden;
-}
-.chat-window.active{display:flex;animation:chatIn .3s cubic-bezier(.175,.885,.32,1.275);}
-@keyframes chatIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+    /* ── BUTTONS ── */
+    .btn { border-radius: 50px; font-weight: 600; font-size: .875rem; }
+    .btn-primary {
+        background: var(--grad); border: none;
+        box-shadow: 0 4px 14px rgba(102,126,234,.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,.5); background: var(--grad); }
+    .btn-outline-primary { border-color: var(--primary); color: var(--primary); }
+    .btn-outline-primary:hover { background: var(--primary); border-color: var(--primary); }
 
-.chat-header{
-  padding:.85rem 1.1rem;background:linear-gradient(135deg,var(--accent),#5b4fdf);
-  color:white;display:flex;align-items:center;gap:.7rem;
-}
-.chat-avatar{width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
-.chat-header-info{flex:1;}
-.chat-header-info .name{font-weight:700;font-size:.95rem;}
-.chat-header-info .status{font-size:.72rem;opacity:.85;}
-.chat-close{background:none;border:none;color:white;cursor:pointer;font-size:1rem;opacity:.8;}
-.chat-close:hover{opacity:1;}
+    /* ── BADGES ── */
+    .badge-free { background: rgba(79,172,254,.15); color: #0369a1; font-size: .72rem; }
+    body.dark-mode .badge-free { color: #38bdf8; }
 
-.chat-messages{flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
-.chat-messages::-webkit-scrollbar{width:3px;}
-.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    /* ── PAGE LOADER ── */
+    .page-loader {
+        position: fixed; inset: 0;
+        background: rgba(244,246,251,.96);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 9999; transition: opacity .4s;
+    }
+    .page-loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-ring {
+        width: 52px; height: 52px; border-radius: 50%;
+        border: 4px solid #e5e7eb;
+        border-top-color: var(--primary);
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-.msg{max-width:85%;padding:.65rem .9rem;border-radius:14px;font-size:.85rem;line-height:1.6;animation:msgIn .2s ease;}
-@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.msg.bot{align-self:flex-start;background:rgba(124,111,247,.1);border-bottom-left-radius:5px;color:var(--text);}
-.msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent),#5b4fdf);color:white;border-bottom-right-radius:5px;}
+    /* ── CHATBOT ── */
+    .chat-fab {
+        position: fixed; bottom: 28px; left: 28px; z-index: 1000;
+        width: 52px; height: 52px; border-radius: 50%; border: none;
+        background: var(--grad);
+        color: white; font-size: 1.4rem; cursor: pointer;
+        box-shadow: 0 4px 16px rgba(102,126,234,.45);
+        display: flex; align-items: center; justify-content: center;
+        transition: all .25s;
+    }
+    .chat-fab:hover { transform: scale(1.1) rotate(10deg); }
+    .chat-window {
+        position: fixed; bottom: 90px; left: 24px; z-index: 1001;
+        width: 340px; max-width: calc(100vw - 32px);
+        background: white; border-radius: 18px;
+        box-shadow: 0 12px 40px rgba(0,0,0,.18);
+        display: none; flex-direction: column;
+        overflow: hidden; animation: chatPop .25s ease;
+    }
+    body.dark-mode .chat-window { background: #1f2937; }
+    @keyframes chatPop { from { opacity:0; transform: scale(.92) translateY(12px); } to { opacity:1; transform: none; } }
+    .chat-window.open { display: flex; }
+    .chat-header {
+        background: var(--grad); color: white;
+        padding: 14px 16px; display: flex; align-items: center; gap: 10px;
+    }
+    .chat-header-info { flex: 1; }
+    .chat-header-title { font-weight: 700; font-size: .9rem; }
+    .chat-header-sub { font-size: .72rem; opacity: .8; }
+    .chat-close { background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; opacity: .8; }
+    .chat-close:hover { opacity: 1; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 14px; max-height: 320px; display: flex; flex-direction: column; gap: 10px; }
+    .chat-msg { max-width: 85%; }
+    .chat-msg.user { align-self: flex-end; }
+    .chat-msg.bot  { align-self: flex-start; }
+    .chat-bubble {
+        padding: 10px 13px; border-radius: 14px;
+        font-size: .83rem; line-height: 1.55;
+    }
+    .chat-msg.user .chat-bubble { background: var(--grad); color: white; border-bottom-right-radius: 4px; }
+    .chat-msg.bot  .chat-bubble { background: #f3f4f6; color: #111; border-bottom-left-radius: 4px; }
+    body.dark-mode .chat-msg.bot .chat-bubble { background: #374151; color: #e5e7eb; }
+    .chat-typing { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }
+    .chat-typing span { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; animation: typingDot 1.2s infinite; }
+    .chat-typing span:nth-child(2) { animation-delay: .2s; }
+    .chat-typing span:nth-child(3) { animation-delay: .4s; }
+    @keyframes typingDot { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1);opacity:1} }
+    .chat-input-row {
+        padding: 10px 12px; border-top: 1px solid #e5e7eb;
+        display: flex; gap: 8px; align-items: center;
+    }
+    body.dark-mode .chat-input-row { border-color: #374151; }
+    .chat-input {
+        flex: 1; border: 1px solid #e5e7eb; border-radius: 50px;
+        padding: 8px 14px; font-size: .83rem; outline: none;
+        font-family: 'Poppins', sans-serif; transition: border .2s;
+        background: transparent; color: inherit;
+    }
+    .chat-input:focus { border-color: var(--primary); }
+    .chat-send {
+        width: 36px; height: 36px; border-radius: 50%; border: none;
+        background: var(--grad); color: white; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .9rem; flex-shrink: 0; transition: all .2s;
+    }
+    .chat-send:hover { transform: scale(1.08); }
+    .chat-lang-toggle {
+        font-size: .7rem; color: var(--primary); cursor: pointer;
+        padding: 4px 10px; border-radius: 50px;
+        border: 1px solid rgba(102,126,234,.3);
+        background: transparent; font-weight: 600;
+        margin-right: 4px; transition: all .2s;
+    }
+    .chat-lang-toggle:hover { background: rgba(102,126,234,.08); }
 
-.typing-indicator{display:flex;gap:3px;align-items:center;padding:.65rem .9rem;background:rgba(124,111,247,.1);border-radius:14px;border-bottom-left-radius:5px;width:fit-content;align-self:flex-start;}
-.typing-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:typingBounce 1.2s infinite;}
-.typing-dot:nth-child(2){animation-delay:.2s;}
-.typing-dot:nth-child(3){animation-delay:.4s;}
-@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    body.dark-mode ::-webkit-scrollbar-track { background: #1f2937; }
+    ::-webkit-scrollbar-thumb { background: var(--grad); border-radius: 8px; }
 
-.chat-footer{padding:.65rem .85rem;border-top:1px solid var(--border);display:flex;gap:.4rem;align-items:flex-end;}
-.chat-input{flex:1;border:1px solid var(--border);border-radius:11px;padding:.6rem .85rem;font-family:'DM Sans',sans-serif;font-size:.85rem;background:var(--bg);color:var(--text);resize:none;max-height:90px;outline:none;transition:border-color .2s;}
-.chat-input:focus{border-color:var(--accent);}
-.chat-send{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#5b4fdf);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
-.chat-send:hover{transform:scale(1.05);}
-.chat-send:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+    /* ── FOOTER ── */
+    footer { font-size: .85rem; }
 
-.quick-prompts{padding:0 .85rem .4rem;display:flex;gap:.35rem;flex-wrap:wrap;}
-.qp-btn{font-size:.73rem;padding:.28rem .75rem;border-radius:100px;border:1px solid rgba(124,111,247,.3);background:rgba(124,111,247,.08);color:var(--accent);cursor:pointer;transition:all .2s;white-space:nowrap;}
-.qp-btn:hover{background:rgba(124,111,247,.15);}
+    /* ── ANIMATIONS ── */
+    .fade-in-up { animation: fadeUp .5s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 
-/* LOADER */
-.page-loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s;}
-.page-loader.hidden{opacity:0;pointer-events:none;}
-.loader-ring{width:48px;height:48px;border:3px solid var(--border);border-top:3px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* SCROLL TOP */
-.scroll-top-btn{position:fixed;bottom:96px;right:28px;width:42px;height:42px;border-radius:11px;background:var(--surface);border:1px solid var(--border);color:var(--muted);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:700;box-shadow:var(--shadow);transition:all .2s;font-size:.875rem;}
-.scroll-top-btn:hover{background:var(--accent);color:white;border-color:var(--accent);}
-
-main{min-height:calc(100vh - 60px);}
-footer{background:var(--surface);border-top:1px solid var(--border);padding:1.25rem;text-align:center;color:var(--muted);font-size:.83rem;}
-
-body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
-
-/* BOTTOM NAV */
-.bottom-nav{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;
-  background:var(--surface);border-top:1px solid var(--border);
-  padding:0 .25rem;padding-bottom:env(safe-area-inset-bottom);
-  height:62px;box-shadow:0 -4px 24px rgba(0,0,0,.10);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-}
-.bottom-nav-inner{display:flex;align-items:center;height:100%;gap:.25rem;}
-.bn-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;text-decoration:none;color:var(--muted);font-size:.58rem;font-weight:600;
-  letter-spacing:.02em;border:none;background:none;cursor:pointer;
-  transition:color .2s;position:relative;padding:.4rem 0;
-  -webkit-tap-highlight-color:transparent;
-}
-.bn-item i{font-size:1.05rem;transition:transform .2s;}
-.bn-item.active{color:var(--accent);}
-.bn-item.active i{transform:scale(1.12);}
-.bn-item::after{content:'';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
-  width:0;height:3px;border-radius:3px;background:var(--accent);transition:width .2s;}
-.bn-item.active::after{width:16px;}
-.bn-ai-wrap{display:flex;align-items:center;justify-content:center;width:52px;flex-shrink:0;}
-.bn-ai{
-  width:44px;height:44px;border-radius:14px;
-  background:linear-gradient(135deg,var(--accent),#5b4fdf);
-  display:flex;align-items:center;justify-content:center;
-  color:white;font-size:1.15rem;cursor:pointer;border:none;
-  box-shadow:0 4px 16px rgba(124,111,247,.45);
-  transition:transform .2s;-webkit-tap-highlight-color:transparent;
-}
-.bn-ai:hover{transform:scale(1.08);}
-
-@media(max-width:768px){
-  .nav-links{display:none;}
-  .bottom-nav{display:block;}
-  main{padding-bottom:70px;}
-  footer{padding-bottom:74px;}
-  .chat-fab{display:none;}
-  .chat-window{width:calc(100vw - 24px);right:12px;bottom:74px;height:480px;}
-  .scroll-top-btn{display:none !important;}
-}
-</style>
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        body { font-size: 14px; }
+        .floating-buttons { bottom: 18px; right: 18px; gap: 10px; }
+        .floating-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+        .back-btn { top: 62px; right: 12px; padding: 6px 14px; font-size: .8rem; }
+        .chat-window { width: calc(100vw - 32px); left: 16px; }
+    }
+    </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
+<!-- Page Loader -->
 <div class="page-loader" id="pageLoader"><div class="loader-ring"></div></div>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<!-- SIDEBAR -->
+<!-- ── SIDEBAR ── -->
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-top">
-    <div class="brand">🧭 Marg Darshak</div>
-    <div class="tagline">जीवन के हर पड़ाव पर सही दिशा</div>
-    {% if current_user %}
+    <div class="sidebar-header">
+        <i class="fas fa-compass fa-2x" style="opacity:.9;"></i>
+        <h5>Marg Darshak</h5>
+        <small style="opacity:.65;font-size:.75rem;">Find Your Path</small>
+    </div>
+
+    <ul class="sidebar-menu">
+        <li class="sidebar-section">Main</li>
+        <li><a href="/dashboard" class="{{ 'active' if request.path == '/dashboard' else '' }}">
+            <i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="/progress">
+            <i class="fas fa-chart-bar"></i> My Progress</a></li>
+        <li><a href="/ai-recommendation">
+            <i class="fas fa-robot"></i> AI Recommendation</a></li>
+
+        <li class="sidebar-section">Career</li>
+        <li><a href="/career/interest-quiz">
+            <i class="fas fa-brain"></i> Interest Quiz</a></li>
+        <li><a href="/career">
+            <i class="fas fa-compass"></i> Career Quiz</a></li>
+        <li><a href="/career/browse">
+            <i class="fas fa-th-large"></i> Browse Careers</a></li>
+        <li><a href="/mock-test">
+            <i class="fas fa-pen-alt"></i> Mock Test</a></li>
+
+        <li class="sidebar-section">Wisdom & Resources</li>
+        <li><a href="/gyan">
+            <i class="fas fa-om"></i> Daily Wisdom</a></li>
+        <li><a href="/granth">
+            <i class="fas fa-book-open"></i> Granth Kosh</a></li>
+        <li><a href="/resources">
+            <i class="fas fa-graduation-cap"></i> Resources</a></li>
+        <li><a href="/skill">
+            <i class="fas fa-tools"></i> Skill Learning</a></li>
+    </ul>
+
+    <div class="sidebar-divider" style="margin-top:16px;"></div>
+
+    {% if is_authenticated and not is_guest %}
     <div class="sidebar-user">
-      <i class="fas fa-user-circle"></i>
-      <span>{{ current_user.username.title() }}</span>
-      {% if level_info %}<span style="opacity:.7;font-size:.78rem;">· {{ level_info.label }}</span>{% endif %}
+        <div style="font-weight:600;margin-bottom:4px;">
+            👤 {{ current_user.username.title() if current_user else 'User' }}
+        </div>
+        <div style="opacity:.65;font-size:.75rem;margin-bottom:10px;">
+            {{ current_user.level.title() if current_user else '' }} ·
+            {{ 'EN' if (current_user.language == 'en' if current_user else True) else 'HI' }}
+        </div>
+        <div style="display:flex;gap:8px;">
+            <a href="/onboarding" style="flex:1;text-align:center;font-size:.75rem;
+                color:rgba(255,255,255,.8);background:rgba(255,255,255,.15);
+                padding:5px 8px;border-radius:8px;text-decoration:none;">
+                ✏️ Edit Profile
+            </a>
+            <a href="/logout" style="flex:1;text-align:center;font-size:.75rem;
+                color:rgba(255,255,255,.8);background:rgba(255,255,255,.15);
+                padding:5px 8px;border-radius:8px;text-decoration:none;">
+                🚪 Logout
+            </a>
+        </div>
     </div>
     {% elif is_guest %}
-    <div class="sidebar-user"><i class="fas fa-user-secret"></i> Guest Mode</div>
+    <div class="sidebar-user">
+        <div style="opacity:.7;font-size:.78rem;margin-bottom:8px;">Guest mode</div>
+        <a href="/register" style="display:block;text-align:center;font-size:.78rem;
+            color:white;background:rgba(255,255,255,.2);
+            padding:7px;border-radius:8px;text-decoration:none;font-weight:600;">
+            Create Free Account
+        </a>
+    </div>
     {% endif %}
-  </div>
-  <div class="sidebar-nav">
-    {% set lq = '?level='+level if level else '' %}
-    <div class="sidebar-section">Main</div>
-    <a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="/progress"><i class="fas fa-chart-bar"></i> My Progress ✨</a>
-    <a href="/ai-recommendation"><i class="fas fa-robot"></i> AI Recommendation ✨</a>
-    <a href="/mock-test"><i class="fas fa-pen-alt"></i> Mock Test ✨</a>
-    <a href="/onboarding"><i class="fas fa-layer-group"></i> Change Level / Goal</a>
-    <div class="sidebar-section">🎯 Career</div>
-    <a href="/quiz"><i class="fas fa-brain"></i> Interest Quiz</a>
-    <a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career Compass</a>
-    <a href="/career/browse{{ lq }}"><i class="fas fa-th-large"></i> Browse Careers</a>
-    <div class="sidebar-section">📿 Wisdom</div>
-    <a href="/scripture"><i class="fas fa-om"></i> Gyan Kosh</a>
-    <div class="sidebar-section">📚 Resources</div>
-    <a href="/resources"><i class="fas fa-graduation-cap"></i> Free Resources</a>
-    {% if level == 'school' %}
-    <a href="/school/resources"><i class="fas fa-book-open"></i> School Subjects</a>
-    {% endif %}
-    <div class="sidebar-section">Account</div>
-    {% if current_user %}
-    <a href="/set-language/{% if lang=='en' %}hi{% else %}en{% endif %}"><i class="fas fa-language"></i> Switch to {% if lang=='en' %}हिंदी{% else %}English{% endif %}</a>
-    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    {% elif is_guest %}
-    <a href="/auth"><i class="fas fa-user-plus"></i> Create Account</a>
-    {% endif %}
-  </div>
-  <div class="sidebar-footer">Made with ❤️ for India's students · v3.0</div>
 </div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-<!-- NAVBAR -->
-<nav class="main-nav">
-  <button class="icon-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-  <a href="/dashboard" class="nav-brand">
-    <div class="brand-icon">🧭</div>Marg Darshak
-  </a>
-  <ul class="nav-links">
-    {% set lq = '?level='+level if level else '' %}
-    <li><a href="/quiz"><i class="fas fa-brain"></i> Quiz</a></li>
-    <li><a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career</a></li>
-    <li><a href="/scripture"><i class="fas fa-om"></i> Gyan</a></li>
-    <li><a href="/resources"><i class="fas fa-graduation-cap"></i> Resources</a></li>
-  </ul>
-  <div class="nav-right">
-    {% if level and level_info %}
-    <a href="/onboarding" class="level-pill {{ level }}">
-      <i class="{{ level_info.icon }}"></i> {{ level_info.label }}
-    </a>
-    {% endif %}
-
-    <!-- Language toggle -->
-    <a href="/set-language/{% if lang=='en' %}hi{% else %}en{% endif %}" class="icon-btn" title="Switch language">
-      {% if lang=='en' %}<span style="font-size:.8rem;font-weight:700;">हि</span>
-      {% else %}<span style="font-size:.8rem;font-weight:700;">EN</span>{% endif %}
-    </a>
-
-    <button class="icon-btn" id="darkModeBtn" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
-
-    {% if current_user %}
-    <div class="user-chip" onclick="toggleSidebar()">
-      <div class="avatar">{{ current_user.username[0].upper() }}</div>
-      {{ current_user.username.title() }}
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background:var(--grad);">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="fas fa-compass"></i> Marg Darshak
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/career/browse"><i class="fas fa-briefcase"></i> Careers</a></li>
+                <li class="nav-item"><a class="nav-link" href="/gyan"><i class="fas fa-om"></i> Wisdom</a></li>
+                <li class="nav-item"><a class="nav-link" href="/resources"><i class="fas fa-graduation-cap"></i> Resources</a></li>
+                <li class="nav-item"><a class="nav-link" href="/mock-test"><i class="fas fa-pen-alt"></i> Tests</a></li>
+            </ul>
+            <div class="d-flex align-items: center; gap: 8px; mt-2 mt-lg-0">
+                {% if is_authenticated and not is_guest %}
+                <div class="dropdown">
+                    <button class="user-menu-btn dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i>
+                        {{ current_user.username.title() if current_user else 'User' }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="min-width:180px;border-radius:12px;border:none;box-shadow:0 8px 24px rgba(0,0,0,.15);">
+                        <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="/progress"><i class="fas fa-chart-bar me-2"></i>My Progress</a></li>
+                        <li><a class="dropdown-item" href="/onboarding"><i class="fas fa-edit me-2"></i>Edit Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+                {% elif is_guest %}
+                <a href="/register" class="btn btn-sm btn-light" style="border-radius:50px;font-weight:600;font-size:.8rem;">
+                    Sign Up Free
+                </a>
+                {% else %}
+                <a href="/login" class="btn btn-sm btn-light" style="border-radius:50px;font-weight:600;font-size:.8rem;">
+                    Login
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    {% elif is_guest %}
-    <a href="/auth" class="icon-btn" title="Login / Sign up"><i class="fas fa-sign-in-alt"></i></a>
-    {% endif %}
-  </div>
 </nav>
 
+{% if request.path != '/dashboard' %}
+<a href="javascript:history.back()" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Back
+</a>
+{% endif %}
+
+<!-- ── CONTENT ── -->
 <main>{% block content %}{% endblock %}</main>
 
-<footer>
-  <p>🧭 <strong>Marg Darshak</strong> — "जीवन के हर पड़ाव पर सही दिशा"</p>
-  <p style="margin-top:.2rem;">Made with ❤️ for India's students</p>
+<!-- ── FOOTER ── -->
+<footer class="bg-dark text-white text-center py-4 mt-5">
+    <div class="container">
+        <p class="mb-1"><i class="fas fa-compass"></i> Marg Darshak</p>
+        <p class="mb-1 text-muted" style="font-family:'Noto Sans Devanagari',sans-serif;font-size:.85rem;">
+            "जीवन के हर पड़ाव पर सही दिशा"
+        </p>
+        <small class="text-muted">Made with ❤️ for Indian students · © 2025</small>
+    </div>
 </footer>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="bottom-nav" id="bottomNav">
-  <div class="bottom-nav-inner">
-    <a href="/dashboard" class="bn-item" data-page="dashboard">
-      <i class="fas fa-home"></i><span>Home</span>
-    </a>
-    <a href="/quiz" class="bn-item" data-page="quiz">
-      <i class="fas fa-brain"></i><span>Quiz</span>
-    </a>
-    <div class="bn-ai-wrap">
-      <button class="bn-ai" onclick="toggleChat()" title="AI Guru">
-        <i class="fas fa-robot"></i>
-      </button>
-    </div>
-    <a href="/scripture" class="bn-item" data-page="scripture">
-      <i class="fas fa-om"></i><span>Gyan</span>
-    </a>
-    <a href="/resources" class="bn-item" data-page="resources">
-      <i class="fas fa-graduation-cap"></i><span>Resources</span>
-    </a>
-  </div>
-</nav>
+<!-- ── FLOATING BUTTONS ── -->
+<div class="floating-buttons">
+    <button class="floating-btn btn-sidebar-float" onclick="toggleSidebar()" title="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    <button class="floating-btn btn-dark-float" id="darkBtn" onclick="toggleDark()" title="Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+    <button class="floating-btn btn-top-float" id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</div>
 
-<button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-  <i class="fas fa-arrow-up"></i>
-</button>
-
-<!-- AI CHATBOT -->
-<button class="chat-fab" id="chatFab" onclick="toggleChat()">
-  <i class="fas fa-robot" id="chatFabIcon"></i>
-  <span class="chat-badge">AI</span>
+<!-- ── AI CHATBOT ── -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" title="AI Guru">
+    <i class="fas fa-robot"></i>
 </button>
 
 <div class="chat-window" id="chatWindow">
-  <div class="chat-header">
-    <div class="chat-avatar">🧘</div>
-    <div class="chat-header-info">
-      <div class="name">Marg Darshak AI Guru</div>
-      <div class="status">● Online · Powered by Claude</div>
+    <div class="chat-header">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);
+            display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🧭</div>
+        <div class="chat-header-info">
+            <div class="chat-header-title">AI Guru</div>
+            <div class="chat-header-sub">Career · Wisdom · Guidance</div>
+        </div>
+        <button class="chat-lang-toggle" id="langToggle" onclick="toggleChatLang()">EN</button>
+        <button class="chat-close" onclick="toggleChat()"><i class="fas fa-times"></i></button>
     </div>
-    <button class="chat-close" onclick="toggleChat()"><i class="fas fa-times"></i></button>
-  </div>
-  <div class="chat-messages" id="chatMessages">
-    <div class="msg bot">
-      {% if lang=='hi' %}
-        🙏 Namaste! Main hoon <strong>Marg Darshak AI Guru</strong>.<br><br>Career, Bhagavad Gita wisdom, ya skills — kuch bhi puchho! ✨
-      {% else %}
-        🙏 Hello! I'm your <strong>Marg Darshak AI Guru</strong>.<br><br>Ask me anything about careers, Bhagavad Gita wisdom, or learning paths! ✨
-      {% endif %}
+    <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot">
+            <div class="chat-bubble">
+                👋 Hi! I'm your AI Guru — ask me anything about careers, studies, or life guidance. I'm here to help!
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="quick-prompts" id="quickPrompts">
-    {% if lang=='hi' %}
-    <button class="qp-btn" onclick="sendQuickPrompt('Mujhe apna career choose karne mein help chahiye')">🎯 Career</button>
-    <button class="qp-btn" onclick="sendQuickPrompt('Aaj ka shloka batao practical meaning ke saath')">📿 Shloka</button>
-    <button class="qp-btn" onclick="sendQuickPrompt('Mujhe stress se kaise deal karna chahiye')">😌 Stress</button>
-    <button class="qp-btn" onclick="sendQuickPrompt('Coding sikhni hai kahan se shuru karun')">💻 Coding</button>
-    {% else %}
-    <button class="qp-btn" onclick="sendQuickPrompt('Help me choose the right career path')">🎯 Career</button>
-    <button class="qp-btn" onclick="sendQuickPrompt('Share a Bhagavad Gita shloka with practical meaning')">📿 Shloka</button>
-    <button class="qp-btn" onclick="sendQuickPrompt('How to deal with exam stress?')">😌 Stress</button>
-    <button class="qp-btn" onclick="sendQuickPrompt('How to start learning coding from scratch?')">💻 Coding</button>
-    {% endif %}
-  </div>
-  <div class="chat-footer">
-    <textarea class="chat-input" id="chatInput"
-      placeholder="{% if lang=='hi' %}Kuch bhi puchhiye... 🙏{% else %}Ask anything... 🙏{% endif %}"
-      rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
-    <button class="chat-send" id="chatSendBtn" onclick="sendMessage()">
-      <i class="fas fa-paper-plane"></i>
-    </button>
-  </div>
+    <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" type="text"
+            placeholder="Ask anything..."
+            onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+    </div>
 </div>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// LOADER
-window.addEventListener('load',()=>setTimeout(()=>document.getElementById('pageLoader').classList.add('hidden'),350));
-
-// DARK MODE
-function toggleDarkMode(){
-  const dark=document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode',dark?'1':'0');
-  document.querySelector('#darkModeBtn i').className=dark?'fas fa-sun':'fas fa-moon';
-}
-(function(){
-  if(localStorage.getItem('darkMode')==='1'){
-    document.body.classList.add('dark-mode');
-    const b=document.querySelector('#darkModeBtn i');
-    if(b)b.className='fas fa-sun';
-  }
-})();
-
-// SIDEBAR
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('active');
-  document.getElementById('sidebarOverlay').classList.toggle('active');
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('active');
-  document.getElementById('sidebarOverlay').classList.remove('active');
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar();});
-
-// BOTTOM NAV active state
-(function(){
-  const path = window.location.pathname;
-  document.querySelectorAll('.bn-item').forEach(item => {
-    const page = item.dataset.page;
-    if(page && path.includes(page)) item.classList.add('active');
-    if(page === 'dashboard' && (path === '/' || path === '/dashboard')) item.classList.add('active');
-  });
-})();
-
-// SCROLL TOP
-window.addEventListener('scroll',()=>{
-  const b=document.getElementById('scrollTopBtn');
-  if(b)b.style.display=window.scrollY>300?'flex':'none';
+// ── PAGE LOADER ──
+window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 400);
 });
 
-// CHATBOT
-let chatHistory=[],isTyping=false;
-const CURR_LEVEL='{{ level }}';
-
-function toggleChat(){
-  const w=document.getElementById('chatWindow');
-  const on=w.classList.toggle('active');
-  document.getElementById('chatFabIcon').className=on?'fas fa-times':'fas fa-robot';
-  if(on)setTimeout(()=>document.getElementById('chatInput').focus(),300);
+// ── DARK MODE ──
+function toggleDark() {
+    document.body.classList.toggle('dark-mode');
+    const on = document.body.classList.contains('dark-mode');
+    localStorage.setItem('md_dark', on ? '1' : '0');
+    document.querySelector('#darkBtn i').className = on ? 'fas fa-sun' : 'fas fa-moon';
 }
-function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
-function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';}
-
-function sendQuickPrompt(text){
-  document.getElementById('chatInput').value=text;
-  document.getElementById('quickPrompts').style.display='none';
-  sendMessage();
-}
-
-function addMsg(text,role){
-  const msgs=document.getElementById('chatMessages');
-  const div=document.createElement('div');
-  div.className=`msg ${role}`;
-  div.innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
-}
-
-function showTyping(){
-  const msgs=document.getElementById('chatMessages');
-  const div=document.createElement('div');
-  div.className='typing-indicator';div.id='typingIndicator';
-  div.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
-}
-function hideTyping(){const t=document.getElementById('typingIndicator');if(t)t.remove();}
-
-async function sendMessage(){
-  const input=document.getElementById('chatInput');
-  const msg=input.value.trim();
-  if(!msg||isTyping)return;
-  input.value='';input.style.height='auto';
-  document.getElementById('chatSendBtn').disabled=true;
-  isTyping=true;
-  addMsg(msg,'user');
-  chatHistory.push({role:'user',content:msg});
-  showTyping();
-  try{
-    const cfgRes=await fetch('/api/chat-config',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({level:CURR_LEVEL})
-    });
-    const cfg=await cfgRes.json();
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
-        system:cfg.system,messages:chatHistory.slice(-10)
-      })
-    });
-    const data=await res.json();
-    hideTyping();
-    if(data.content&&data.content[0]){
-      const reply=data.content[0].text;
-      addMsg(reply,'bot');chatHistory.push({role:'assistant',content:reply});
-    } else {
-      addMsg('Kuch technical issue aa gayi. Thodi der baad try karo. 🙏','bot');
+(function(){
+    if (localStorage.getItem('md_dark') === '1') {
+        document.body.classList.add('dark-mode');
+        const b = document.querySelector('#darkBtn i');
+        if (b) b.className = 'fas fa-sun';
     }
-  }catch(e){
-    hideTyping();
-    addMsg('Network error. Please check connection. 🙏','bot');
-  }
-  isTyping=false;
-  document.getElementById('chatSendBtn').disabled=false;
+})();
+
+// ── SIDEBAR ──
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+    document.body.style.overflow =
+        document.getElementById('sidebar').classList.contains('active') ? 'hidden' : '';
+}
+document.querySelectorAll('.sidebar-menu a').forEach(a =>
+    a.addEventListener('click', () => setTimeout(toggleSidebar, 200)));
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('sidebar').classList.contains('active'))
+        toggleSidebar();
+});
+
+// ── SCROLL TOP ──
+window.addEventListener('scroll', () => {
+    document.getElementById('topBtn').style.display =
+        window.pageYOffset > 300 ? 'flex' : 'none';
+});
+
+// ── CHATBOT ──
+let chatOpen  = false;
+let chatLang  = 'en';
+const chatHistory = [];
+
+function toggleChat() {
+    chatOpen = !chatOpen;
+    document.getElementById('chatWindow').classList.toggle('open', chatOpen);
+    if (chatOpen) document.getElementById('chatInput').focus();
+}
+
+function toggleChatLang() {
+    chatLang = chatLang === 'en' ? 'hi' : 'en';
+    document.getElementById('langToggle').textContent = chatLang.toUpperCase();
+    document.getElementById('chatInput').placeholder =
+        chatLang === 'hi' ? 'Kuch bhi pucho...' : 'Ask anything...';
+}
+
+async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text  = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    // Add user message to UI
+    addChatMsg(text, 'user');
+    chatHistory.push({ role: 'user', content: text });
+
+    // Show typing indicator
+    const typingId = addTyping();
+
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: chatHistory,
+                lang: chatLang
+            })
+        });
+        const data = await res.json();
+        removeTyping(typingId);
+
+        const reply = data.success ? data.message : '⚠️ ' + (data.error || 'Something went wrong. Please try again.');
+        addChatMsg(reply, 'bot');
+        if (data.success) chatHistory.push({ role: 'assistant', content: reply });
+
+    } catch (e) {
+        removeTyping(typingId);
+        addChatMsg('⚠️ Could not connect. Please check your internet and try again.', 'bot');
+    }
+}
+
+function addChatMsg(text, role) {
+    const msgs = document.getElementById('chatMessages');
+    const div  = document.createElement('div');
+    div.className = `chat-msg ${role}`;
+    // Simple markdown: bold
+    const html = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    div.innerHTML = `<div class="chat-bubble">${html}</div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+}
+
+function addTyping() {
+    const msgs = document.getElementById('chatMessages');
+    const id   = 'typing-' + Date.now();
+    const div  = document.createElement('div');
+    div.className = 'chat-msg bot';
+    div.id = id;
+    div.innerHTML = `<div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return id;
+}
+
+function removeTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
 }
 </script>
 {% block extra_js %}{% endblock %}
