@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup Your Path — Marg Darshak</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0d0d14;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.10);
+  --text:#f0f0f8;--muted:rgba(240,240,248,0.45);
+  --school:#43e97b;--college:#7c6ff7;--pro:#f093fb;
+}
+html,body{min-height:100vh;}
+body{
+  background:var(--ink);color:var(--text);font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+}
+
+/* background */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 25%,rgba(124,111,247,.14) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 75%,rgba(67,233,123,.10) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%,rgba(240,147,251,.07) 0%,transparent 60%);
+  pointer-events:none;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:radial-gradient(rgba(255,255,255,0.05) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none;
+}
+
+/* layout */
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;}
+
+/* header */
+.top-bar{width:100%;max-width:680px;display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;}
+.logo-wrap{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#7c6ff7,#5b4fdf);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.logo-text{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#7c6ff7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* progress bar */
+.progress-wrap{flex:1;max-width:260px;margin-left:auto;}
+.progress-track{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7c6ff7,#43e97b);border-radius:4px;transition:width .5s ease;}
+.progress-label{text-align:right;font-size:.72rem;color:var(--muted);margin-top:.35rem;}
+
+/* step container */
+.step{display:none;width:100%;max-width:680px;animation:stepIn .4s cubic-bezier(.17,.85,.32,1.1);}
+.step.active{display:block;}
+@keyframes stepIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+.step-header{text-align:center;margin-bottom:2rem;}
+.step-pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.3rem .9rem;border-radius:100px;font-size:.72rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;
+  background:rgba(124,111,247,.15);color:#a78bfa;border:1px solid rgba(124,111,247,.25);
+}
+.step-title{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;line-height:1.2;margin-bottom:.5rem;}
+.step-sub{color:var(--muted);font-size:.95rem;}
+
+/* level cards */
+.level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+@media(max-width:600px){.level-grid{grid-template-columns:1fr;}}
+
+.level-card{
+  position:relative;padding:1.75rem 1.25rem;border-radius:20px;
+  border:1.5px solid var(--border);background:rgba(255,255,255,0.03);
+  cursor:pointer;transition:all .3s cubic-bezier(.17,.85,.32,1.2);text-align:center;
+  overflow:hidden;
+}
+.level-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;border-radius:20px;}
+.level-card.school::before{background:linear-gradient(135deg,rgba(67,233,123,.12),rgba(56,249,215,.06));}
+.level-card.college::before{background:linear-gradient(135deg,rgba(124,111,247,.12),rgba(91,79,223,.06));}
+.level-card.professional::before{background:linear-gradient(135deg,rgba(240,147,251,.12),rgba(245,87,108,.06));}
+.level-card:hover,.level-card.selected{transform:translateY(-6px);}
+.level-card:hover::before,.level-card.selected::before{opacity:1;}
+.level-card.school:hover,.level-card.school.selected{border-color:rgba(67,233,123,.5);box-shadow:0 12px 40px rgba(67,233,123,.2);}
+.level-card.college:hover,.level-card.college.selected{border-color:rgba(124,111,247,.5);box-shadow:0 12px 40px rgba(124,111,247,.2);}
+.level-card.professional:hover,.level-card.professional.selected{border-color:rgba(240,147,251,.5);box-shadow:0 12px 40px rgba(240,147,251,.2);}
+
+.lc-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto .9rem;position:relative;z-index:1;}
+.school .lc-icon{background:rgba(67,233,123,.15);color:#43e97b;}
+.college .lc-icon{background:rgba(124,111,247,.15);color:#a78bfa;}
+.professional .lc-icon{background:rgba(240,147,251,.15);color:#f093fb;}
+.lc-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.25rem;position:relative;z-index:1;}
+.lc-hindi{font-family:'Noto Sans Devanagari',sans-serif;font-size:.78rem;color:var(--muted);margin-bottom:.5rem;position:relative;z-index:1;}
+.lc-desc{font-size:.78rem;color:var(--muted);position:relative;z-index:1;}
+.lc-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7c6ff7,#5b4fdf);color:#fff;padding:.25rem .8rem;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.06em;white-space:nowrap;}
+
+/* option pills (class, board, etc.) */
+.pills-grid{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem;justify-content:center;}
+.pill{
+  padding:.5rem 1.1rem;border-radius:100px;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--muted);font-size:.875rem;font-weight:500;
+  cursor:pointer;transition:all .2s ease;
+}
+.pill:hover{border-color:rgba(124,111,247,.4);color:var(--text);}
+.pill.selected{background:rgba(124,111,247,.15);border-color:rgba(124,111,247,.5);color:#a78bfa;}
+
+/* sub-panels */
+.sub-panel{display:none;animation:stepIn .35s ease;}
+.sub-panel.active{display:block;}
+
+/* goal grid */
+.goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;margin-bottom:1.5rem;}
+.goal-card{
+  padding:1rem .85rem;border-radius:16px;border:1px solid var(--border);
+  background:rgba(255,255,255,.03);cursor:pointer;transition:all .25s ease;
+  text-align:center;
+}
+.goal-card:hover{border-color:rgba(124,111,247,.4);background:rgba(124,111,247,.06);transform:translateY(-2px);}
+.goal-card.selected{border-color:rgba(67,233,123,.5);background:rgba(67,233,123,.08);}
+.goal-emoji{font-size:1.5rem;margin-bottom:.4rem;}
+.goal-label{font-size:.8rem;font-weight:600;line-height:1.3;}
+
+/* language */
+.lang-grid{display:flex;gap:1rem;justify-content:center;margin-bottom:1.5rem;}
+.lang-card{
+  padding:1.25rem 2rem;border-radius:16px;border:1.5px solid var(--border);
+  background:rgba(255,255,255,.04);cursor:pointer;transition:all .25s ease;text-align:center;
+}
+.lang-card:hover{border-color:rgba(124,111,247,.4);transform:translateY(-2px);}
+.lang-card.selected{border-color:rgba(124,111,247,.5);background:rgba(124,111,247,.1);}
+.lang-flag{font-size:2rem;margin-bottom:.4rem;}
+.lang-name{font-size:.9rem;font-weight:600;}
+
+/* buttons */
+.btn-next{
+  width:100%;padding:.9rem;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#7c6ff7,#5b4fdf);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;
+  cursor:pointer;transition:all .25s ease;box-shadow:0 4px 20px rgba(124,111,247,.35);
+}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,111,247,.5);}
+.btn-next:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+.btn-back{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  padding:.65rem 1.5rem;border-radius:14px;cursor:pointer;font-size:.875rem;
+  transition:all .2s;margin-right:.75rem;font-family:'DM Sans',sans-serif;
+}
+.btn-back:hover{border-color:rgba(255,255,255,.2);color:var(--text);}
+
+.btn-row{display:flex;align-items:center;margin-top:.5rem;}
+
+/* section label */
+.sec-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- top bar -->
+  <div class="top-bar">
+    <a class="logo-wrap" href="/"><div class="logo-icon">🧭</div><span class="logo-text">Marg Darshak</span></a>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+      <div class="progress-label" id="progressLabel">Step 1 of 4</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: LEVEL ── -->
+  <div class="step active" id="step-1">
+    <div class="step-header">
+      <div class="step-pill"><i class="fas fa-layer-group"></i> Step 1</div>
+      <h1 class="step-title">Aap kaun hain?</h1>
+      <p class="step-sub">Choose your level — content will be personalised for you</p>
+    </div>
+
+    <div class="level-grid">
+      <div class="level-card school" onclick="selectLevel('school')">
+        <div class="lc-icon"><i class="fas fa-school"></i></div>
+        <div class="lc-title">School Student</div>
+        <div class="lc-hindi">स्कूल छात्र</div>
+        <div class="lc-desc">Class 6–12 | Explore & Discover</div>
+      </div>
+      <div class="level-card college" onclick="selectLevel('college')">
+        <div class="lc-badge">⭐ Most Popular</div>
+        <div class="lc-icon"><i class="fas fa-university"></i></div>
+        <div class="lc-title">College Student</div>
+        <div class="lc-hindi">कॉलेज छात्र</div>
+        <div class="lc-desc">UG / PG | Build & Grow</div>
+      </div>
+      <div class="level-card professional" onclick="selectLevel('professional')">
+        <div class="lc-icon"><i class="fas fa-briefcase"></i></div>
+        <div class="lc-title">Professional</div>
+        <div class="lc-hindi">पेशेवर</div>
+        <div class="lc-desc">Working | Level Up & Lead</div>
+      </div>
+    </div>
+
+    <!-- SCHOOL sub-options -->
+    <div class="sub-panel" id="school-options">
+      <div class="sec-label">Apni Class choose karo</div>
+      <div class="pills-grid" id="class-pills">
+        {% for k,v in {'6':'Class 6','7':'Class 7','8':'Class 8','9':'Class 9','10':'Class 10 (Board)','11':'Class 11','12':'Class 12 (Board)'}.items() %}
+        <div class="pill" onclick="selectClass('{{k}}')">{{v}}</div>
+        {% endfor %}
+      </div>
+      <div class="sec-label" id="board-label" style="display:none;">Board choose karo</div>
+      <div class="pills-grid" id="board-pills" style="display:none;">
+        {% for b in ['CBSE','ICSE','State Board','IB','NIOS'] %}
+        <div class="pill" onclick="selectBoard('{{b}}')">{{b}}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- COLLEGE sub-options -->
+    <div class="sub-panel" id="college-options">
+      <div class="sec-label">Stream / Course</div>
+      <div class="pills-grid">
+        {% for s in ['Engineering','Medical / Pharma','Commerce / CA','Arts / Humanities','Science / BSc','Law','Design','Management / BBA','Other'] %}
+        <div class="pill" onclick="selectStream('{{s}}')">{{s}}</div>
+        {% endfor %}
+      </div>
+      <div class="sec-label">Year</div>
+      <div class="pills-grid">
+        {% for y in ['1st Year','2nd Year','3rd Year','4th Year','PG / Masters'] %}
+        <div class="pill" onclick="selectYear('{{y}}')">{{y}}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- PROFESSIONAL sub-options -->
+    <div class="sub-panel" id="professional-options">
+      <div class="sec-label">Experience</div>
+      <div class="pills-grid">
+        {% for e in ['Fresher (0–1 yr)','1–3 yrs','3–5 yrs','5–10 yrs','10+ yrs'] %}
+        <div class="pill" onclick="selectExp('{{e}}')">{{e}}</div>
+        {% endfor %}
+      </div>
+      <div class="sec-label">Domain / Field</div>
+      <div class="pills-grid">
+        {% for d in ['Technology','Finance','Healthcare','Marketing','Education','Legal','Design','Operations','Other'] %}
+        <div class="pill" onclick="selectDomain('{{d}}')">{{d}}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="btn-row"><button class="btn-next" id="step1-next" onclick="goStep(2)" disabled>Aage badhein →</button></div>
+  </div>
+
+  <!-- ── STEP 2: GOAL ── -->
+  <div class="step" id="step-2">
+    <div class="step-header">
+      <div class="step-pill"><i class="fas fa-bullseye"></i> Step 2</div>
+      <h1 class="step-title">Aapka sapna kya hai?</h1>
+      <p class="step-sub">Apna future goal batao — hum uske hisaab se sab kuch personalise karenge</p>
+    </div>
+
+    <!-- school goals -->
+    <div class="sub-panel" id="goal-school">
+      <div class="goal-grid">
+        {% for k,v in school_goals.items() %}
+        <div class="goal-card" onclick="selectGoal('{{k}}')">
+          <div class="goal-emoji">{{v.icon}}</div>
+          <div class="goal-label">{{v.label}}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- college goals -->
+    <div class="sub-panel" id="goal-college">
+      <div class="goal-grid">
+        {% for k,v in college_goals.items() %}
+        <div class="goal-card" onclick="selectGoal('{{k}}')">
+          <div class="goal-emoji">{{v[:2]}}</div>
+          <div class="goal-label">{{v[2:].strip()}}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- professional goals -->
+    <div class="sub-panel" id="goal-professional">
+      <div class="goal-grid">
+        {% for k,v in professional_goals.items() %}
+        <div class="goal-card" onclick="selectGoal('{{k}}')">
+          <div class="goal-emoji">{{v[:2]}}</div>
+          <div class="goal-label">{{v[2:].strip()}}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(1)">← Wapas</button>
+      <button class="btn-next" id="step2-next" onclick="goStep(3)" style="flex:1" disabled>Aage badhein →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: LANGUAGE ── -->
+  <div class="step" id="step-3">
+    <div class="step-header">
+      <div class="step-pill"><i class="fas fa-language"></i> Step 3</div>
+      <h1 class="step-title">Language choose karo</h1>
+      <p class="step-sub">AI Guru aur content kis bhasha mein pasand karoge?</p>
+    </div>
+
+    <div class="lang-grid">
+      <div class="lang-card selected" onclick="selectLang('en')">
+        <div class="lang-flag">🇬🇧</div>
+        <div class="lang-name">English</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem">Clean & Formal</div>
+      </div>
+      <div class="lang-card" onclick="selectLang('hi')">
+        <div class="lang-flag">🇮🇳</div>
+        <div class="lang-name">हिंदी / Hinglish</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.25rem">Desi & Friendly</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(2)">← Wapas</button>
+      <button class="btn-next" onclick="goStep(4)" style="flex:1">Aage badhein →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: CONFIRM ── -->
+  <div class="step" id="step-4">
+    <div class="step-header">
+      <div class="step-pill"><i class="fas fa-check-circle"></i> Step 4</div>
+      <h1 class="step-title">Sab ready hai! 🎉</h1>
+      <p class="step-sub">Tera personalized experience taiyaar ho raha hai...</p>
+    </div>
+
+    <div id="summary-card" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:20px;padding:1.5rem;margin-bottom:1.5rem;"></div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(3)">← Wapas</button>
+      <button class="btn-next" id="finalBtn" onclick="submitOnboarding()" style="flex:1">
+        <i class="fas fa-rocket"></i> Dashboard pe jao!
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const state = {
+  level:'', class_std:'', board:'', stream:'', year:'',
+  experience:'', domain:'', goal:'', language:'en', step:1
+};
+
+const STEPS = 4;
+const progressFill  = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+
+function updateProgress(s){
+  const pct = Math.round((s/STEPS)*100);
+  progressFill.style.width = pct+'%';
+  progressLabel.textContent = `Step ${s} of ${STEPS}`;
+}
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(el=>el.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  state.step = n;
+  updateProgress(n);
+  if(n===4) buildSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── LEVEL ──
+function selectLevel(lvl){
+  state.level = lvl;
+  // reset sub
+  state.class_std=state.board=state.stream=state.year=state.experience=state.domain='';
+  document.querySelectorAll('.level-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelector(`.level-card.${lvl}`).classList.add('selected');
+  ['school-options','college-options','professional-options'].forEach(id=>{
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById(lvl+'-options').classList.add('active');
+  checkStep1();
+}
+
+function selectClass(c){
+  state.class_std = c;
+  document.querySelectorAll('#class-pills .pill').forEach(p=>p.classList.toggle('selected', p.textContent.startsWith('Class '+c)||p.textContent===`Class ${c}`));
+  // show board if class 10 or 12
+  const showBoard = ['10','11','12'].includes(c);
+  document.getElementById('board-label').style.display = showBoard?'block':'none';
+  document.getElementById('board-pills').style.display  = showBoard?'flex':'none';
+  if(!showBoard) state.board='';
+  checkStep1();
+}
+
+function selectBoard(b){
+  state.board = b;
+  document.querySelectorAll('#board-pills .pill').forEach(p=>p.classList.toggle('selected',p.textContent===b));
+  checkStep1();
+}
+
+function selectStream(s){
+  state.stream = s;
+  document.querySelectorAll('#college-options .pill').forEach(p=>{
+    if(['1st Year','2nd Year','3rd Year','4th Year','PG / Masters'].every(y=>p.textContent!==y))
+      p.classList.toggle('selected',p.textContent===s);
+  });
+  checkStep1();
+}
+
+function selectYear(y){
+  state.year = y;
+  document.querySelectorAll('#college-options .pill').forEach(p=>{
+    if(['1st Year','2nd Year','3rd Year','4th Year','PG / Masters'].includes(p.textContent))
+      p.classList.toggle('selected',p.textContent===y);
+  });
+  checkStep1();
+}
+
+function selectExp(e){
+  state.experience = e;
+  document.querySelectorAll('#professional-options .pill').forEach(p=>{
+    if(!['Technology','Finance','Healthcare','Marketing','Education','Legal','Design','Operations','Other'].includes(p.textContent))
+      p.classList.toggle('selected',p.textContent===e);
+  });
+  checkStep1();
+}
+
+function selectDomain(d){
+  state.domain = d;
+  document.querySelectorAll('#professional-options .pill').forEach(p=>{
+    if(['Technology','Finance','Healthcare','Marketing','Education','Legal','Design','Operations','Other'].includes(p.textContent))
+      p.classList.toggle('selected',p.textContent===d);
+  });
+  checkStep1();
+}
+
+function checkStep1(){
+  let ok = false;
+  if(state.level==='school')       ok = !!state.class_std;
+  if(state.level==='college')      ok = !!state.stream && !!state.year;
+  if(state.level==='professional') ok = !!state.experience && !!state.domain;
+  document.getElementById('step1-next').disabled = !ok;
+}
+
+// ── GOAL ──
+function selectGoal(g){
+  state.goal = g;
+  document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  document.getElementById('step2-next').disabled = false;
+}
+
+// show correct goal panel when entering step 2
+const _origGoStep = goStep;
+(function(){
+  const orig = goStep;
+  goStep = function(n){
+    orig(n);
+    if(n===2){
+      ['goal-school','goal-college','goal-professional'].forEach(id=>document.getElementById(id).classList.remove('active'));
+      const panel = document.getElementById('goal-'+state.level);
+      if(panel) panel.classList.add('active');
+      document.getElementById('step2-next').disabled = !state.goal;
+    }
+  };
+})();
+
+// ── LANGUAGE ──
+function selectLang(l){
+  state.language = l;
+  document.querySelectorAll('.lang-card').forEach(c=>c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
+
+// ── SUMMARY ──
+function buildSummary(){
+  const icons = {school:'🏫',college:'🎓',professional:'💼'};
+  const ll    = {school:'School Student',college:'College Student',professional:'Professional'};
+  let html = `<div style="display:flex;flex-direction:column;gap:.75rem;">`;
+  html += row('🧑','Level', ll[state.level]||'');
+  if(state.class_std) html += row('📚','Class', 'Class '+state.class_std+(state.board?' · '+state.board:''));
+  if(state.stream)    html += row('🎓','Stream', state.stream+(state.year?' · '+state.year:''));
+  if(state.experience)html += row('💼','Experience', state.experience+(state.domain?' · '+state.domain:''));
+  if(state.goal)      html += row('🎯','Goal', state.goal.replace(/_/g,' '));
+  html += row('🌐','Language', state.language==='hi'?'हिंदी / Hinglish':'English');
+  html += '</div>';
+  document.getElementById('summary-card').innerHTML = html;
+}
+
+function row(ico,k,v){
+  return `<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:rgba(255,255,255,.04);border-radius:10px;">
+    <span style="font-size:1.1rem;">${ico}</span>
+    <div>
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,248,.4);font-weight:700;">${k}</div>
+      <div style="font-size:.9rem;font-weight:600;">${v}</div>
+    </div>
+  </div>`;
+}
+
+// ── SUBMIT ──
+async function submitOnboarding(){
+  const btn = document.getElementById('finalBtn');
+  btn.textContent = 'Setting up...'; btn.disabled = true;
+
+  const res = await fetch('/onboarding', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(state)
+  });
+  const data = await res.json();
+  if(data.success){
+    window.location.href = data.redirect;
+  } else {
+    btn.textContent = 'Error! Try again.'; btn.disabled = false;
+  }
+}
+
+// init
+updateProgress(1);
+</script>
+</body>
+</html>

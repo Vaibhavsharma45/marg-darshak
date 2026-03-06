@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Marg Darshak{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── DASHBOARD ── */
+.dash-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;}
+
+/* greeting */
+.greeting-bar{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:1.5rem 2rem;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+}
+.greet-left h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.25rem;}
+.greet-left p{color:var(--muted);font-size:.9rem;}
+.greet-badge{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.25rem;
+  border-radius:100px;font-size:.82rem;font-weight:600;border:1.5px solid;
+}
+.greet-badge.school{background:rgba(67,233,123,.1);color:#43e97b;border-color:rgba(67,233,123,.3);}
+.greet-badge.college{background:rgba(124,111,247,.1);color:#a78bfa;border-color:rgba(124,111,247,.3);}
+.greet-badge.professional{background:rgba(240,147,251,.1);color:#f093fb;border-color:rgba(240,147,251,.3);}
+
+/* stats row */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;
+}
+.stat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.stat-icon.career{background:rgba(124,111,247,.15);color:#a78bfa;}
+.stat-icon.gyan{background:rgba(240,147,251,.15);color:#f093fb;}
+.stat-icon.skill{background:rgba(79,172,254,.15);color:#4facfe;}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;}
+.stat-label{font-size:.8rem;color:var(--muted);}
+
+/* main grid */
+.main-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+
+/* section card */
+.sec-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:1.5rem;margin-bottom:1.5rem;
+}
+.sec-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.sec-card-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:.5rem;}
+.sec-link{font-size:.82rem;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:.3rem;font-weight:600;}
+.sec-link:hover{color:var(--accent);}
+
+/* goal prediction card */
+.goal-card-big{
+  background:linear-gradient(135deg,rgba(124,111,247,.12),rgba(67,233,123,.06));
+  border:1px solid rgba(124,111,247,.25);border-radius:20px;padding:1.5rem;
+  margin-bottom:1.5rem;
+}
+.goal-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.25rem;}
+.goal-emoji-big{font-size:2.5rem;line-height:1;}
+.goal-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+.goal-path{font-size:.85rem;color:var(--muted);margin-top:.25rem;}
+.goal-exam-badge{
+  display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .9rem;border-radius:100px;
+  background:rgba(124,111,247,.15);color:#a78bfa;font-size:.75rem;font-weight:700;margin-top:.5rem;
+}
+
+/* milestones */
+.milestones{display:flex;flex-direction:column;gap:.6rem;}
+.milestone{
+  display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;
+  background:rgba(255,255,255,.04);border-radius:12px;border-left:3px solid rgba(124,111,247,.5);
+}
+.ms-class{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a78bfa;min-width:60px;flex-shrink:0;padding-top:.15rem;}
+.ms-task{font-size:.85rem;line-height:1.5;}
+
+/* shloka card */
+.shloka-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.5rem;}
+.shloka-sanskrit{font-family:'Noto Sans Devanagari',sans-serif;font-size:1rem;font-weight:600;line-height:1.7;color:var(--accent-color,#a78bfa);margin-bottom:.75rem;}
+.shloka-meaning{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem;}
+.shloka-application{
+  padding:.75rem 1rem;background:rgba(124,111,247,.07);border-radius:12px;
+  font-size:.83rem;line-height:1.6;border-left:3px solid rgba(124,111,247,.4);
+}
+
+/* module cards */
+.mod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+@media(max-width:600px){.mod-grid{grid-template-columns:1fr;}}
+.mod-mini{
+  padding:1.25rem;border-radius:16px;border:1px solid var(--border);background:var(--surface);
+  text-decoration:none;color:var(--text);transition:all .25s ease;display:block;
+}
+.mod-mini:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.15);border-color:rgba(124,111,247,.3);}
+.mod-mini .mi-icon{font-size:1.5rem;margin-bottom:.5rem;}
+.mod-mini .mi-title{font-weight:700;font-size:.9rem;margin-bottom:.2rem;}
+.mod-mini .mi-sub{font-size:.78rem;color:var(--muted);}
+
+/* subjects chips */
+.subj-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem;}
+.subj-chip{padding:.3rem .75rem;border-radius:100px;background:rgba(67,233,123,.1);color:#43e97b;border:1px solid rgba(67,233,123,.2);font-size:.75rem;font-weight:600;}
+
+@media(max-width:768px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .greet-badge{display:none;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-wrap">
+
+  <!-- GREETING -->
+  <div class="greeting-bar">
+    <div class="greet-left">
+      <h2>
+        {% if lang == 'hi' %}
+          Namaste, {{ user_name }} ji! 🙏
+        {% else %}
+          Welcome back, {{ user_name }}! 👋
+        {% endif %}
+      </h2>
+      <p>
+        {% if lang == 'hi' %}
+          Aaj apna ek naya kadam uthao — teri manzil nahi rukegi ✨
+        {% else %}
+          Your personalised guidance dashboard is ready. Let's grow today! ✨
+        {% endif %}
+      </p>
+    </div>
+    <a href="/select-level" class="greet-badge {{ level }}">
+      <i class="{{ level_info.icon }}"></i> {{ level_info.label }}
+    </a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon career"><i class="fas fa-compass"></i></div>
+      <div><div class="stat-num">{{ stats.careers }}+</div><div class="stat-label">Career Paths</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gyan"><i class="fas fa-om"></i></div>
+      <div><div class="stat-num">{{ stats.shlokas }}+</div><div class="stat-label">Wisdom Verses</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon skill"><i class="fas fa-graduation-cap"></i></div>
+      <div><div class="stat-num">{{ stats.resources }}+</div><div class="stat-label">Resources</div></div>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div class="mod-grid">
+    <a href="/career?level={{ level }}" class="mod-mini">
+      <div class="mi-icon">🎯</div>
+      <div class="mi-title">Career Quiz</div>
+      <div class="mi-sub">Find your path</div>
+    </a>
+    <a href="/gyan?level={{ level }}" class="mod-mini">
+      <div class="mi-icon">📿</div>
+      <div class="mi-title">Gyan Kosh</div>
+      <div class="mi-sub">Daily wisdom</div>
+    </a>
+    <a href="/skill?level={{ level }}" class="mod-mini">
+      <div class="mi-icon">📚</div>
+      <div class="mi-title">Skill Saathi</div>
+      <div class="mi-sub">Learn & grow</div>
+    </a>
+  </div>
+
+  <div class="main-grid">
+    <div>
+
+      <!-- GOAL PREDICTION (school) -->
+      {% if level == 'school' and goal %}
+      <div class="goal-card-big" id="goalSection">
+        <div class="sec-card-header">
+          <div class="sec-card-title">🔮 Your Future Roadmap</div>
+          <button onclick="loadPrediction()" style="background:rgba(124,111,247,.15);border:1px solid rgba(124,111,247,.3);color:#a78bfa;padding:.4rem .9rem;border-radius:100px;font-size:.78rem;font-weight:600;cursor:pointer;">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+        <div id="roadmapContent">
+          <div style="text-align:center;padding:2rem;color:var(--muted);">
+            <div class="loader-ring" style="margin:0 auto 1rem;"></div>
+            Loading your roadmap...
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if level == 'college' and goal %}
+      <div class="sec-card">
+        <div class="sec-card-header">
+          <div class="sec-card-title">🎯 Your Goal</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;background:rgba(124,111,247,.07);border-radius:14px;">
+          <div style="font-size:2rem;">{{ college_goals.get(goal, '🎯 ' + goal)[:2] }}</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;">{{ college_goals.get(goal, goal)[2:].strip() }}</div>
+            <div style="font-size:.82rem;color:var(--muted);margin-top:.2rem;">
+              {% if lang=='hi' %}AI Guru se puchho apne goal ke baare mein!
+              {% else %}Ask AI Guru for a personalised roadmap for this goal!{% endif %}
+            </div>
+          </div>
+        </div>
+        <button onclick="sendGoalQuery()" style="margin-top:1rem;background:linear-gradient(135deg,#7c6ff7,#5b4fdf);border:none;color:white;padding:.7rem 1.5rem;border-radius:100px;font-size:.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem;">
+          <i class="fas fa-robot"></i>
+          {% if lang=='hi' %}AI Guru se roadmap maango{% else %}Get AI Roadmap{% endif %}
+        </button>
+      </div>
+      {% endif %}
+
+      {% if level == 'professional' and goal %}
+      <div class="sec-card">
+        <div class="sec-card-header">
+          <div class="sec-card-title">📈 Career Focus</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;background:rgba(240,147,251,.07);border-radius:14px;">
+          <div style="font-size:2rem;">{{ professional_goals.get(goal, '📈 ' + goal)[:2] }}</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem;">{{ professional_goals.get(goal, goal)[2:].strip() }}</div>
+            <div style="font-size:.82rem;color:var(--muted);margin-top:.2rem;">
+              {% if lang=='hi' %}AI Guru aapki career strategy mein help karega{% else %}AI Guru will help craft your career strategy{% endif %}
+            </div>
+          </div>
+        </div>
+        <button onclick="sendGoalQuery()" style="margin-top:1rem;background:linear-gradient(135deg,#f093fb,#f5576c);border:none;color:white;padding:.7rem 1.5rem;border-radius:100px;font-size:.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem;">
+          <i class="fas fa-robot"></i>
+          {% if lang=='hi' %}Strategy banao{% else %}Build My Strategy{% endif %}
+        </button>
+      </div>
+      {% endif %}
+
+      <!-- Daily Shloka -->
+      {% if shloka %}
+      <div class="shloka-card">
+        <div class="sec-card-header">
+          <div class="sec-card-title">📿 Aaj ka Shloka</div>
+          <a href="/gyan?level={{ level }}" class="sec-link">Aur dekho <i class="fas fa-arrow-right"></i></a>
+        </div>
+        {% if shloka.sanskrit_text %}
+        <div class="shloka-sanskrit">{{ shloka.sanskrit_text }}</div>
+        {% endif %}
+        <div class="shloka-meaning">
+          {% if lang == 'hi' %}{{ shloka.hindi_meaning }}
+          {% else %}{{ shloka.english_meaning }}{% endif %}
+        </div>
+        {% if shloka.practical_application %}
+        <div class="shloka-application">
+          💡 <strong>{% if lang=='hi' %}आज के लिए:{% else %}Today's Application:{% endif %}</strong>
+          {{ shloka.practical_application }}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+
+      <!-- MODULES -->
+      <div class="sec-card">
+        <div class="sec-card-header">
+          <div class="sec-card-title">🧭 Explore</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.6rem;">
+          <a href="/career/browse?level={{ level }}" class="mod-mini" style="border-radius:12px;padding:1rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(124,111,247,.15);color:#a78bfa;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-th-large"></i></div>
+              <div><div class="mi-title" style="font-size:.85rem;">Browse Careers</div><div class="mi-sub">25+ paths →</div></div>
+            </div>
+          </a>
+          <a href="/gyan/search?level={{ level }}" class="mod-mini" style="border-radius:12px;padding:1rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(240,147,251,.15);color:#f093fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-search"></i></div>
+              <div><div class="mi-title" style="font-size:.85rem;">Search Verses</div><div class="mi-sub">Find wisdom →</div></div>
+            </div>
+          </a>
+          <a href="/skill/browse?level={{ level }}" class="mod-mini" style="border-radius:12px;padding:1rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(79,172,254,.15);color:#4facfe;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-filter"></i></div>
+              <div><div class="mi-title" style="font-size:.85rem;">Filter Resources</div><div class="mi-sub">By topic, level →</div></div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- CHANGE GOAL -->
+      <div class="sec-card">
+        <div class="sec-card-header">
+          <div class="sec-card-title">⚙️ Settings</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.6rem;">
+          <a href="/onboarding" style="display:flex;align-items:center;gap:.6rem;padding:.65rem .75rem;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.875rem;border:1px solid var(--border);transition:all .2s;">
+            <i class="fas fa-redo" style="width:18px;text-align:center;"></i> Change Level / Goal
+          </a>
+          <a href="/set-language/{% if lang == 'en' %}hi{% else %}en{% endif %}" style="display:flex;align-items:center;gap:.6rem;padding:.65rem .75rem;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.875rem;border:1px solid var(--border);transition:all .2s;">
+            <i class="fas fa-language" style="width:18px;text-align:center;"></i>
+            Switch to {% if lang == 'en' %}हिंदी / Hinglish{% else %}English{% endif %}
+          </a>
+          <a href="/logout" style="display:flex;align-items:center;gap:.6rem;padding:.65rem .75rem;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.875rem;border:1px solid var(--border);transition:all .2s;">
+            <i class="fas fa-sign-out-alt" style="width:18px;text-align:center;"></i> Logout
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+</style>
+
+<script>
+// Jinja values passed as JS variables (no Jinja inside JS logic)
+const LEVEL = '{{ level }}';
+const GOAL  = '{{ goal }}';
+const CLASS = '{{ (current_user.class_std or "") if current_user else "" }}';
+const BOARD = '{{ (current_user.board or "") if current_user else "" }}';
+const LANG  = '{{ lang }}';
+const IS_SCHOOL_WITH_GOAL = (LEVEL === 'school' && GOAL !== '');
+
+// ── SCHOOL: load roadmap on page load ──
+async function loadPrediction(){
+  const el = document.getElementById('roadmapContent');
+  if (!el) return;
+  el.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted);">
+    <div style="width:32px;height:32px;border:3px solid rgba(255,255,255,.1);
+      border-top:3px solid #a78bfa;border-radius:50%;
+      animation:spin 1s linear infinite;margin:0 auto 1rem;"></div>
+    Loading your roadmap...
+  </div>`;
+
+  try {
+    const res  = await fetch('/api/predict-goal', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ goal: GOAL, class_std: CLASS, board: BOARD })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const r = data.roadmap;
+
+    let html = `
+      <div class="goal-header">
+        <div class="goal-emoji-big">${r.icon}</div>
+        <div>
+          <div class="goal-title">${r.goal}</div>
+          <div class="goal-path">${r.path}</div>
+          <span class="goal-exam-badge"><i class="fas fa-star"></i> Target Exam: ${r.exam}</span>
+        </div>
+      </div>`;
+
+    if (r.subjects && r.subjects.length) {
+      html += `<div style="margin-bottom:1rem;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;
+          text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;">
+          Focus Subjects
+        </div>
+        <div class="subj-chips">
+          ${r.subjects.map(s => `<span class="subj-chip">${s}</span>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    if (r.milestones && r.milestones.length) {
+      html += `<div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;
+        text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;">
+        Your Roadmap
+      </div><div class="milestones">`;
+      r.milestones.forEach((m, i) => {
+        html += `<div class="milestone"
+          style="animation:fadeIn .3s ease ${(i * 0.1).toFixed(1)}s both;">
+          <div class="ms-class">${m.class}</div>
+          <div class="ms-task">${m.task}</div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:.9rem;">
+      Could not load roadmap.
+      <button onclick="loadPrediction()"
+        style="color:#a78bfa;background:none;border:none;cursor:pointer;font-weight:600;">
+        Retry
+      </button>
+    </div>`;
+  }
+}
+
+// Auto-load roadmap for school students
+if (IS_SCHOOL_WITH_GOAL) {
+  window.addEventListener('DOMContentLoaded', loadPrediction);
+}
+
+// ── GOAL QUERY TO CHATBOT ──
+function sendGoalQuery(){
+  const goalText = GOAL.replace(/_/g, ' ');
+  const prompt = LANG === 'hi'
+    ? `Mera goal hai: ${goalText}. Mujhe iske liye ek detailed roadmap, important skills, aur resources batao.`
+    : `My goal is: ${goalText}. Please give me a detailed roadmap, key skills to develop, and top resources.`;
+
+  const win = document.getElementById('chatWindow');
+  if (!win.classList.contains('active')) toggleChat();
+  setTimeout(() => {
+    document.getElementById('chatInput').value = prompt;
+    sendMessage();
+  }, 400);
+}
+</script>
+{% endblock %}

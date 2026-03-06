@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marg Darshak — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --ink:#0d0d14;
+  --surface:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.10);
+  --text:#f0f0f8;
+  --muted:rgba(240,240,248,0.45);
+  --accent:#7c6ff7;
+  --accent2:#43e97b;
+  --danger:#f87171;
+}
+
+html{height:100%}
+body{
+  min-height:100vh;
+  background:var(--ink);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── animated background ── */
+.bg-canvas{
+  position:fixed;inset:0;z-index:0;overflow:hidden;
+}
+.orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;
+  animation:drift 12s ease-in-out infinite alternate;
+}
+.orb-1{width:600px;height:600px;background:#7c6ff7;top:-200px;left:-150px;animation-delay:0s}
+.orb-2{width:500px;height:500px;background:#43e97b;bottom:-200px;right:-100px;animation-delay:-4s}
+.orb-3{width:350px;height:350px;background:#f093fb;top:50%;left:60%;animation-delay:-8s}
+
+@keyframes drift{
+  from{transform:translate(0,0) scale(1)}
+  to{transform:translate(40px,30px) scale(1.1)}
+}
+
+/* grid dots */
+.bg-canvas::after{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px);
+  background-size:32px 32px;
+  pointer-events:none;
+}
+
+/* ── card ── */
+.card{
+  position:relative;z-index:1;
+  width:100%;max-width:440px;
+  padding:2.5rem 2rem;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:28px;
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);
+  margin:1rem;
+  animation:cardIn .5s cubic-bezier(.17,.85,.32,1.27);
+}
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(30px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ── brand ── */
+.brand{
+  text-align:center;margin-bottom:2rem;
+}
+.brand-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:64px;height:64px;border-radius:20px;font-size:1.8rem;margin-bottom:.75rem;
+  background:linear-gradient(135deg,#7c6ff7,#5b4fdf);
+  box-shadow:0 8px 32px rgba(124,111,247,0.4);
+}
+.brand-name{
+  font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;
+  background:linear-gradient(135deg,#a78bfa,#7c6ff7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.brand-tagline{
+  font-family:'Noto Sans Devanagari',sans-serif;
+  font-size:.85rem;color:var(--muted);margin-top:.25rem;
+}
+
+/* ── tabs ── */
+.tabs{
+  display:flex;background:rgba(255,255,255,0.05);
+  border-radius:14px;padding:4px;margin-bottom:1.75rem;gap:4px;
+}
+.tab-btn{
+  flex:1;padding:.55rem;border-radius:10px;border:none;
+  background:transparent;color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;
+  cursor:pointer;transition:all .2s ease;
+}
+.tab-btn.active{
+  background:rgba(124,111,247,0.2);color:#a78bfa;
+  border:1px solid rgba(124,111,247,0.3);
+}
+.tab-btn:hover:not(.active){color:var(--text);}
+
+/* ── forms ── */
+.form-panel{display:none;}
+.form-panel.active{display:block;animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.field{margin-bottom:1.1rem;}
+.field label{
+  display:block;font-size:.8rem;font-weight:600;color:var(--muted);
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;
+}
+.field-wrap{position:relative;}
+.field-wrap i{
+  position:absolute;left:1rem;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:.9rem;pointer-events:none;
+}
+input{
+  width:100%;padding:.75rem 1rem .75rem 2.75rem;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:12px;color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .2s,background .2s;
+}
+input:focus{border-color:rgba(124,111,247,.6);background:rgba(124,111,247,.06);}
+input::placeholder{color:var(--muted);}
+
+.btn-main{
+  width:100%;padding:.85rem;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#7c6ff7,#5b4fdf);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;
+  cursor:pointer;letter-spacing:.02em;
+  transition:all .2s ease;
+  box-shadow:0 4px 20px rgba(124,111,247,.35);
+  margin-top:.5rem;
+}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,111,247,.5);}
+.btn-main:active{transform:translateY(0);}
+
+/* ── error ── */
+.error-msg{
+  background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);
+  border-radius:10px;padding:.65rem 1rem;font-size:.85rem;color:var(--danger);
+  margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;
+}
+
+/* ── divider ── */
+.divider{
+  display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;
+  font-size:.8rem;color:var(--muted);
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ── guest button ── */
+.btn-guest{
+  width:100%;padding:.8rem;border-radius:14px;
+  border:1px solid rgba(67,233,123,.25);
+  background:rgba(67,233,123,.07);
+  color:#43e97b;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;
+  cursor:pointer;transition:all .2s ease;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  text-decoration:none;
+}
+.btn-guest:hover{
+  background:rgba(67,233,123,.15);
+  border-color:rgba(67,233,123,.4);
+  transform:translateY(-1px);
+  color:#43e97b;
+}
+
+/* ── features strip ── */
+.features{
+  display:flex;gap:.6rem;margin-top:1.5rem;flex-wrap:wrap;justify-content:center;
+}
+.feat{
+  font-size:.72rem;padding:.3rem .7rem;border-radius:100px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);
+  white-space:nowrap;
+}
+
+/* mobile */
+@media(max-width:480px){
+  .card{padding:2rem 1.5rem;border-radius:20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="card">
+
+  <!-- brand -->
+  <div class="brand">
+    <div class="brand-icon">🧭</div>
+    <div class="brand-name">Marg Darshak</div>
+    <div class="brand-tagline">जीवन के हर पड़ाव पर सही दिशा</div>
+  </div>
+
+  <!-- error flash -->
+  {% if error and msg %}
+  <div class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ msg }}</div>
+  {% endif %}
+
+  <!-- tabs -->
+  <div class="tabs">
+    <button class="tab-btn {% if error=='signup' %}{% else %}active{% endif %}" onclick="switchTab('login')">
+      <i class="fas fa-sign-in-alt"></i> Login
+    </button>
+    <button class="tab-btn {% if error=='signup' %}active{% endif %}" onclick="switchTab('signup')">
+      <i class="fas fa-user-plus"></i> Sign Up
+    </button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div class="form-panel {% if error=='signup' %}{% else %}active{% endif %}" id="panel-login">
+    <form method="POST" action="/auth">
+      <input type="hidden" name="action" value="login">
+      <div class="field">
+        <label>Username</label>
+        <div class="field-wrap">
+          <i class="fas fa-user"></i>
+          <input type="text" name="username" placeholder="apna username likho" required autocomplete="username">
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="field-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+      </div>
+      <button type="submit" class="btn-main">
+        <i class="fas fa-arrow-right"></i> Login karo
+      </button>
+    </form>
+  </div>
+
+  <!-- SIGNUP FORM -->
+  <div class="form-panel {% if error=='signup' %}active{% endif %}" id="panel-signup">
+    <form method="POST" action="/auth">
+      <input type="hidden" name="action" value="signup">
+      <div class="field">
+        <label>Username choose karo</label>
+        <div class="field-wrap">
+          <i class="fas fa-user"></i>
+          <input type="text" name="username" placeholder="e.g. rahul_sharma" required minlength="3" autocomplete="username">
+        </div>
+      </div>
+      <div class="field">
+        <label>Password banao</label>
+        <div class="field-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" name="password" placeholder="6+ characters" required minlength="6" autocomplete="new-password">
+        </div>
+      </div>
+      <button type="submit" class="btn-main">
+        <i class="fas fa-rocket"></i> Account banao — Free!
+      </button>
+    </form>
+  </div>
+
+  <!-- divider + guest -->
+  <div class="divider">ya fir</div>
+  <a href="/guest" class="btn-guest">
+    <i class="fas fa-user-secret"></i>
+    Guest ke roop mein explore karo
+    <span style="font-size:.75rem;opacity:.7;font-weight:400">(no signup needed)</span>
+  </a>
+
+  <!-- features -->
+  <div class="features">
+    <span class="feat">🎯 Career Quiz</span>
+    <span class="feat">📿 Gyan Kosh</span>
+    <span class="feat">🤖 AI Guru</span>
+    <span class="feat">🆓 Free Always</span>
+  </div>
+
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active', (tab==='login' && i===0)||(tab==='signup' && i===1));
+  });
+  document.getElementById('panel-login').classList.toggle('active', tab==='login');
+  document.getElementById('panel-signup').classList.toggle('active', tab==='signup');
+}
+</script>
+</body>
+</html>
