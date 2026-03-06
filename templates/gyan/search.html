@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Wisdom - Gyan Kosh{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5">🔍 Search Spiritual Wisdom</h1>
+    
+    <!-- Search Bar -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6">
+            <form action="/gyan/search" method="get">
+                <div class="input-group input-group-lg">
+                    <input type="text" class="form-control" name="q" 
+                           placeholder="Search by topic, keyword..." 
+                           value="{{ query }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results -->
+    <div class="row">
+        {% if shlokas %}
+            {% for shloka in shlokas %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 hover-card">
+                    <div class="card-body">
+                        <h6 class="text-muted">{{ shloka.source }} {{ shloka.chapter }}.{{ shloka.verse_number }}</h6>
+                        <p class="devanagari-text">{{ shloka.sanskrit_text[:100] }}...</p>
+                        <p class="text-muted small">{{ shloka.english_meaning[:150] }}...</p>
+                        <a href="/gyan/detail/{{ shloka.id }}" class="btn btn-sm btn-outline-primary">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="lead">No results found. Try different keywords.</p>
+                <a href="/gyan" class="btn btn-primary mt-3">
+                    <i class="fas fa-home"></i> Back to Daily Wisdom
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .devanagari-text {
+        font-family: 'Noto Sans Devanagari', sans-serif;
+    }
+    .hover-card {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
