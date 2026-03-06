@@ -1,0 +1,646 @@
+{% extends 'base.html' %}
+{% block title %}Career Interest Quiz — Marg Darshak{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── QUIZ WRAPPER ── */
+.quiz-page{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* HERO */
+.quiz-hero{
+  text-align:center;padding:2.5rem 1.5rem 2rem;
+  background:linear-gradient(135deg,rgba(124,111,247,.1),rgba(67,233,123,.06));
+  border:1px solid rgba(124,111,247,.15);border-radius:24px;margin-bottom:2rem;
+}
+.quiz-hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;margin-bottom:.5rem;}
+.quiz-hero p{color:var(--muted);font-size:.95rem;max-width:500px;margin:0 auto;}
+.quiz-meta{display:flex;justify-content:center;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;}
+.quiz-meta-item{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--muted);font-weight:600;}
+
+/* PROGRESS */
+.quiz-progress{margin-bottom:1.5rem;}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
+.prog-title{font-size:.82rem;font-weight:700;color:var(--muted);}
+.prog-count{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:800;color:var(--accent);}
+.prog-track{height:6px;background:var(--border);border-radius:6px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),#43e97b);border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+
+/* QUESTION CARD */
+.q-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;margin-bottom:1.25rem;
+  animation:qIn .35s cubic-bezier(.17,.85,.32,1.1);
+}
+@keyframes qIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+
+.q-category-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.28rem .85rem;border-radius:100px;font-size:.7rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem;
+}
+.cat-R{background:rgba(79,172,254,.12);color:#4facfe;border:1px solid rgba(79,172,254,.2);}
+.cat-I{background:rgba(240,147,251,.12);color:#f093fb;border:1px solid rgba(240,147,251,.2);}
+.cat-A{background:rgba(255,193,7,.12);color:#ffc107;border:1px solid rgba(255,193,7,.2);}
+.cat-S{background:rgba(67,233,123,.12);color:#43e97b;border:1px solid rgba(67,233,123,.2);}
+.cat-E{background:rgba(255,107,53,.12);color:#ff6b35;border:1px solid rgba(255,107,53,.2);}
+.cat-C{background:rgba(124,111,247,.12);color:var(--accent);border:1px solid rgba(124,111,247,.2);}
+
+.q-text{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;line-height:1.5;margin-bottom:1.25rem;}
+.q-hindi{font-family:'Noto Sans Devanagari',sans-serif;font-size:.82rem;color:var(--muted);margin-top:.25rem;display:block;}
+
+/* RATING OPTIONS */
+.rating-row{display:flex;gap:.5rem;align-items:center;justify-content:space-between;}
+.rating-label{font-size:.72rem;color:var(--muted);font-weight:600;text-align:center;flex-shrink:0;max-width:60px;}
+.rating-options{display:flex;gap:.4rem;flex:1;justify-content:center;}
+.r-btn{
+  width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:all .2s cubic-bezier(.17,.85,.32,1.2);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;
+}
+.r-btn:hover{transform:scale(1.1);}
+.r-btn.r1:hover,.r-btn.r1.selected{background:rgba(239,68,68,.12);border-color:#ef4444;color:#ef4444;}
+.r-btn.r2:hover,.r-btn.r2.selected{background:rgba(249,115,22,.12);border-color:#f97316;color:#f97316;}
+.r-btn.r3:hover,.r-btn.r3.selected{background:rgba(234,179,8,.12);border-color:#eab308;color:#eab308;}
+.r-btn.r4:hover,.r-btn.r4.selected{background:rgba(34,197,94,.12);border-color:#22c55e;color:#22c55e;}
+.r-btn.r5:hover,.r-btn.r5.selected{background:rgba(67,233,123,.15);border-color:#43e97b;color:#43e97b;}
+.r-btn .r-emoji{font-size:.85rem;}
+.r-btn .r-num{font-size:.65rem;opacity:.7;}
+
+/* NAV */
+.q-nav{display:flex;align-items:center;gap:.75rem;margin-top:1rem;}
+.btn-prev{
+  padding:.7rem 1.4rem;border-radius:100px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.875rem;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.btn-prev:hover{border-color:var(--accent);color:var(--accent);}
+.btn-next-q{
+  flex:1;padding:.8rem;border-radius:100px;border:none;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);
+  color:white;font-size:.9rem;font-weight:600;cursor:pointer;
+  transition:all .25s;font-family:'DM Sans',sans-serif;
+  box-shadow:0 4px 16px rgba(124,111,247,.3);
+}
+.btn-next-q:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,111,247,.45);}
+.btn-next-q:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* SECTION HEADER */
+.section-header{
+  display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;
+  background:var(--bg);border:1px solid var(--border);border-radius:14px;
+  margin-bottom:1rem;
+}
+.sec-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+
+/* RESULTS */
+.results-page{display:none;}
+.results-page.active{display:block;animation:qIn .4s ease;}
+
+.riasec-bar-section{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.5rem;margin-bottom:1.5rem;}
+.riasec-grid{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem;}
+.riasec-row{display:grid;grid-template-columns:120px 1fr 40px;align-items:center;gap:.75rem;}
+.riasec-label{font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem;}
+.riasec-track{height:10px;background:var(--border);border-radius:10px;overflow:hidden;}
+.riasec-fill{height:100%;border-radius:10px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.riasec-val{font-size:.82rem;font-weight:700;text-align:right;}
+
+.career-matches{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem;}
+.career-match-card{
+  display:flex;align-items:flex-start;gap:1rem;padding:1.1rem 1.25rem;
+  background:var(--bg);border:1px solid var(--border);border-radius:14px;
+  text-decoration:none;color:var(--text);transition:all .25s;
+}
+.career-match-card:hover{border-color:rgba(124,111,247,.3);transform:translateX(4px);}
+.match-rank{
+  width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:800;flex-shrink:0;color:white;
+}
+.rank-1{background:linear-gradient(135deg,#ffd700,#ff8c00);}
+.rank-2{background:linear-gradient(135deg,#c0c0c0,#808080);}
+.rank-3{background:linear-gradient(135deg,#cd7f32,#8b4513);}
+.rank-n{background:var(--accent);}
+.match-info{flex:1;}
+.match-title{font-weight:700;font-size:.95rem;margin-bottom:.25rem;}
+.match-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.match-score{
+  display:inline-flex;align-items:center;gap:.3rem;margin-top:.4rem;
+  font-size:.72rem;font-weight:700;color:#43e97b;
+}
+.match-pct{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;flex-shrink:0;color:var(--accent);}
+
+.type-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:1.25rem;margin-bottom:1rem;
+}
+.type-code{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:.4rem;}
+.type-name{font-size:.95rem;font-weight:700;margin-bottom:.4rem;}
+.type-desc{font-size:.85rem;color:var(--muted);line-height:1.6;}
+
+.btn-retake{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;
+  border-radius:100px;border:1.5px solid var(--border);background:transparent;
+  color:var(--muted);font-size:.875rem;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:'DM Sans',sans-serif;margin-right:.75rem;
+}
+.btn-retake:hover{border-color:var(--accent);color:var(--accent);}
+.btn-dashboard{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;
+  border-radius:100px;border:none;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);
+  color:white;font-size:.875rem;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:'DM Sans',sans-serif;
+  text-decoration:none;
+}
+.btn-dashboard:hover{transform:translateY(-2px);color:white;}
+
+@media(max-width:600px){
+  .quiz-page{padding:1rem 1rem 5rem;}
+  .rating-row{flex-direction:column;gap:.75rem;}
+  .rating-label{max-width:none;}
+  .r-btn{width:52px;height:52px;}
+  .riasec-row{grid-template-columns:90px 1fr 36px;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-page">
+
+  <!-- QUIZ SECTION -->
+  <div id="quizSection">
+    <!-- HERO -->
+    <div class="quiz-hero">
+      <div style="font-size:2.5rem;margin-bottom:.75rem;">🧭</div>
+      <h1>Career Interest Quiz</h1>
+      <p>30 sawalon ke jawab do — hum tumhare interest ke hisaab se best career paths batayenge. Koi sahi ya galat jawab nahi hota!</p>
+      <div class="quiz-meta">
+        <div class="quiz-meta-item"><i class="fas fa-clock"></i> ~8 minutes</div>
+        <div class="quiz-meta-item"><i class="fas fa-brain"></i> Holland Code (RIASEC)</div>
+        <div class="quiz-meta-item"><i class="fas fa-chart-bar"></i> 30 Questions</div>
+        <div class="quiz-meta-item"><i class="fas fa-star"></i> Personalised Results</div>
+      </div>
+      <button onclick="startQuiz()" class="btn-next-q" style="max-width:260px;margin:1.25rem auto 0;display:flex;align-items:center;justify-content:center;gap:.5rem;">
+        <i class="fas fa-play"></i> Quiz Shuru Karo
+      </button>
+    </div>
+
+    <!-- PROGRESS (hidden initially) -->
+    <div class="quiz-progress" id="progressWrap" style="display:none;">
+      <div class="prog-header">
+        <span class="prog-title" id="sectionTitle">Section 1: Practical Abilities</span>
+        <span class="prog-count" id="qCounter">1 / 30</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+
+    <!-- QUESTION AREA -->
+    <div id="questionArea" style="display:none;"></div>
+
+    <!-- NAV -->
+    <div class="q-nav" id="qNav" style="display:none;">
+      <button class="btn-prev" id="btnPrev" onclick="prevQ()"><i class="fas fa-arrow-left"></i> Pichla</button>
+      <button class="btn-next-q" id="btnNext" onclick="nextQ()" disabled>Agla <i class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- RESULTS SECTION -->
+  <div class="results-page" id="resultsSection">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <div style="font-size:3rem;margin-bottom:.5rem;">🎉</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:.4rem;">Tera Result Aaya!</h2>
+      <p style="color:var(--muted);">Tere interests ke hisaab se yeh hain tere best career paths</p>
+    </div>
+
+    <!-- PERSONALITY TYPE -->
+    <div class="type-card" id="typeCard"></div>
+
+    <!-- RIASEC BARS -->
+    <div class="riasec-bar-section">
+      <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.25rem;">📊 Interest Profile</div>
+      <div style="font-size:.82rem;color:var(--muted);">Holland Code — RIASEC Model</div>
+      <div class="riasec-grid" id="riasecGrid"></div>
+    </div>
+
+    <!-- CAREER MATCHES -->
+    <div class="riasec-bar-section">
+      <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.25rem;">🎯 Best Career Matches</div>
+      <div style="font-size:.82rem;color:var(--muted);">Tere liye sabse suitable careers — interest match ke hisaab se</div>
+      <div class="career-matches" id="careerMatches"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem;">
+      <button class="btn-retake" onclick="retakeQuiz()"><i class="fas fa-redo"></i> Dobara do</button>
+      <a href="/career/browse" class="btn-dashboard"><i class="fas fa-compass"></i> Sab Careers Dekho</a>
+      <a href="/dashboard" class="btn-dashboard" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#0a1f15;"><i class="fas fa-home"></i> Dashboard</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  RIASEC QUESTION BANK — 30 Questions, 5 per type
+//  R=Realistic I=Investigative A=Artistic S=Social E=Enterprising C=Conventional
+// ════════════════════════════════════════════════════════
+const QUESTIONS = [
+  // ── REALISTIC (R) — Hands-on, practical, builds things
+  { id:1, type:'R', section:'🔧 Practical Abilities',
+    en:'Mujhe machines, tools, ya physical cheezein banane/theek karne mein mazaa aata hai.',
+    hi:'I enjoy fixing or building machines, gadgets, or physical things.' },
+  { id:2, type:'R', section:'🔧 Practical Abilities',
+    en:'Mujhe outdoors kaam karna pasand hai — sports, farming, construction, ya nature mein.',
+    hi:'I prefer working outdoors over sitting at a desk all day.' },
+  { id:3, type:'R', section:'🔧 Practical Abilities',
+    en:'Electricity, mechanics, ya engineering ke practical problems solve karna mujhe achha lagta hai.',
+    hi:'Solving hands-on engineering or mechanical problems excites me.' },
+  { id:4, type:'R', section:'🔧 Practical Abilities',
+    en:'Mujhe precise, step-by-step kaam karna pasand hai — jahan ek galti bhi na ho.',
+    hi:'I enjoy precise, step-by-step work where accuracy matters.' },
+  { id:5, type:'R', section:'🔧 Practical Abilities',
+    en:'Mujhe computer hardware, robotics, ya electronic gadgets ke saath kaam karna pasand hai.',
+    hi:'I enjoy working with computer hardware, electronics, or robotics.' },
+
+  // ── INVESTIGATIVE (I) — Research, analysis, curious
+  { id:6, type:'I', section:'🔬 Thinking & Research',
+    en:'Mujhe scientific theories aur research papers padhna aur samajhna achha lagta hai.',
+    hi:'I enjoy reading research papers and understanding scientific theories.' },
+  { id:7, type:'I', section:'🔬 Thinking & Research',
+    en:'Koi problem solve karna — especially mathematical ya logical — mujhe satisfy karta hai.',
+    hi:'Solving complex mathematical or logical problems gives me deep satisfaction.' },
+  { id:8, type:'I', section:'🔬 Thinking & Research',
+    en:'Main "kyun?" aur "kaise?" sawaal poochha karta/karti hoon — curiosity meri strength hai.',
+    hi:'I constantly ask "why" and "how" — curiosity is my core strength.' },
+  { id:9, type:'I', section:'🔬 Thinking & Research',
+    en:'Mujhe data, statistics, experiments analyze karna boring nahi lagta — balki interesting lagta hai.',
+    hi:'Analyzing data, statistics, or experimental results feels interesting to me.' },
+  { id:10, type:'I', section:'🔬 Thinking & Research',
+    en:'Mujhe medicine, biology, astronomy, ya koi bhi science field mein gehri dilchaspi hai.',
+    hi:'I have a deep interest in medicine, biology, astronomy, or any science field.' },
+
+  // ── ARTISTIC (A) — Creative, expressive, original
+  { id:11, type:'A', section:'🎨 Creative Expression',
+    en:'Mujhe drawing, painting, design, ya koi bhi visual cheez banana pasand hai.',
+    hi:'I love drawing, painting, or creating visual designs.' },
+  { id:12, type:'A', section:'🎨 Creative Expression',
+    en:'Music, writing, acting, dance — kisi creative field mein mujhe bahut interest hai.',
+    hi:'I am passionate about music, writing, acting, dance, or any creative art.' },
+  { id:13, type:'A', section:'🎨 Creative Expression',
+    en:'Main apni feelings aur ideas ko creative tarike se express karna chahta/chahti hoon.',
+    hi:'I prefer expressing my ideas and emotions through creative mediums.' },
+  { id:14, type:'A', section:'🎨 Creative Expression',
+    en:'Mujhe woh kaam achha lagta hai jahan rules se zyada imagination use ho.',
+    hi:'I prefer work where imagination matters more than following fixed rules.' },
+  { id:15, type:'A', section:'🎨 Creative Expression',
+    en:'Nayi cheezein imagine karna aur original ideas create karna mujhe energize karta hai.',
+    hi:'Imagining new ideas and creating original things gives me energy.' },
+
+  // ── SOCIAL (S) — Helping, teaching, empathy
+  { id:16, type:'S', section:'🤝 People & Helping',
+    en:'Doosron ki problems mein help karna mujhe genuinely khushi deta hai.',
+    hi:'Genuinely helping others solve their problems brings me joy.' },
+  { id:17, type:'S', section:'🤝 People & Helping',
+    en:'Mujhe teaching, counselling, ya mentoring karna bahut pasand hai.',
+    hi:'I love teaching, counselling, or mentoring others.' },
+  { id:18, type:'S', section:'🤝 People & Helping',
+    en:'Log aksar apni personal problems share karte hain mujhse — main achha sunne wala hoon.',
+    hi:'People often share their problems with me — I am a good listener.' },
+  { id:19, type:'S', section:'🤝 People & Helping',
+    en:'Social causes — healthcare, education, equality — ke liye kaam karna mujhe motivate karta hai.',
+    hi:'Working for social causes like healthcare, education, or equality motivates me.' },
+  { id:20, type:'S', section:'🤝 People & Helping',
+    en:'Team mein kaam karna akele kaam karne se zyada energizing lagta hai mujhe.',
+    hi:'Working in a team energizes me more than working alone.' },
+
+  // ── ENTERPRISING (E) — Leadership, influence, business
+  { id:21, type:'E', section:'🚀 Leadership & Business',
+    en:'Mujhe logon ko lead karna aur persuade karna aata hai aur pasand bhi hai.',
+    hi:'I enjoy leading people and convincing others to see my point of view.' },
+  { id:22, type:'E', section:'🚀 Leadership & Business',
+    en:'Naya business idea ya startup banana mujhe excite karta hai.',
+    hi:'The idea of starting my own business or startup genuinely excites me.' },
+  { id:23, type:'E', section:'🚀 Leadership & Business',
+    en:'Mujhe risk lena aur bade decisions karna comfortable lagta hai.',
+    hi:'Taking risks and making big decisions feels natural and comfortable to me.' },
+  { id:24, type:'E', section:'🚀 Leadership & Business',
+    en:'Mujhe selling, marketing, ya negotiation mein interest hai.',
+    hi:'I am interested in sales, marketing, or negotiation.' },
+  { id:25, type:'E', section:'🚀 Leadership & Business',
+    en:'Money, power, aur influence — yeh cheezein mujhe motivate karti hain.',
+    hi:'Financial success, influence, and impact are strong motivators for me.' },
+
+  // ── CONVENTIONAL (C) — Organized, detail-oriented, systematic
+  { id:26, type:'C', section:'📋 Organization & Detail',
+    en:'Mujhe data organize karna, files maintain karna, aur systematic kaam karna pasand hai.',
+    hi:'I enjoy organizing data, maintaining records, and working systematically.' },
+  { id:27, type:'C', section:'📋 Organization & Detail',
+    en:'Mujhe accounts, finance, ya numbers se related kaam interesting lagta hai.',
+    hi:'I find accounting, finance, or number-related work genuinely interesting.' },
+  { id:28, type:'C', section:'📋 Organization & Detail',
+    en:'Mujhe rules follow karna aur ek defined process mein kaam karna comfort deta hai.',
+    hi:'Following clear rules and working in a defined process gives me comfort.' },
+  { id:29, type:'C', section:'📋 Organization & Detail',
+    en:'Detail mein galti dhundhna — proofreading, auditing, checking — mujhe boring nahi lagta.',
+    hi:'Checking for errors — proofreading, auditing, reviewing — does not bore me.' },
+  { id:30, type:'C', section:'📋 Organization & Detail',
+    en:'Mujhe woh career pasand aayega jahan stability, structure, aur clear expectations hon.',
+    hi:'I prefer careers with stability, structure, and clear expectations.' },
+];
+
+// ════════════════════════════════════════════════════════
+//  CAREER DATABASE — RIASEC mapped careers
+// ════════════════════════════════════════════════════════
+const CAREER_DB = [
+  // R dominant
+  {title:'Civil Engineer',code:'RIC',cat:'Engineering',icon:'🏗️',desc:'Bridges, buildings, infrastructure design karo India ke liye.',salary:'₹6–18L',exam:'JEE / GATE'},
+  {title:'Mechanical Engineer',code:'RIS',cat:'Engineering',icon:'⚙️',desc:'Machines, engines, manufacturing systems design karo.',salary:'₹5–16L',exam:'JEE / GATE'},
+  {title:'Electrical Engineer',code:'RIE',cat:'Engineering',icon:'⚡',desc:'Power systems, circuits, electronics — India ka future banao.',salary:'₹6–20L',exam:'JEE / GATE'},
+  {title:'Pilot / Aviation',code:'RIE',cat:'Aviation',icon:'✈️',desc:'Commercial airline ya military pilot — sky is no limit.',salary:'₹15–80L',exam:'NDA / CPL'},
+  {title:'Agricultural Scientist',code:'RIS',cat:'Science',icon:'🌾',desc:'India ki farming revolution mein contribute karo.',salary:'₹4–12L',exam:'ICAR'},
+
+  // I dominant
+  {title:'Data Scientist',code:'IRC',cat:'Technology',icon:'📊',desc:'Data se insights nikalo, AI/ML models banao.',salary:'₹8–40L',exam:'GATE / Campus'},
+  {title:'Medical Doctor',code:'ISR',cat:'Healthcare',icon:'🩺',desc:'Logon ki jaan bachao — sabse noble profession.',salary:'₹8–50L+',exam:'NEET'},
+  {title:'Research Scientist',code:'IAI',cat:'Science',icon:'🔬',desc:'Labs mein naye discoveries karo — India ko science superpower banao.',salary:'₹6–25L',exam:'CSIR / KVPY'},
+  {title:'Software Engineer',code:'IRC',cat:'Technology',icon:'💻',desc:'Apps, systems, platforms banao jo crores use karein.',salary:'₹6–60L',exam:'JEE / Campus'},
+  {title:'Psychologist',code:'ISA',cat:'Healthcare',icon:'🧠',desc:'Mental health — India ka fastest growing need.',salary:'₹4–20L',exam:'PG Entrance'},
+  {title:'Economist',code:'ICE',cat:'Business',icon:'📈',desc:'Policies, markets, economies analyze karo.',salary:'₹6–22L',exam:'NET / Civil Services'},
+  {title:'Astronomer / Astrophysicist',code:'IRA',cat:'Science',icon:'🌌',desc:'Universe ke raaz kholo — ISRO mein contribute karo.',salary:'₹6–18L',exam:'JEST / GATE'},
+
+  // A dominant
+  {title:'UI/UX Designer',code:'AEI',cat:'Design',icon:'🎨',desc:'Digital products ka experience design karo.',salary:'₹5–30L',exam:'NID / NIFT / Self'},
+  {title:'Filmmaker / Director',code:'AES',cat:'Creative',icon:'🎬',desc:'Stories visually batao — Bollywood ya OTT.',salary:'Varies',exam:'FTII / SRFTI'},
+  {title:'Writer / Author',code:'AIE',cat:'Creative',icon:'✍️',desc:'Books, content, scripts — words se duniya badlo.',salary:'Varies',exam:'None'},
+  {title:'Architect',code:'AIR',cat:'Design',icon:'🏛️',desc:'Beautiful, functional spaces design karo.',salary:'₹5–25L',exam:'NATA'},
+  {title:'Musician / Composer',code:'ASE',cat:'Creative',icon:'🎵',desc:'Music banao jo logon ke dil ko touch kare.',salary:'Varies',exam:'Music School'},
+  {title:'Fashion Designer',code:'AEC',cat:'Design',icon:'👗',desc:'India ki textile heritage ko modern fashion mein lao.',salary:'₹4–20L',exam:'NIFT'},
+  {title:'Game Designer',code:'ARI',cat:'Technology',icon:'🎮',desc:'Interactive experiences aur games banao.',salary:'₹5–25L',exam:'Self / Campus'},
+
+  // S dominant
+  {title:'Teacher / Professor',code:'SAI',cat:'Education',icon:'📚',desc:'Next generation ko shape karo — sabse impactful career.',salary:'₹4–15L',exam:'CTET / NET'},
+  {title:'Social Worker / NGO',code:'SAE',cat:'Social',icon:'🌱',desc:'Society ke marginalised logon ki life better karo.',salary:'₹3–12L',exam:'MSW'},
+  {title:'HR Manager',code:'SEC',cat:'Business',icon:'👥',desc:'Companies ke most important asset — logon ko manage karo.',salary:'₹5–20L',exam:'MBA HR'},
+  {title:'Counsellor / Therapist',code:'SIA',cat:'Healthcare',icon:'💙',desc:'Mental health support do — India ki pressing need.',salary:'₹4–18L',exam:'PG Psychology'},
+  {title:'Doctor (Pediatrician)',code:'SIR',cat:'Healthcare',icon:'👶',desc:'Children ki health protect karo.',salary:'₹12–50L',exam:'NEET + PG'},
+
+  // E dominant
+  {title:'Entrepreneur / Founder',code:'EAS',cat:'Business',icon:'🚀',desc:'Apna startup banao — khud ka boss bano.',salary:'Unlimited',exam:'None'},
+  {title:'Investment Banker',code:'ECI',cat:'Finance',icon:'💰',desc:'Mergers, acquisitions, high-stakes finance.',salary:'₹12–1Cr+',exam:'MBA Finance'},
+  {title:'Marketing Manager',code:'EAS',cat:'Business',icon:'📣',desc:'Brands build karo, campaigns chalao, market conquer karo.',salary:'₹6–25L',exam:'MBA Marketing'},
+  {title:'Lawyer / Advocate',code:'ESI',cat:'Legal',icon:'⚖️',desc:'Justice ke liye lado — courtrooms aur boardrooms mein.',salary:'₹5–50L+',exam:'CLAT / Bar'},
+  {title:'Politician / Civil Services',code:'ESC',cat:'Government',icon:'🏛️',desc:'IAS/IPS — country ke sabse powerful positions.',salary:'₹8–20L+',exam:'UPSC'},
+  {title:'Sales Director',code:'ERC',cat:'Business',icon:'📊',desc:'Revenue generate karo, teams lead karo.',salary:'₹8–40L',exam:'MBA / Experience'},
+
+  // C dominant
+  {title:'Chartered Accountant',code:'CEI',cat:'Finance',icon:'🧾',desc:'India ka most respected finance professional.',salary:'₹8–50L',exam:'CA Foundation → Final'},
+  {title:'Data Analyst',code:'CIR',cat:'Technology',icon:'📉',desc:'Numbers se business decisions shape karo.',salary:'₹5–20L',exam:'Certification / Campus'},
+  {title:'Bank Manager',code:'CES',cat:'Finance',icon:'🏦',desc:'Banking sector mein stable, growing career.',salary:'₹6–18L',exam:'IBPS / SBI'},
+  {title:'Company Secretary',code:'CEI',cat:'Legal',icon:'📋',desc:'Corporate compliance aur legal governance.',salary:'₹6–22L',exam:'CS Foundation'},
+  {title:'Actuary',code:'CIE',cat:'Finance',icon:'📐',desc:'Risk calculate karo — insurance aur finance ka backbone.',salary:'₹10–40L',exam:'IAI Exams'},
+];
+
+// ════════════════════════════════════════════════════════
+//  RIASEC CONFIG
+// ════════════════════════════════════════════════════════
+const RIASEC_INFO = {
+  R:{name:'Realistic',label:'The Builder 🔧',color:'#4facfe',
+     desc:'Tu practical, hands-on kaam prefer karta hai. Tools, machines, nature — yeh teri duniya hai. Tere liye best: Engineering, Medicine (surgery), Architecture, Agriculture.'},
+  I:{name:'Investigative',label:'The Thinker 🔬',color:'#f093fb',
+     desc:'Tu curious hai, research karna aur problems analytically solve karna pasand hai. Tere liye best: Science, Technology, Research, Medicine, Data.'},
+  A:{name:'Artistic',label:'The Creator 🎨',color:'#ffc107',
+     desc:'Tu creative hai — expression aur originality teri pehchan hai. Rules se zyada imagination use karna chahta hai. Tere liye best: Design, Arts, Media, Architecture.'},
+  S:{name:'Social',label:'The Helper 🤝',color:'#43e97b',
+     desc:'Tu logon ki parwah karta hai aur unhe help karna genuinely satisfying lagta hai. Tere liye best: Teaching, Healthcare, Counselling, Social Work, HR.'},
+  E:{name:'Enterprising',label:'The Leader 🚀',color:'#ff6b35',
+     desc:'Tu natural leader hai — persuade karna, lead karna, risk lena tujhe suit karta hai. Tere liye best: Business, Law, Politics, Sales, Entrepreneurship.'},
+  C:{name:'Conventional',label:'The Organizer 📋',color:'#7c6ff7',
+     desc:'Tu systematic, detail-oriented aur organized hai. Clear structure mein best perform karta hai. Tere liye best: Finance, Accounting, Data, Administration, Banking.'},
+};
+
+// ════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════
+const LANG = '{{ lang }}';
+let currentQ = 0;
+let answers  = {}; // { questionId: score (1-5) }
+let quizStarted = false;
+
+// ════════════════════════════════════════════════════════
+//  QUIZ FLOW
+// ════════════════════════════════════════════════════════
+function startQuiz() {
+  quizStarted = true;
+  document.querySelector('.quiz-hero').style.display = 'none';
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('questionArea').style.display = 'block';
+  document.getElementById('qNav').style.display = 'flex';
+  renderQuestion(0);
+}
+
+function renderQuestion(idx) {
+  const q = QUESTIONS[idx];
+  const pct = Math.round((idx / QUESTIONS.length) * 100);
+
+  // Update progress
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('qCounter').textContent = `${idx + 1} / ${QUESTIONS.length}`;
+  document.getElementById('sectionTitle').textContent = q.section;
+
+  // Determine display text
+  const mainText  = LANG === 'hi' ? q.hi  : q.en;
+  const subText   = LANG === 'hi' ? q.en  : q.hi;
+
+  const selectedVal = answers[q.id] || 0;
+  const emojis = ['😐','🙁','😶','🙂','😊'];
+  const labels = ['Bilkul nahi','Thoda','Neutral','Haan!','Bilkul haan!'];
+
+  document.getElementById('questionArea').innerHTML = `
+    <div class="q-card">
+      <span class="q-category-badge cat-${q.type}">
+        ${RIASEC_INFO[q.type].label}
+      </span>
+      <div class="q-text">
+        ${mainText}
+        <span class="q-hindi">${subText}</span>
+      </div>
+      <div class="rating-row">
+        <div class="rating-label">👎<br><span style="font-size:.62rem;">Bilkul<br>nahi</span></div>
+        <div class="rating-options">
+          ${[1,2,3,4,5].map(v => `
+            <button class="r-btn r${v} ${selectedVal === v ? 'selected' : ''}"
+              onclick="selectRating(${q.id}, ${v}, this)">
+              <span class="r-emoji">${emojis[v-1]}</span>
+              <span class="r-num">${v}</span>
+            </button>`).join('')}
+        </div>
+        <div class="rating-label">👍<br><span style="font-size:.62rem;">Bilkul<br>haan</span></div>
+      </div>
+    </div>`;
+
+  // Enable/disable next
+  document.getElementById('btnNext').disabled = !answers[q.id];
+  document.getElementById('btnPrev').disabled = idx === 0;
+
+  // Last question — change button text
+  const btnNext = document.getElementById('btnNext');
+  if (idx === QUESTIONS.length - 1) {
+    btnNext.innerHTML = '<i class="fas fa-check-circle"></i> Result Dekho!';
+    btnNext.disabled = !answers[q.id];
+  } else {
+    btnNext.innerHTML = 'Agla <i class="fas fa-arrow-right"></i>';
+  }
+}
+
+function selectRating(qId, val, btn) {
+  answers[qId] = val;
+  // Update UI
+  btn.closest('.rating-options').querySelectorAll('.r-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('btnNext').disabled = false;
+}
+
+function nextQ() {
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion(currentQ);
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion(currentQ);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  SCORING + RESULTS
+// ════════════════════════════════════════════════════════
+function calcScores() {
+  const scores = {R:0,I:0,A:0,S:0,E:0,C:0};
+  const counts  = {R:0,I:0,A:0,S:0,E:0,C:0};
+
+  QUESTIONS.forEach(q => {
+    const ans = answers[q.id] || 3; // default neutral
+    scores[q.type] += ans;
+    counts[q.type]++;
+  });
+
+  // Normalize 0–100
+  const normalized = {};
+  for (const t in scores) {
+    normalized[t] = Math.round((scores[t] / (counts[t] * 5)) * 100);
+  }
+  return normalized;
+}
+
+function getHollandCode(scores) {
+  return Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([t]) => t)
+    .join('');
+}
+
+function matchCareers(hollandCode, scores) {
+  const top2 = hollandCode.slice(0, 2);
+
+  return CAREER_DB.map(career => {
+    let matchScore = 0;
+    career.code.split('').forEach((c, i) => {
+      const weight = [3, 2, 1][i] || 1;
+      if (hollandCode.includes(c)) matchScore += weight * (scores[c] || 0);
+    });
+    return { ...career, matchScore };
+  })
+  .sort((a, b) => b.matchScore - a.matchScore)
+  .slice(0, 8);
+}
+
+function showResults() {
+  const scores  = calcScores();
+  const holland = getHollandCode(scores);
+  const matches = matchCareers(holland, scores);
+  const topType = holland[0];
+
+  // Save to server
+  fetch('/api/save-quiz-result', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ holland_code: holland, scores: scores, top_careers: matches.slice(0,3).map(c=>c.title) })
+  }).catch(() => {});
+
+  // Hide quiz, show results
+  document.getElementById('quizSection').style.display = 'none';
+  const res = document.getElementById('resultsSection');
+  res.classList.add('active');
+
+  // Personality type card
+  const ti = RIASEC_INFO[topType];
+  document.getElementById('typeCard').innerHTML = `
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;">
+      <div style="width:52px;height:52px;border-radius:16px;background:${ti.color}22;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid ${ti.color}44;">${ti.label.slice(-2)}</div>
+      <div>
+        <div class="type-code" style="color:${ti.color};">Holland Code: ${holland}</div>
+        <div class="type-name">${ti.label}</div>
+      </div>
+    </div>
+    <div class="type-desc">${ti.desc}</div>`;
+
+  // RIASEC bars
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  document.getElementById('riasecGrid').innerHTML = sorted.map(([type, pct]) => {
+    const info = RIASEC_INFO[type];
+    return `<div class="riasec-row">
+      <div class="riasec-label" style="color:${info.color};">${info.label}</div>
+      <div class="riasec-track">
+        <div class="riasec-fill" style="width:0%;background:${info.color};" data-target="${pct}"></div>
+      </div>
+      <div class="riasec-val" style="color:${info.color};">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  // Career matches
+  document.getElementById('careerMatches').innerHTML = matches.map((c, i) => {
+    const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
+    const pct = Math.round((c.matchScore / (matches[0].matchScore || 1)) * 100);
+    return `<a href="/career/browse" class="career-match-card" style="animation:qIn .4s ease ${(i*0.07).toFixed(2)}s both;">
+      <div class="match-rank ${rankClass}">${i+1}</div>
+      <div class="match-info">
+        <div class="match-title">${c.icon} ${c.title}</div>
+        <div class="match-desc">${c.desc}</div>
+        <div class="match-score">
+          <span>🎯 Match</span>
+          <span style="background:rgba(67,233,123,.1);border:1px solid rgba(67,233,123,.2);padding:.1rem .5rem;border-radius:100px;">${pct}%</span>
+          <span style="color:var(--muted);">· ${c.salary} · ${c.exam}</span>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+
+  // Animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.riasec-fill').forEach(el => {
+      el.style.width = el.dataset.target + '%';
+    });
+  }, 200);
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function retakeQuiz() {
+  answers = {};
+  currentQ = 0;
+  document.getElementById('resultsSection').classList.remove('active');
+  document.getElementById('quizSection').style.display = 'block';
+  document.querySelector('.quiz-hero').style.display = 'block';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('questionArea').style.display = 'none';
+  document.getElementById('qNav').style.display = 'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+{% endblock %}

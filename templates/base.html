@@ -253,14 +253,14 @@ body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
     <div class="sidebar-section">Main</div>
     <a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
     <a href="/onboarding"><i class="fas fa-layer-group"></i> Change Level / Goal</a>
-    <div class="sidebar-section">Career</div>
-    <a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career Quiz</a>
+    <div class="sidebar-section">🎯 Career</div>
+    <a href="/quiz"><i class="fas fa-brain"></i> Interest Quiz</a>
+    <a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career Compass</a>
     <a href="/career/browse{{ lq }}"><i class="fas fa-th-large"></i> Browse Careers</a>
-    <div class="sidebar-section">Wisdom</div>
-    <a href="/gyan{{ lq }}"><i class="fas fa-om"></i> Daily Shloka</a>
-    <a href="/gyan/search{{ lq }}"><i class="fas fa-search"></i> Search Verses</a>
-    <div class="sidebar-section">Skills</div>
-    <a href="/skill{{ lq }}"><i class="fas fa-graduation-cap"></i> Learning Resources</a>
+    <div class="sidebar-section">📿 Wisdom</div>
+    <a href="/scripture"><i class="fas fa-om"></i> Gyan Kosh</a>
+    <div class="sidebar-section">📚 Resources</div>
+    <a href="/resources"><i class="fas fa-graduation-cap"></i> Free Resources</a>
     {% if level == 'school' %}
     <a href="/school/resources"><i class="fas fa-book-open"></i> School Subjects</a>
     {% endif %}
@@ -283,9 +283,10 @@ body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
   </a>
   <ul class="nav-links">
     {% set lq = '?level='+level if level else '' %}
+    <li><a href="/quiz"><i class="fas fa-brain"></i> Quiz</a></li>
     <li><a href="/career{{ lq }}"><i class="fas fa-compass"></i> Career</a></li>
-    <li><a href="/gyan{{ lq }}"><i class="fas fa-om"></i> Gyan</a></li>
-    <li><a href="/skill{{ lq }}"><i class="fas fa-graduation-cap"></i> Skills</a></li>
+    <li><a href="/scripture"><i class="fas fa-om"></i> Gyan</a></li>
+    <li><a href="/resources"><i class="fas fa-graduation-cap"></i> Resources</a></li>
   </ul>
   <div class="nav-right">
     {% if level and level_info %}
@@ -326,26 +327,20 @@ body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
     <a href="/dashboard" class="bn-item" data-page="dashboard">
       <i class="fas fa-home"></i><span>Home</span>
     </a>
-    <a href="/career" class="bn-item" data-page="career">
-      <i class="fas fa-compass"></i><span>Career</span>
+    <a href="/quiz" class="bn-item" data-page="quiz">
+      <i class="fas fa-brain"></i><span>Quiz</span>
     </a>
     <div class="bn-ai-wrap">
       <button class="bn-ai" onclick="toggleChat()" title="AI Guru">
         <i class="fas fa-robot"></i>
       </button>
     </div>
-    <a href="/gyan" class="bn-item" data-page="gyan">
+    <a href="/scripture" class="bn-item" data-page="scripture">
       <i class="fas fa-om"></i><span>Gyan</span>
     </a>
-    {% if level == 'school' %}
-    <a href="/school/resources" class="bn-item" data-page="school">
-      <i class="fas fa-book-open"></i><span>Subjects</span>
+    <a href="/resources" class="bn-item" data-page="resources">
+      <i class="fas fa-graduation-cap"></i><span>Resources</span>
     </a>
-    {% else %}
-    <a href="/skill" class="bn-item" data-page="skill">
-      <i class="fas fa-graduation-cap"></i><span>Skills</span>
-    </a>
-    {% endif %}
   </div>
 </nav>
 

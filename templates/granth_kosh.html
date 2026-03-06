@@ -1,0 +1,530 @@
+{% extends 'base.html' %}
+{% block title %}Granth Kosh — Marg Darshak{% endblock %}
+
+{% block extra_css %}
+<style>
+.gk-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* HERO */
+.gk-hero{
+  background:linear-gradient(135deg,#1a0533 0%,#0d1f3c 60%,#0a2a1a 100%);
+  color:white;padding:3rem 2rem;border-radius:24px;margin-bottom:2rem;
+  position:relative;overflow:hidden;text-align:center;
+}
+.gk-hero::before{
+  content:'ॐ';position:absolute;font-size:18rem;opacity:.03;
+  font-family:'Noto Sans Devanagari',sans-serif;
+  top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
+}
+.gk-hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:.5rem;position:relative;}
+.gk-hero-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:1.1rem;opacity:.75;margin-bottom:.4rem;position:relative;}
+.gk-hero-desc{font-size:.9rem;opacity:.6;max-width:520px;margin:0 auto;position:relative;}
+
+/* GRANTH TABS */
+.granth-tabs{
+  display:flex;gap:.5rem;overflow-x:auto;padding:.5rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  margin-bottom:1.5rem;scrollbar-width:none;
+}
+.granth-tabs::-webkit-scrollbar{display:none;}
+.gt-btn{
+  display:flex;flex-direction:column;align-items:center;gap:.3rem;
+  padding:.65rem 1.1rem;border-radius:12px;border:none;background:transparent;
+  cursor:pointer;transition:all .2s;white-space:nowrap;min-width:90px;
+  font-family:'DM Sans',sans-serif;
+}
+.gt-icon{font-size:1.4rem;}
+.gt-name{font-size:.72rem;font-weight:700;color:var(--muted);}
+.gt-btn.active{background:var(--bg);}
+.gt-btn.active .gt-name{color:var(--text);}
+.gt-btn:hover:not(.active){background:rgba(255,255,255,.05);}
+
+/* SEARCH */
+.gk-search-wrap{position:relative;margin-bottom:1.5rem;}
+.gk-search{
+  width:100%;padding:.85rem 1rem .85rem 3rem;border-radius:14px;
+  border:1.5px solid var(--border);background:var(--surface);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:.95rem;
+  outline:none;transition:border-color .2s;
+}
+.gk-search:focus{border-color:rgba(124,111,247,.5);}
+.gk-search-icon{
+  position:absolute;left:1rem;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:.95rem;pointer-events:none;
+}
+
+/* MAIN LAYOUT */
+.gk-main{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;}
+@media(max-width:900px){.gk-main{grid-template-columns:1fr;}}
+
+/* VERSE GRID */
+.verse-grid{display:flex;flex-direction:column;gap:1rem;}
+
+.verse-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;transition:all .3s ease;cursor:pointer;
+}
+.verse-card:hover{box-shadow:var(--shadow-lg);border-color:rgba(124,111,247,.2);}
+
+.vc-source-bar{
+  padding:.55rem 1.1rem;display:flex;align-items:center;justify-content:space-between;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+}
+.vc-source-bar.gita{background:rgba(255,215,0,.08);color:#c8960c;border-bottom:1px solid rgba(255,215,0,.15);}
+.vc-source-bar.ramayana{background:rgba(255,107,53,.08);color:#cc5500;border-bottom:1px solid rgba(255,107,53,.15);}
+.vc-source-bar.upanishad{background:rgba(124,111,247,.08);color:var(--accent);border-bottom:1px solid rgba(124,111,247,.15);}
+.vc-source-bar.vedas{background:rgba(67,233,123,.08);color:#1a8a4a;border-bottom:1px solid rgba(67,233,123,.15);}
+.vc-source-bar.chanakya{background:rgba(240,147,251,.08);color:#9b2fb5;border-bottom:1px solid rgba(240,147,251,.15);}
+body.dark-mode .vc-source-bar.vedas{color:#43e97b;}
+
+.vc-body{padding:1.25rem;}
+.vc-sanskrit{
+  font-family:'Noto Sans Devanagari',sans-serif;font-size:1rem;font-weight:600;
+  line-height:1.8;margin-bottom:.75rem;color:var(--text);
+}
+.vc-divider{height:1px;background:var(--border);margin:.75rem 0;}
+.vc-meaning{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:.75rem;}
+.vc-application{
+  padding:.75rem 1rem;border-radius:10px;font-size:.82rem;line-height:1.6;
+  border-left:3px solid;background:rgba(124,111,247,.05);
+}
+.vc-application.gita{border-color:rgba(255,215,0,.5);}
+.vc-application.ramayana{border-color:rgba(255,107,53,.5);}
+.vc-application.upanishad{border-color:rgba(124,111,247,.5);}
+.vc-application.vedas{border-color:rgba(67,233,123,.5);}
+.vc-application.chanakya{border-color:rgba(240,147,251,.5);}
+
+.vc-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.75rem;}
+.vc-tag{
+  font-size:.7rem;padding:.22rem .65rem;border-radius:100px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.vc-tag:hover{background:rgba(124,111,247,.1);color:var(--accent);border-color:rgba(124,111,247,.3);}
+
+/* SIDEBAR */
+.gk-sidebar{}
+.sidebar-widget{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:1.25rem;margin-bottom:1rem;
+}
+.sw-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.85rem;display:flex;align-items:center;gap:.5rem;}
+
+/* Daily verse widget */
+.daily-verse{
+  background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,107,53,.05));
+  border:1px solid rgba(255,215,0,.2);
+}
+.daily-badge{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.25rem .75rem;border-radius:100px;font-size:.68rem;font-weight:700;
+  background:rgba(255,215,0,.12);color:#c8960c;border:1px solid rgba(255,215,0,.25);
+  margin-bottom:.75rem;letter-spacing:.04em;
+}
+body.dark-mode .daily-badge{color:#ffd700;}
+.dv-sanskrit{font-family:'Noto Sans Devanagari',sans-serif;font-size:.92rem;font-weight:600;line-height:1.7;margin-bottom:.5rem;}
+.dv-meaning{font-size:.8rem;color:var(--muted);line-height:1.6;}
+.dv-source{font-size:.72rem;color:var(--muted);margin-top:.5rem;font-weight:600;}
+
+/* Granth guide */
+.granth-guide-list{display:flex;flex-direction:column;gap:.5rem;}
+.gg-item{
+  display:flex;align-items:flex-start;gap:.65rem;padding:.65rem .75rem;
+  border-radius:10px;border:1px solid var(--border);background:var(--bg);
+  cursor:pointer;transition:all .2s;
+}
+.gg-item:hover{border-color:rgba(124,111,247,.3);}
+.gg-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem;}
+.gg-name{font-size:.82rem;font-weight:700;margin-bottom:.15rem;}
+.gg-desc{font-size:.72rem;color:var(--muted);line-height:1.4;}
+
+/* Career tags filter */
+.career-filter{display:flex;flex-wrap:wrap;gap:.35rem;}
+.cf-tag{
+  padding:.3rem .75rem;border-radius:100px;font-size:.72rem;font-weight:600;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.cf-tag.active{background:rgba(124,111,247,.12);border-color:rgba(124,111,247,.4);color:var(--accent);}
+.cf-tag:hover:not(.active){border-color:rgba(124,111,247,.25);color:var(--text);}
+
+/* no results */
+.no-results{text-align:center;padding:3rem;color:var(--muted);}
+.no-results .nr-icon{font-size:3rem;margin-bottom:.75rem;}
+
+@media(max-width:600px){.gk-wrap{padding:1rem 1rem 5rem;}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gk-wrap">
+
+  <!-- HERO -->
+  <div class="gk-hero">
+    <h1>📿 Granth Kosh</h1>
+    <div class="gk-hero-sub">ज्ञान का असीम सागर</div>
+    <div class="gk-hero-desc">Bhagavad Gita, Ramayana, Vedas, Upanishads aur Chanakya Neeti — sabhi granths se jiwan aur career mein guidance.</div>
+  </div>
+
+  <!-- GRANTH TABS -->
+  <div class="granth-tabs" id="granthTabs">
+    <button class="gt-btn active" onclick="filterGranth('all', this)">
+      <span class="gt-icon">📚</span><span class="gt-name">Sab</span>
+    </button>
+    <button class="gt-btn" onclick="filterGranth('gita', this)">
+      <span class="gt-icon">🌸</span><span class="gt-name">Gita</span>
+    </button>
+    <button class="gt-btn" onclick="filterGranth('ramayana', this)">
+      <span class="gt-icon">🏹</span><span class="gt-name">Ramayana</span>
+    </button>
+    <button class="gt-btn" onclick="filterGranth('upanishad', this)">
+      <span class="gt-icon">🔮</span><span class="gt-name">Upanishads</span>
+    </button>
+    <button class="gt-btn" onclick="filterGranth('vedas', this)">
+      <span class="gt-icon">🌿</span><span class="gt-name">Vedas</span>
+    </button>
+    <button class="gt-btn" onclick="filterGranth('chanakya', this)">
+      <span class="gt-icon">⚔️</span><span class="gt-name">Chanakya</span>
+    </button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="gk-search-wrap">
+    <i class="fas fa-search gk-search-icon"></i>
+    <input class="gk-search" type="text" id="gkSearch"
+      placeholder="Koi bhi vishay search karo — karma, success, courage, dhairya..."
+      oninput="searchVerses(this.value)">
+  </div>
+
+  <div class="gk-main">
+    <!-- LEFT: VERSES -->
+    <div>
+      <!-- Career filter tags -->
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">Topic:</span>
+        <div class="career-filter" id="careerFilter">
+          <button class="cf-tag active" onclick="filterTopic('all', this)">Sab</button>
+          <button class="cf-tag" onclick="filterTopic('karma', this)">Karma</button>
+          <button class="cf-tag" onclick="filterTopic('success', this)">Success</button>
+          <button class="cf-tag" onclick="filterTopic('fear', this)">Fear/Courage</button>
+          <button class="cf-tag" onclick="filterTopic('focus', this)">Focus</button>
+          <button class="cf-tag" onclick="filterTopic('leadership', this)">Leadership</button>
+          <button class="cf-tag" onclick="filterTopic('knowledge', this)">Knowledge</button>
+          <button class="cf-tag" onclick="filterTopic('purpose', this)">Purpose</button>
+          <button class="cf-tag" onclick="filterTopic('peace', this)">Peace/Stress</button>
+        </div>
+      </div>
+
+      <div class="verse-grid" id="verseGrid"></div>
+    </div>
+
+    <!-- RIGHT: SIDEBAR -->
+    <div class="gk-sidebar">
+
+      <!-- Daily Verse -->
+      <div class="sidebar-widget daily-verse">
+        <div class="daily-badge">✨ Aaj ka Shloka</div>
+        <div id="dailyVerse"></div>
+      </div>
+
+      <!-- Granth Guide -->
+      <div class="sidebar-widget">
+        <div class="sw-title">📖 Granth Guide</div>
+        <div class="granth-guide-list">
+          <div class="gg-item" onclick="filterGranth('gita', document.querySelector('[onclick*=gita]'))">
+            <span class="gg-icon">🌸</span>
+            <div><div class="gg-name">Bhagavad Gita</div><div class="gg-desc">700 shlokas · Karma, Duty, Devotion, Knowledge</div></div>
+          </div>
+          <div class="gg-item" onclick="filterGranth('ramayana', document.querySelector('[onclick*=ramayana]'))">
+            <span class="gg-icon">🏹</span>
+            <div><div class="gg-name">Ramayana</div><div class="gg-desc">Valmiki · Leadership, Dharma, Loyalty, Values</div></div>
+          </div>
+          <div class="gg-item" onclick="filterGranth('upanishad', document.querySelector('[onclick*=upanishad]'))">
+            <span class="gg-icon">🔮</span>
+            <div><div class="gg-name">Upanishads</div><div class="gg-desc">108 texts · Self-knowledge, Consciousness, Truth</div></div>
+          </div>
+          <div class="gg-item" onclick="filterGranth('vedas', document.querySelector('[onclick*=vedas]'))">
+            <span class="gg-icon">🌿</span>
+            <div><div class="gg-name">Vedas</div><div class="gg-desc">Rig, Sama, Yajur, Atharva · Universe, Duty, Life</div></div>
+          </div>
+          <div class="gg-item" onclick="filterGranth('chanakya', document.querySelector('[onclick*=chanakya]'))">
+            <span class="gg-icon">⚔️</span>
+            <div><div class="gg-name">Chanakya Neeti</div><div class="gg-desc">Arthashastra · Strategy, Politics, Success, Wisdom</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const LANG = '{{ lang }}';
+
+// ════════════════════════════════════════════════════════
+//  VERSE DATABASE — 40+ curated verses
+// ════════════════════════════════════════════════════════
+const VERSES = [
+  // ── BHAGAVAD GITA ──
+  { id:1, source:'gita', ref:'Gita 2.47', tags:['karma','success','work'],
+    sanskrit:'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥',
+    hindi:'Tumhara adhikar sirf karma karne mein hai, phal mein kabhi nahi. Karm ke phal ka karan mat bano aur akarm mein bhi aasakti mat rakho.',
+    english:'You have the right to perform your actions but never to the fruits. Do not let the fruits of action be your motive, nor let your attachment be to inaction.',
+    application:'Exam ya career mein result pe focus karna chhodon — apni padhai aur mehnat par focus karo. Jo aata hai woh best result laata hai.',
+    career_relevance:'Every professional: Stop overthinking outcomes. Focus on the work itself — this is the secret of top performers globally.'},
+
+  { id:2, source:'gita', ref:'Gita 3.27', tags:['ego','growth','self-awareness'],
+    sanskrit:'प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः।\nअहङ्कारविमूढात्मा कर्ताहमिति मन्यते॥',
+    hindi:'Prakriti ke gunn hi kaam karte hain lekin ahankaar se mooh par aya insaan khud ko karta samajhta hai.',
+    english:'All actions are performed by the qualities of nature. But he who is deluded by ego thinks "I am the doer."',
+    application:'Success milne par ego mat palo. Team ka credit lo, akele ka nahi. Leaders jo yeh jaante hain woh zyaada succeed karte hain.',
+    career_relevance:'Leadership: The best leaders understand that success is collective. Ego is the biggest career killer.'},
+
+  { id:3, source:'gita', ref:'Gita 6.5', tags:['self','focus','discipline'],
+    sanskrit:'उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥',
+    hindi:'Apne aap ko apne aap se uthao, neeche mat girao. Woh khud ka dost hai jo khud apna uddhar kar sakta hai, aur khud ka dushman bhi wahi hai.',
+    english:'Let a man elevate himself by his own self; let him not degrade himself; for the self alone is the friend of the self, and the self alone is the enemy of the self.',
+    application:'Koi aur tumhari life nahi badlega. Uthna hai, distractions chhodna hai, focus karna hai — yeh sab sirf tum kar sakte ho.',
+    career_relevance:'Students & Professionals: Self-discipline is the only real superpower. Your biggest competition is your past self.'},
+
+  { id:4, source:'gita', ref:'Gita 18.46', tags:['purpose','work','dharma'],
+    sanskrit:'यतः प्रवृत्तिर्भूतानां येन सर्वमिदं ततम्।\nस्वकर्मणा तमभ्यर्च्य सिद्धिं विन्दति मानवः॥',
+    hindi:'Apne swadharma ka palan karo — apna natural kaam poorat nishtaa se karo. Isi se siddhi milti hai.',
+    english:'A man attains perfection by worshipping through his own work the source from which all beings originate.',
+    application:'Apna career choose karte waqt yeh socho — "Yeh kaam mera swabhav hai?" Agar haan, toh usi mein perfection aayegi.',
+    career_relevance:'Career choice: The best career is the one aligned with your natural strengths. Forced careers rarely lead to excellence.'},
+
+  { id:5, source:'gita', ref:'Gita 2.14', tags:['peace','stress','resilience'],
+    sanskrit:'मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदुःखदाः।\nआगमापायिनोऽनित्यास्तांस्तितिक्षस्व भारत॥',
+    hindi:'O Kaunteya, dukh aur sukh, thandi aur garmi — yeh aana jaana karte rehte hain. Inhe sahna seekho.',
+    english:'The contacts of senses with objects give rise to cold and heat, pleasure and pain. These come and go; they are impermanent. Endure them, O Arjuna.',
+    application:'Exam failure ho ya job rejection — yeh temporary hai. Jo toot-ta nahi, woh agle level pe pahunchta hai.',
+    career_relevance:'Everyone: Setbacks are temporary. Resilience is the defining trait of every successful person in history.'},
+
+  { id:6, source:'gita', ref:'Gita 4.7-8', tags:['purpose','change','courage'],
+    sanskrit:'यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।\nअभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥',
+    hindi:'Jab jab dharma ki haani hoti hai aur adharma badhta hai, tab tab main swayam pragat hota hoon.',
+    english:'Whenever righteousness declines and unrighteousness rises, I manifest myself. For the protection of good, the destruction of evil, and the establishment of righteousness, I am born age after age.',
+    application:'Tum bhi apni field mein change laane ke liye ho. Doctor, engineer, teacher, artist — har role mein dharma ki rakhsha hai.',
+    career_relevance:'Purpose: Your career is not just for money — it is to bring positive change in your domain. This mindset transforms work.'},
+
+  // ── RAMAYANA ──
+  { id:7, source:'ramayana', ref:'Valmiki Ramayana · Yuddha Kanda', tags:['leadership','dharma','duty'],
+    sanskrit:'न धर्मस्य गतिं वेत्ति न धर्मफलमेव च।\nधर्मं चाचरितुं शक्तो न स धर्मं प्रशंसति॥',
+    hindi:'Jo dharma ka phal nahi jaanta, jo dharma ka acharan nahi kar sakta — woh dharma ki prashansa ka adhikar nahi rakhta.',
+    english:'One who does not understand righteousness, cannot practice it, and praises it without understanding — truly does not know dharma.',
+    application:'Sirf baatein karna kaafi nahi. Ram ne jo padha, wahi jeeke dikhaya. Action hi asli dharma hai.',
+    career_relevance:'Leadership: Leaders who only talk and don\'t walk the talk lose all credibility. Ram is the model of leading by example.'},
+
+  { id:8, source:'ramayana', ref:'Valmiki Ramayana · Bala Kanda', tags:['learning','knowledge','guru'],
+    sanskrit:'विद्या ददाति विनयं विनयाद् याति पात्रताम्।\nपात्रत्वाद् धनमाप्नोति धनाद् धर्मं ततः सुखम्॥',
+    hindi:'Vidya se vinay aata hai, vinay se yogyata, yogyata se dhan, dhan se dharma aur dharma se sukh milta hai.',
+    english:'Knowledge gives humility; from humility comes worthiness; from worthiness comes wealth; from wealth comes righteousness; and from righteousness comes happiness.',
+    application:'Education sirf degree nahi hai. Asli shiksha humility sikhaati hai — tab success ka asli arth samajh aata hai.',
+    career_relevance:'Students: Education\'s goal is not just a job — it\'s character. Humble, knowledgeable people rise higher and sustain longer.'},
+
+  { id:9, source:'ramayana', ref:'Ramayana · Aranya Kanda', tags:['patience','courage','challenges'],
+    sanskrit:'संपत्ति च विपत्ति च दैवकृत्यं भवन्ति हि।\nन शोकं तत्र कुर्वीत धीरस्य पण्डितस्य च॥',
+    hindi:'Sukh aur dukh dono daivadheen hain. Dheer aur pandita log in par shok nahi karte.',
+    english:'Both prosperity and adversity are divinely ordained. A wise and courageous person does not grieve over them.',
+    application:'Ram ko 14 saal ka vanvas mila — phir bhi unke mann mein shok nahi tha. Tum apni mushkilon ko bhi isi nazar se dekho.',
+    career_relevance:'Resilience: Every career has setbacks — job loss, project failures, rejections. The courageous accept and move forward.'},
+
+  { id:10, source:'ramayana', ref:'Sundara Kanda', tags:['purpose','determination','focus'],
+    sanskrit:'मनसा सिन्धुमुत्तर्तुं शक्तोऽस्मि यदि मानसम्।\nकिमु वायुजवोपेतः पन्थानमनुसर्पतः॥',
+    hindi:'Jo manasik roop se samudra paar kar sakta hai, woh to vayu ki gati se bhi zyada tej chal sakta hai.',
+    english:'He who can cross the ocean of thought can certainly cross any physical barrier with even greater speed.',
+    application:'Hanuman ji ki tarah — pehle mann mein nishchay karo, baaki sab ho jaata hai. Most battles are won in the mind first.',
+    career_relevance:'Goal achievement: Before you succeed in the world, you must believe it completely in your mind. Mental clarity precedes all success.'},
+
+  // ── UPANISHADS ──
+  { id:11, source:'upanishad', ref:'Kena Upanishad 1.3', tags:['self-awareness','knowledge','consciousness'],
+    sanskrit:'न तत्र चक्षुर्गच्छति न वाग्गच्छति नो मनः।\nन विद्मो न विजानीमो यथैतदनुशिष्यात्॥',
+    hindi:'Wahan na aankh jaati hai, na wani, na mann. Hum nahi jaante ki yeh kaise sikhaya ja sakta hai.',
+    english:'There the eye does not reach, nor speech, nor mind. We do not know how to teach this — it is beyond ordinary knowledge.',
+    application:'Sabse badi intelligence woh hai jo dikh nahi ti — intuition, emotional awareness, inner guidance. Ise develop karo meditation se.',
+    career_relevance:'Innovation & Creativity: The deepest insights don\'t come from textbooks — they come from stillness and inner awareness.'},
+
+  { id:12, source:'upanishad', ref:'Chandogya Upanishad 6.8.7', tags:['self','truth','identity'],
+    sanskrit:'तत्त्वमसि',
+    hindi:'Tat Tvam Asi — Woh Tum Ho. Tu hi Brahman hai. Tu limitless hai.',
+    english:'That art Thou — you are the infinite, the supreme consciousness itself. Your potential is boundless.',
+    application:'Teri limitations sirf teri soch mein hain. Tu actually limitless potential hai. Jo bhi banna chahta hai — ban sakta hai.',
+    career_relevance:'Mindset: The biggest barrier to success is a self-limiting belief. Science now confirms what Upanishads said 3000 years ago.'},
+
+  { id:13, source:'upanishad', ref:'Mundaka Upanishad 3.2.3', tags:['truth','knowledge','wisdom'],
+    sanskrit:'सत्यमेव जयते नानृतम् सत्येन पन्था विततो देवयानः।',
+    hindi:'Satya hi jeet ta hai, jhooth nahi. Satya se hi dev path khulta hai.',
+    english:'Truth alone triumphs, not falsehood. Through truth, the divine path is spread out.',
+    application:'Career mein shortcuts lena, cheating karna — yeh temporarily kaam kar sakta hai lekin eventually satya hi jeet ta hai.',
+    career_relevance:'Ethics & Integrity: In the long run, honest professionals always outlast those who cut corners. Truth is a strategic advantage.'},
+
+  { id:14, source:'upanishad', ref:'Taittiriya Upanishad 1.11', tags:['dharma','duty','gratitude'],
+    sanskrit:'सत्यं वद। धर्मं चर। स्वाध्यायान्मा प्रमदः।',
+    hindi:'Satya bolo. Dharma ka palan karo. Apni vidya ka abhyas kabhi mat chhodna.',
+    english:'Speak truth. Follow righteousness. Never be careless about your study and learning.',
+    application:'Teen cheezein hamesha karo — sach bolo, sahi kaam karo, aur seekhna bandh mat karo. Yahi safalta ki neev hai.',
+    career_relevance:'Life principles: These three — truth, right action, continuous learning — are the foundation of every successful life and career.'},
+
+  // ── VEDAS ──
+  { id:15, source:'vedas', ref:'Rig Veda 1.89.1', tags:['knowledge','growth','universe'],
+    sanskrit:'आ नो भद्राः क्रतवो यन्तु विश्वतो',
+    hindi:'Sabhi dishao se shubh vichar hamari taraf aayein.',
+    english:'Let noble thoughts come to us from all directions.',
+    application:'Seekhne ke liye koi ek source kaafi nahi. Books, people, nature, experience — sab jagah se wisdom lo.',
+    career_relevance:'Learning mindset: The most successful people are omnivorous learners — they absorb knowledge from everywhere, everyone.'},
+
+  { id:16, source:'vedas', ref:'Atharva Veda 6.130.1', tags:['courage','strength','energy'],
+    sanskrit:'उद्यानं ते पुरुष नावयानं जीवं रुद्राय परि दद्मसि त्वा।',
+    hindi:'O manushya, utho! Jeevan mein aage badho. Sone wale ko chamak nahi milti.',
+    english:'Rise, O man! Move forward in life. Energy, effort, and action are the paths to achievement.',
+    application:'Sapne dekhne se kuch nahi hoga. Uthna padega, kaam karna padega. Action hi sab kuch hai.',
+    career_relevance:'Action orientation: No amount of planning replaces taking the first step. The Vedas glorify the active, striving person.'},
+
+  { id:17, source:'vedas', ref:'Yajur Veda 36.18', tags:['peace','harmony','focus'],
+    sanskrit:'ॐ द्यौः शान्तिरन्तरिक्षं शान्तिः।\nपृथिवी शान्तिरापः शान्तिरोषधयः शान्तिः॥',
+    hindi:'Sky mein shanti ho, antariksha mein shanti ho, dharti pe shanti ho, jal mein shanti ho — har jagah shanti ho.',
+    english:'Peace in the sky, peace in the space between, peace on earth, peace in waters, peace in plants — may peace pervade everywhere.',
+    application:'Inner peace bahut badi shakti hai. Jab mann shant hota hai, tab best decisions aate hain — career mein bhi, life mein bhi.',
+    career_relevance:'Mental health: Research confirms that calm, centered minds make better decisions, learn faster, and perform consistently.'},
+
+  // ── CHANAKYA ──
+  { id:18, source:'chanakya', ref:'Chanakya Neeti 1.6', tags:['education','learning','time'],
+    sanskrit:'शीघ्रं क्रियाफलं नास्ति न च विद्याफलं तथा।\nक्रमेण विद्यां विन्दन्ति पुष्पाणीव महाद्रुमाः॥',
+    hindi:'Kaam ka fal aur vidya ka fal turant nahi milta — dheeray dheeray milta hai, jaise bade ped pe phool dheere khilte hain.',
+    english:'The results of action and education do not come immediately. They come gradually, like flowers blooming on a great tree.',
+    application:'Ek cheez regular karo — padhai, skill building, ya koi bhi kaam. Compound karta hai waqt ke saath. Patience hi asli power hai.',
+    career_relevance:'Long-term thinking: Every skill you build compounds over time. Patience + consistency = exponential results.'},
+
+  { id:19, source:'chanakya', ref:'Chanakya Neeti 2.1', tags:['focus','distraction','goals'],
+    sanskrit:'काक चेष्टा, बको ध्यानम्, श्वान निद्रा तथैव च।\nअल्पाहारी, गृहत्यागी, विद्यार्थी पञ्च लक्षणम्॥',
+    hindi:'Kauwe jesi koshish, bagule jesi ekagrata, kutte jesi neend, kam khana, ghar ki aasakti chhodna — yeh hain vidyarthi ke paanch lakshan.',
+    english:'The enthusiasm of a crow, the focus of a heron, light sleep of a dog, eating little, leaving home comforts — these are the five signs of a true student.',
+    application:'Serious students ko serious choices leni hoti hain. Distractions — social media, parties, time waste — temporarily chhodni padti hain.',
+    career_relevance:'Students in competitive preparation: JEE/NEET/UPSC toppers say the same thing — eliminate ruthlessly, focus on one thing.'},
+
+  { id:20, source:'chanakya', ref:'Chanakya Neeti 7.12', tags:['strategy','planning','success'],
+    sanskrit:'यस्मिन् देशे न सम्मानो न वृत्तिर्न च बान्धवाः।\nन च विद्यागमोऽप्यस्ति वासं तत्र न कारयेत्॥',
+    hindi:'Jis jagah na sammaan mile, na kaam mile, na dost hon aur na vidya mile — wahan rehna band karo.',
+    english:'Do not live in a place where there is no respect, no livelihood, no friends, and no opportunity to learn.',
+    application:'Agar teri current situation tujhe grow nahi kar rahi — college, company, city — badlne ki himmat rakho. Environment matter karta hai.',
+    career_relevance:'Environment matters: Your growth is heavily shaped by where you are. Don\'t hesitate to move for better opportunities.'},
+
+  { id:21, source:'chanakya', ref:'Arthashastra · Book 1', tags:['leadership','management','power'],
+    sanskrit:'राजा प्रजाहिते रतः — सुखे प्रजासुखं राज्ञः।\nप्रजानां च हिते राज्ञः प्रियं प्रियमिति स्मृतम्॥',
+    hindi:'Raja ko praja ke sukh mein sukh milna chahiye. Jo leader apni praja ko sukhi rakhta hai wahi sachcha neta hai.',
+    english:'A king\'s happiness lies in the happiness of his subjects. What is dear to the subjects is dear to the king.',
+    application:'Ek achha leader ya manager apni team ki success mein khushi maanta hai. Selfish leaders hamesha fail hote hain.',
+    career_relevance:'Leadership: Great managers are defined by how much their team grows, not by personal achievement alone.'},
+
+  { id:22, source:'chanakya', ref:'Chanakya Neeti 5.4', tags:['knowledge','learning','wisdom'],
+    sanskrit:'पुस्तकस्था तु या विद्या परहस्तगतं धनम्।\nकार्यकाले समुत्पन्ने न सा विद्या न तद्धनम्॥',
+    hindi:'Jo vidya sirf kitab mein hai aur jo dhan kisi aur ke haath mein hai — zaroorat pe kaam nahi aata.',
+    english:'Knowledge that stays only in books and wealth in someone else\'s hands — neither is of use when the time of need arrives.',
+    application:'Sirf padhne se kaam nahi chalta — practical karo, projects banao, experiments karo. Applied knowledge hi asli vidya hai.',
+    career_relevance:'Practical skills: Degrees without application are useless. Build things, do internships, create real projects.'},
+];
+
+// ════════════════════════════════════════════════════════
+//  STATE + FILTER LOGIC
+// ════════════════════════════════════════════════════════
+let activeGranth = 'all';
+let activeTopic  = 'all';
+let searchQuery  = '';
+
+function filterGranth(g, btn) {
+  activeGranth = g;
+  document.querySelectorAll('.gt-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderVerses();
+}
+
+function filterTopic(t, btn) {
+  activeTopic = t;
+  document.querySelectorAll('.cf-tag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVerses();
+}
+
+function searchVerses(q) {
+  searchQuery = q.toLowerCase();
+  renderVerses();
+}
+
+function getFiltered() {
+  return VERSES.filter(v => {
+    const matchGranth = activeGranth === 'all' || v.source === activeGranth;
+    const matchTopic  = activeTopic  === 'all' || v.tags.includes(activeTopic);
+    const q = searchQuery;
+    const matchSearch = !q || v.sanskrit.toLowerCase().includes(q) ||
+      v.hindi.toLowerCase().includes(q) || v.english.toLowerCase().includes(q) ||
+      v.application.toLowerCase().includes(q) || v.tags.some(t => t.includes(q));
+    return matchGranth && matchTopic && matchSearch;
+  });
+}
+
+function renderVerses() {
+  const filtered = getFiltered();
+  const grid = document.getElementById('verseGrid');
+  const isHindi = '{{ lang }}' === 'hi';
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="no-results">
+      <div class="nr-icon">🔍</div>
+      <div style="font-weight:700;margin-bottom:.4rem;">Koi shloka nahi mila</div>
+      <div style="font-size:.85rem;color:var(--muted);">Dusra topic ya granth try karo</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((v, i) => `
+    <div class="verse-card" style="animation:fadeIn .35s ease ${(i*0.05).toFixed(2)}s both;">
+      <div class="vc-source-bar ${v.source}">
+        <span>${sourceLabel(v.source)} · ${v.ref}</span>
+        <div style="display:flex;gap:.35rem;">
+          ${v.tags.map(t => `<span style="padding:.15rem .5rem;border-radius:4px;background:rgba(255,255,255,.1);font-size:.65rem;">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="vc-body">
+        <div class="vc-sanskrit">${v.sanskrit.replace(/\n/g,'<br>')}</div>
+        <div class="vc-divider"></div>
+        <div class="vc-meaning">
+          ${isHindi ? v.hindi : v.english}
+        </div>
+        <div class="vc-application ${v.source}">
+          💡 <strong>${isHindi ? 'Career mein use:' : 'Application:'}</strong>
+          ${v.application}
+        </div>
+        <div class="vc-tags">
+          ${v.tags.map(t => `<span class="vc-tag" onclick="filterTopic('${t}',event.target)">${t}</span>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function sourceLabel(s) {
+  return {gita:'🌸 Bhagavad Gita',ramayana:'🏹 Ramayana',upanishad:'🔮 Upanishad',vedas:'🌿 Vedas',chanakya:'⚔️ Chanakya'}[s] || s;
+}
+
+// Daily verse — random, changes daily
+function renderDailyVerse() {
+  const dayIndex = Math.floor(Date.now() / 86400000) % VERSES.length;
+  const v = VERSES[dayIndex];
+  const isHindi = '{{ lang }}' === 'hi';
+  document.getElementById('dailyVerse').innerHTML = `
+    <div class="dv-sanskrit">${v.sanskrit.replace(/\n/g,'<br>').split('<br>')[0]}...</div>
+    <div class="dv-meaning">${isHindi ? v.hindi.slice(0,120) : v.english.slice(0,120)}...</div>
+    <div class="dv-source">${sourceLabel(v.source)} · ${v.ref}</div>`;
+}
+
+// CSS animation
+const style = document.createElement('style');
+style.textContent = '@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}';
+document.head.appendChild(style);
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderVerses();
+  renderDailyVerse();
+});
+</script>
+{% endblock %}

@@ -721,6 +721,59 @@ def api_stats():
         return jsonify({'error': str(e)}), 500
 
 
+
+# ═══════════════════════════════════════════════
+#  INTEREST QUIZ
+# ═══════════════════════════════════════════════
+@app.route('/career/interest-quiz')
+@login_required
+@onboarding_required
+def interest_quiz():
+    return render_template('interest_quiz.html')
+
+@app.route('/api/save-quiz-result', methods=['POST'])
+@login_required
+def save_quiz_result():
+    try:
+        data = request.json
+        if session.get('guest'):
+            return jsonify({'success': True})
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS quiz_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, holland_code TEXT, scores TEXT,
+            top_careers TEXT, taken_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )''')
+        db.execute(
+            'INSERT INTO quiz_results(user_id,holland_code,scores,top_careers) VALUES(?,?,?,?)',
+            (session['user_id'],
+             data.get('holland_code',''),
+             json.dumps(data.get('scores',{})),
+             json.dumps(data.get('top_careers',[])))
+        )
+        db.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ═══════════════════════════════════════════════
+#  GRANTH KOSH (Scriptures)
+# ═══════════════════════════════════════════════
+@app.route('/granth')
+@login_required
+@onboarding_required
+def granth_kosh():
+    return render_template('granth_kosh.html')
+
+# ═══════════════════════════════════════════════
+#  RESOURCES EXPLORER
+# ═══════════════════════════════════════════════
+@app.route('/resources')
+@login_required
+@onboarding_required
+def resources_explorer():
+    return render_template('resources_explorer.html')
+
 # ═══════════════════════════════════════════════
 #  SCHOOL RESOURCES
 # ═══════════════════════════════════════════════
@@ -829,6 +882,73 @@ def get_saved_careers():
         return jsonify({'success': True, 'careers': [dict(r) for r in rows]})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ═══════════════════════════════════════════════
+#  INTEREST QUIZ
+# ═══════════════════════════════════════════════
+@app.route('/quiz')
+@login_required
+@onboarding_required
+def quiz():
+    try:
+        db = get_db()
+        careers = db.execute('SELECT * FROM careers ORDER BY title').fetchall()
+        return render_template('quiz.html', careers=[dict(c) for c in careers])
+    except Exception as e:
+        return f'Error: {e}', 500
+
+@app.route('/api/save-quiz-result', methods=['POST'])
+@login_required
+def save_quiz_result():
+    try:
+        data = request.json
+        if session.get('guest'):
+            return jsonify({'success': True, 'note': 'guest'})
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS quiz_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, top_type TEXT, scores TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )''')
+        db.execute(
+            'INSERT INTO quiz_results(user_id,top_type,scores) VALUES(?,?,?)',
+            (session['user_id'], data.get('topType',''), str(data.get('scores',{})))
+        )
+        db.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ═══════════════════════════════════════════════
+#  SCRIPTURE
+# ═══════════════════════════════════════════════
+@app.route('/scripture')
+@login_required
+@onboarding_required
+def scripture():
+    try:
+        db = get_db()
+        shlokas = db.execute('SELECT * FROM gyan_kosh ORDER BY chapter,verse_number').fetchall()
+        return render_template('scripture.html', shlokas=[dict(s) for s in shlokas])
+    except Exception as e:
+        return f'Error: {e}', 500
+
+# ═══════════════════════════════════════════════
+#  FREE RESOURCES EXPLORER
+# ═══════════════════════════════════════════════
+@app.route('/resources')
+@login_required
+@onboarding_required
+def resources_explorer():
+    try:
+        db = get_db()
+        resources = db.execute(
+            'SELECT * FROM learning_resources ORDER BY quality_score DESC'
+        ).fetchall()
+        return render_template('resources.html', resources=[dict(r) for r in resources])
+    except Exception as e:
+        return f'Error: {e}', 500
 
 # ═══════════════════════════════════════════════
 #  ERROR HANDLERS
