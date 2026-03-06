@@ -898,27 +898,7 @@ def quiz():
     except Exception as e:
         return f'Error: {e}', 500
 
-@app.route('/api/save-quiz-result', methods=['POST'])
-@login_required
-def save_quiz_result():
-    try:
-        data = request.json
-        if session.get('guest'):
-            return jsonify({'success': True, 'note': 'guest'})
-        db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS quiz_results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER, top_type TEXT, scores TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )''')
-        db.execute(
-            'INSERT INTO quiz_results(user_id,top_type,scores) VALUES(?,?,?)',
-            (session['user_id'], data.get('topType',''), str(data.get('scores',{})))
-        )
-        db.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 # ═══════════════════════════════════════════════
 #  SCRIPTURE
@@ -934,21 +914,7 @@ def scripture():
     except Exception as e:
         return f'Error: {e}', 500
 
-# ═══════════════════════════════════════════════
-#  FREE RESOURCES EXPLORER
-# ═══════════════════════════════════════════════
-@app.route('/resources')
-@login_required
-@onboarding_required
-def resources_explorer():
-    try:
-        db = get_db()
-        resources = db.execute(
-            'SELECT * FROM learning_resources ORDER BY quality_score DESC'
-        ).fetchall()
-        return render_template('resources.html', resources=[dict(r) for r in resources])
-    except Exception as e:
-        return f'Error: {e}', 500
+
 
 # ═══════════════════════════════════════════════
 #  ERROR HANDLERS
