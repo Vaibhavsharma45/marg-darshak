@@ -183,10 +183,47 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:1.25
 
 body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
 
+/* BOTTOM NAV */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:0 .25rem;padding-bottom:env(safe-area-inset-bottom);
+  height:62px;box-shadow:0 -4px 24px rgba(0,0,0,.10);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.bottom-nav-inner{display:flex;align-items:center;height:100%;gap:.25rem;}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;text-decoration:none;color:var(--muted);font-size:.58rem;font-weight:600;
+  letter-spacing:.02em;border:none;background:none;cursor:pointer;
+  transition:color .2s;position:relative;padding:.4rem 0;
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-item i{font-size:1.05rem;transition:transform .2s;}
+.bn-item.active{color:var(--accent);}
+.bn-item.active i{transform:scale(1.12);}
+.bn-item::after{content:'';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+  width:0;height:3px;border-radius:3px;background:var(--accent);transition:width .2s;}
+.bn-item.active::after{width:16px;}
+.bn-ai-wrap{display:flex;align-items:center;justify-content:center;width:52px;flex-shrink:0;}
+.bn-ai{
+  width:44px;height:44px;border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);
+  display:flex;align-items:center;justify-content:center;
+  color:white;font-size:1.15rem;cursor:pointer;border:none;
+  box-shadow:0 4px 16px rgba(124,111,247,.45);
+  transition:transform .2s;-webkit-tap-highlight-color:transparent;
+}
+.bn-ai:hover{transform:scale(1.08);}
+
 @media(max-width:768px){
   .nav-links{display:none;}
-  .chat-window{width:calc(100vw - 28px);right:14px;bottom:88px;}
-  .chat-fab{bottom:18px;right:18px;}
+  .bottom-nav{display:block;}
+  main{padding-bottom:70px;}
+  footer{padding-bottom:74px;}
+  .chat-fab{display:none;}
+  .chat-window{width:calc(100vw - 24px);right:12px;bottom:74px;height:480px;}
+  .scroll-top-btn{display:none !important;}
 }
 </style>
 </head>
@@ -224,6 +261,9 @@ body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
     <a href="/gyan/search{{ lq }}"><i class="fas fa-search"></i> Search Verses</a>
     <div class="sidebar-section">Skills</div>
     <a href="/skill{{ lq }}"><i class="fas fa-graduation-cap"></i> Learning Resources</a>
+    {% if level == 'school' %}
+    <a href="/school/resources"><i class="fas fa-book-open"></i> School Subjects</a>
+    {% endif %}
     <div class="sidebar-section">Account</div>
     {% if current_user %}
     <a href="/set-language/{% if lang=='en' %}hi{% else %}en{% endif %}"><i class="fas fa-language"></i> Switch to {% if lang=='en' %}हिंदी{% else %}English{% endif %}</a>
@@ -279,6 +319,35 @@ body.dark-mode .main-nav{background:rgba(19,19,26,.95);}
   <p>🧭 <strong>Marg Darshak</strong> — "जीवन के हर पड़ाव पर सही दिशा"</p>
   <p style="margin-top:.2rem;">Made with ❤️ for India's students</p>
 </footer>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav-inner">
+    <a href="/dashboard" class="bn-item" data-page="dashboard">
+      <i class="fas fa-home"></i><span>Home</span>
+    </a>
+    <a href="/career" class="bn-item" data-page="career">
+      <i class="fas fa-compass"></i><span>Career</span>
+    </a>
+    <div class="bn-ai-wrap">
+      <button class="bn-ai" onclick="toggleChat()" title="AI Guru">
+        <i class="fas fa-robot"></i>
+      </button>
+    </div>
+    <a href="/gyan" class="bn-item" data-page="gyan">
+      <i class="fas fa-om"></i><span>Gyan</span>
+    </a>
+    {% if level == 'school' %}
+    <a href="/school/resources" class="bn-item" data-page="school">
+      <i class="fas fa-book-open"></i><span>Subjects</span>
+    </a>
+    {% else %}
+    <a href="/skill" class="bn-item" data-page="skill">
+      <i class="fas fa-graduation-cap"></i><span>Skills</span>
+    </a>
+    {% endif %}
+  </div>
+</nav>
 
 <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <i class="fas fa-arrow-up"></i>
@@ -361,6 +430,16 @@ function closeSidebar(){
   document.getElementById('sidebarOverlay').classList.remove('active');
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar();});
+
+// BOTTOM NAV active state
+(function(){
+  const path = window.location.pathname;
+  document.querySelectorAll('.bn-item').forEach(item => {
+    const page = item.dataset.page;
+    if(page && path.includes(page)) item.classList.add('active');
+    if(page === 'dashboard' && (path === '/' || path === '/dashboard')) item.classList.add('active');
+  });
+})();
 
 // SCROLL TOP
 window.addEventListener('scroll',()=>{

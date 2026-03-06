@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% block title %}{{ career.title }} — Career Guide{% endblock %}
+
+{% block extra_css %}
+<style>
+.cd-wrap{max-width:960px;margin:0 auto;padding:2rem 1.5rem;}
+
+/* HERO */
+.cd-hero{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;margin-bottom:1.5rem;
+  display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;
+}
+.cd-icon-big{
+  width:80px;height:80px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+  font-size:2rem;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(124,111,247,.15),rgba(91,79,223,.08));
+  border:1px solid rgba(124,111,247,.2);
+}
+.cd-hero-info{flex:1;min-width:200px;}
+.cd-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:.4rem;}
+.cd-category{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .9rem;border-radius:100px;font-size:.78rem;font-weight:600;background:rgba(124,111,247,.1);color:var(--accent);border:1px solid rgba(124,111,247,.2);margin-bottom:.75rem;}
+.cd-desc{font-size:.95rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;}
+.cd-stats{display:flex;gap:1rem;flex-wrap:wrap;}
+.cd-stat{
+  display:flex;flex-direction:column;gap:.15rem;padding:.75rem 1.1rem;
+  background:var(--bg);border:1px solid var(--border);border-radius:12px;min-width:120px;
+}
+.cd-stat .val{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);}
+.cd-stat .lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+
+/* ACTION BUTTONS */
+.cd-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem;}
+.btn-save{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:100px;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);color:white;border:none;
+  font-size:.875rem;font-weight:600;cursor:pointer;transition:all .25s;
+  box-shadow:0 4px 16px rgba(124,111,247,.3);
+}
+.btn-save:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,111,247,.45);}
+.btn-ask-ai{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:100px;
+  background:rgba(124,111,247,.1);color:var(--accent);border:1.5px solid rgba(124,111,247,.3);
+  font-size:.875rem;font-weight:600;cursor:pointer;transition:all .25s;
+}
+.btn-ask-ai:hover{background:rgba(124,111,247,.18);}
+
+/* TABS */
+.cd-tabs{display:flex;gap:.25rem;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:4px;margin-bottom:1.5rem;}
+.cd-tab{
+  flex:1;padding:.6rem .5rem;border-radius:12px;border:none;
+  background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;
+}
+.cd-tab.active{background:var(--bg);color:var(--text);box-shadow:var(--shadow);}
+
+.cd-tab-panel{display:none;}
+.cd-tab-panel.active{display:block;animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ROADMAP TIMELINE */
+.timeline{position:relative;padding-left:2.5rem;}
+.timeline::before{
+  content:'';position:absolute;left:.85rem;top:8px;bottom:8px;
+  width:2px;background:linear-gradient(180deg,var(--accent),rgba(124,111,247,.1));
+  border-radius:2px;
+}
+.tl-item{position:relative;margin-bottom:1.5rem;}
+.tl-dot{
+  position:absolute;left:-2.5rem;top:.35rem;
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#5b4fdf);
+  border:3px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;color:white;font-weight:800;
+  box-shadow:0 2px 8px rgba(124,111,247,.4);
+}
+.tl-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.1rem 1.25rem;transition:all .2s;
+}
+.tl-card:hover{border-color:rgba(124,111,247,.25);box-shadow:var(--shadow);}
+.tl-stage{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.3rem;}
+.tl-title{font-weight:700;font-size:.95rem;margin-bottom:.35rem;}
+.tl-text{font-size:.85rem;color:var(--muted);line-height:1.6;}
+.tl-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.6rem;}
+.tl-tag{font-size:.7rem;padding:.2rem .6rem;border-radius:100px;background:rgba(124,111,247,.08);border:1px solid rgba(124,111,247,.15);color:var(--muted);}
+
+/* SKILLS */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;}
+.skill-pill{
+  padding:.75rem 1rem;border-radius:12px;background:var(--surface);
+  border:1px solid var(--border);font-size:.85rem;font-weight:600;
+  display:flex;align-items:center;gap:.6rem;transition:all .2s;
+}
+.skill-pill:hover{border-color:rgba(124,111,247,.3);transform:translateY(-2px);}
+.skill-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.must{background:#43e97b;}.good{background:#4facfe;}.bonus{background:#f093fb;}
+
+/* COLLEGES */
+.college-list{display:flex;flex-direction:column;gap:.6rem;}
+.college-item{
+  display:flex;align-items:center;gap:.9rem;padding:.85rem 1.1rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:all .2s;
+}
+.college-item:hover{border-color:rgba(124,111,247,.2);}
+.college-rank{
+  width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:800;background:linear-gradient(135deg,var(--accent),#5b4fdf);color:white;flex-shrink:0;
+}
+.college-name{font-weight:600;font-size:.9rem;}
+.college-type{font-size:.75rem;color:var(--muted);}
+
+/* JOB ROLES */
+.job-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;}
+.job-card{
+  padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:all .2s;
+}
+.job-card:hover{border-color:rgba(124,111,247,.2);transform:translateY(-2px);}
+.job-icon{font-size:1.4rem;margin-bottom:.4rem;}
+.job-title{font-weight:700;font-size:.875rem;margin-bottom:.25rem;}
+.job-salary{font-size:.78rem;color:#43e97b;font-weight:600;}
+
+/* SAVE STATUS */
+.saved-badge{
+  display:none;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:100px;
+  background:rgba(67,233,123,.12);color:#27ae60;border:1px solid rgba(67,233,123,.3);
+  font-size:.78rem;font-weight:600;
+}
+body.dark-mode .saved-badge{color:#43e97b;}
+
+@media(max-width:600px){
+  .cd-wrap{padding:1rem;}
+  .cd-hero{flex-direction:column;gap:1rem;}
+  .cd-tabs{gap:0;}
+  .cd-tab{font-size:.75rem;padding:.5rem .3rem;}
+  .cd-title{font-size:1.4rem;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cd-wrap">
+
+  <!-- BACK -->
+  <a href="/career/browse" style="display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.875rem;margin-bottom:1.25rem;font-weight:600;transition:color .2s;"
+    onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+    <i class="fas fa-arrow-left"></i> Back to Careers
+  </a>
+
+  <!-- HERO CARD -->
+  <div class="cd-hero">
+    <div class="cd-icon-big">
+      {{ career_icon }}
+    </div>
+    <div class="cd-hero-info">
+      <div class="cd-category"><i class="fas fa-tag"></i> {{ career.category }}</div>
+      <h1 class="cd-title">{{ career.title }}</h1>
+      <p class="cd-desc">{{ career.description }}</p>
+
+      <div class="cd-stats">
+        {% if career.avg_salary_inr %}
+        <div class="cd-stat">
+          <span class="val">₹{{ '{:,.0f}'.format(career.avg_salary_inr / 100000) }}L</span>
+          <span class="lbl">Avg Salary/yr</span>
+        </div>
+        {% endif %}
+        {% if career.growth_rate %}
+        <div class="cd-stat">
+          <span class="val">{{ career.growth_rate }}</span>
+          <span class="lbl">Growth Rate</span>
+        </div>
+        {% endif %}
+        {% if career.difficulty_level %}
+        <div class="cd-stat">
+          <span class="val">{{ career.difficulty_level }}</span>
+          <span class="lbl">Difficulty</span>
+        </div>
+        {% endif %}
+        {% if career.education_required %}
+        <div class="cd-stat">
+          <span class="val" style="font-size:.85rem;">{{ career.education_required }}</span>
+          <span class="lbl">Education</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="cd-actions">
+        <button class="btn-save" id="saveBtn" onclick="saveCareer()">
+          <i class="fas fa-bookmark" id="saveIcon"></i>
+          <span id="saveTxt">Save Career</span>
+        </button>
+        <span class="saved-badge" id="savedBadge"><i class="fas fa-check"></i> Saved!</span>
+        <button class="btn-ask-ai" onclick="askAIAbout()">
+          <i class="fas fa-robot"></i> Ask AI Guru
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="cd-tabs">
+    <button class="cd-tab active" onclick="switchTab('roadmap', this)">🗺 Roadmap</button>
+    <button class="cd-tab" onclick="switchTab('skills', this)">🛠 Skills</button>
+    <button class="cd-tab" onclick="switchTab('colleges', this)">🎓 Colleges</button>
+    <button class="cd-tab" onclick="switchTab('jobs', this)">💼 Job Roles</button>
+  </div>
+
+  <!-- ROADMAP TAB -->
+  <div class="cd-tab-panel active" id="tab-roadmap">
+    <div class="timeline" id="roadmapTimeline">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+  <!-- SKILLS TAB -->
+  <div class="cd-tab-panel" id="tab-skills">
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;"><span class="skill-dot must" style="display:inline-block;"></span> Must Have</span>
+        <span style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;"><span class="skill-dot good" style="display:inline-block;"></span> Good to Have</span>
+        <span style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;"><span class="skill-dot bonus" style="display:inline-block;"></span> Bonus</span>
+      </div>
+    </div>
+    <div class="skills-grid" id="skillsGrid"><!-- JS --></div>
+  </div>
+
+  <!-- COLLEGES TAB -->
+  <div class="cd-tab-panel" id="tab-colleges">
+    <div class="college-list" id="collegeList"><!-- JS --></div>
+  </div>
+
+  <!-- JOB ROLES TAB -->
+  <div class="cd-tab-panel" id="tab-jobs">
+    <div class="job-grid" id="jobGrid"><!-- JS --></div>
+  </div>
+
+</div>
+
+<script>
+const CAREER = {{ career | tojson }};
+const LEVEL  = '{{ level }}';
+
+// ── TAB SWITCH ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.cd-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cd-tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── ROADMAP ──
+function buildRoadmap() {
+  const roadmap = CAREER.roadmap || '';
+  const el = document.getElementById('roadmapTimeline');
+
+  // Try to parse if it's a semicolon-separated list
+  let steps = [];
+  if (roadmap && roadmap.includes(';')) {
+    steps = roadmap.split(';').map(s => s.trim()).filter(Boolean);
+  } else if (roadmap) {
+    steps = roadmap.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+
+  // Fallback: generate sensible default roadmap by category
+  if (!steps.length) {
+    steps = getDefaultRoadmap(CAREER.category, CAREER.title);
+  }
+
+  const stages = ['Foundation','Learning','Practice','Experience','Growth','Expert'];
+  el.innerHTML = steps.map((step, i) => `
+    <div class="tl-item" style="animation:fadeIn .4s ease ${(i * 0.08).toFixed(2)}s both;">
+      <div class="tl-dot">${i + 1}</div>
+      <div class="tl-card">
+        <div class="tl-stage">${stages[i] || 'Step ' + (i+1)}</div>
+        <div class="tl-text">${step}</div>
+      </div>
+    </div>`).join('');
+}
+
+function getDefaultRoadmap(category, title) {
+  const maps = {
+    Technology: [
+      `Start with programming basics — Python or C++ is best for beginners. Use free resources like freeCodeCamp, CS50 by Harvard.`,
+      `Build foundation in Data Structures & Algorithms (DSA). Practice on LeetCode, Codeforces. This is essential for placements.`,
+      `Learn the core domain: Web Dev → HTML/CSS/React/Node | Data Science → NumPy/Pandas/ML | Mobile → Flutter/React Native.`,
+      `Build 3–5 projects. Host on GitHub. Deploy one live project. Recruiters look at GitHub profiles seriously.`,
+      `Internships — apply at startups via LinkedIn, Internshala, AngelList. 6-month internship > 1 year of college learning.`,
+      `Full-time role at a startup or mid-size company. Build domain expertise. Target FAANG after 2–3 years experience.`,
+    ],
+    Business: [
+      `Get MBA/BBA foundation — understand Finance, Marketing, Operations basics. Books: Think and Grow Rich, Zero to One.`,
+      `Develop communication & analytical skills. Excel, PowerPoint, Data Analysis are non-negotiables in business world.`,
+      `Internships in relevant sector. Even 2-month internships teach more than a full semester of theory.`,
+      `Build network — LinkedIn, industry events, alumni connections. Business is 50% who you know.`,
+      `Get certified in your domain — Google Digital Marketing, CFA for Finance, PMP for Management.`,
+      `Grow into leadership: Manager → Senior Manager → Director → VP. Or start your own venture!`,
+    ],
+    Creative: [
+      `Master your core tool — Adobe Suite for Design, Final Cut for Video, Blender for 3D, DAW for Music.`,
+      `Study fundamentals: Color Theory, Typography, Composition, Sound Design — depending on your field.`,
+      `Build a portfolio with 10+ strong pieces. Quality > Quantity. Every piece should tell a story.`,
+      `Freelance on Fiverr, Upwork, Behance to earn while learning and get real client experience.`,
+      `Collaborate with others in your field — join creative communities, do collabs, expand your network.`,
+      `Build a recognizable personal brand. Social media presence is your portfolio in the creative world.`,
+    ],
+  };
+  return maps[category] || maps.Technology;
+}
+
+// ── SKILLS ──
+function buildSkills() {
+  const rawSkills = CAREER.required_skills || CAREER.skills || '';
+  const skillArr  = rawSkills.split(';').map(s => s.trim()).filter(Boolean);
+
+  const skillData = skillArr.map((s, i) => ({
+    name: s,
+    type: i < Math.ceil(skillArr.length * 0.5) ? 'must' : i < Math.ceil(skillArr.length * 0.8) ? 'good' : 'bonus'
+  }));
+
+  const el = document.getElementById('skillsGrid');
+  el.innerHTML = skillData.map(s => `
+    <div class="skill-pill">
+      <span class="skill-dot ${s.type}"></span>
+      ${s.name}
+    </div>`).join('');
+}
+
+// ── COLLEGES ──
+function buildColleges() {
+  const raw = CAREER.top_colleges || '';
+  const colleges = raw.split(';').map(s => s.trim()).filter(Boolean);
+
+  const types = {
+    'IIT':'🏆 Premier IIT','NIT':'🥇 National Institute','IIIT':'💻 IIIT',
+    'IIM':'🎯 Premier B-School','AIIMS':'🏥 Premier Medical',
+    'NID':'🎨 Design School','NIFT':'👗 Fashion Institute',
+    'BITS':'⭐ BITS Pilani','Delhi':'🏛️ Central University',
+  };
+
+  const el = document.getElementById('collegeList');
+  if (!colleges.length) {
+    el.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted);">College info coming soon for this career.</div>`;
+    return;
+  }
+  el.innerHTML = colleges.map((c, i) => {
+    let type = '🎓 Top College';
+    for (const [k, v] of Object.entries(types)) {
+      if (c.includes(k)) { type = v; break; }
+    }
+    return `
+    <div class="college-item">
+      <div class="college-rank">${i + 1}</div>
+      <div>
+        <div class="college-name">${c}</div>
+        <div class="college-type">${type}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── JOB ROLES ──
+function buildJobs() {
+  const raw   = CAREER.job_roles || '';
+  const roles = raw.split(';').map(s => s.trim()).filter(Boolean);
+
+  const emojis = ['💻','📊','🎨','🔬','📱','🌐','⚙️','📈','🎯','🧠','🚀','💼'];
+  const salRange = (base) => {
+    const lo = Math.round(base * 0.7 / 100000);
+    const hi = Math.round(base * 1.5 / 100000);
+    return `₹${lo}–${hi}L/yr`;
+  };
+
+  const el = document.getElementById('jobGrid');
+  el.innerHTML = roles.map((r, i) => `
+    <div class="job-card">
+      <div class="job-icon">${emojis[i % emojis.length]}</div>
+      <div class="job-title">${r}</div>
+      <div class="job-salary">${CAREER.avg_salary_inr ? salRange(CAREER.avg_salary_inr) : 'Market Rate'}</div>
+    </div>`).join('');
+}
+
+// ── SAVE CAREER ──
+function saveCareer() {
+  const saved = JSON.parse(localStorage.getItem('md_saved_careers') || '[]');
+  const id    = CAREER.id;
+  if (!saved.includes(id)) {
+    saved.push(id);
+    localStorage.setItem('md_saved_careers', JSON.stringify(saved));
+  }
+  document.getElementById('saveIcon').className = 'fas fa-check';
+  document.getElementById('saveTxt').textContent = 'Saved!';
+  document.getElementById('saveBtn').style.background = 'linear-gradient(135deg,#43e97b,#38f9d7)';
+  document.getElementById('saveBtn').style.color = '#0a1f15';
+  document.getElementById('savedBadge').style.display = 'flex';
+
+  // Persist to server
+  fetch('/api/save-career', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({career_id: id})
+  }).catch(() => {});
+}
+
+// ── ASK AI ──
+function askAIAbout() {
+  const query = `Tell me everything about a career as a ${CAREER.title} — roadmap, skills, salary, best colleges, and job roles in India.`;
+  const win = document.getElementById('chatWindow');
+  if (!win.classList.contains('active')) toggleChat();
+  setTimeout(() => {
+    document.getElementById('chatInput').value = query;
+    sendMessage();
+  }, 400);
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  buildRoadmap();
+  buildSkills();
+  buildColleges();
+  buildJobs();
+
+  // Check if already saved
+  const saved = JSON.parse(localStorage.getItem('md_saved_careers') || '[]');
+  if (saved.includes(CAREER.id)) {
+    document.getElementById('saveIcon').className = 'fas fa-check';
+    document.getElementById('saveTxt').textContent = 'Saved!';
+    document.getElementById('savedBadge').style.display = 'flex';
+  }
+});
+
+// CSS for animations
+const style = document.createElement('style');
+style.textContent = '@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}';
+document.head.appendChild(style);
+</script>
+{% endblock %}

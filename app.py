@@ -457,9 +457,14 @@ def career_browse():
 def career_detail(cid):
     try:
         career = get_db().execute('SELECT * FROM careers WHERE id=?', (cid,)).fetchone()
-        if career:
-            return render_template('career/detail.html', career=dict(career))
-        return 'Not found', 404
+        if not career:
+            return 'Not found', 404
+        c = dict(career)
+        # map category to emoji icon
+        icons = {'Technology':'💻','Business':'📊','Creative':'🎨',
+                 'Healthcare':'🩺','Legal':'⚖️','Education':'📚','Science':'🔬'}
+        career_icon = icons.get(c.get('category',''), '🎯')
+        return render_template('career_detail.html', career=c, career_icon=career_icon)
     except Exception as e:
         return f'Error: {e}', 500
 
@@ -714,6 +719,116 @@ def api_stats():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ═══════════════════════════════════════════════
+#  SCHOOL RESOURCES
+# ═══════════════════════════════════════════════
+@app.route('/school/resources')
+@login_required
+@onboarding_required
+def school_resources():
+    if session.get('guest'):
+        user_class = session.get('class_std', '9')
+        user_board = session.get('board', 'CBSE')
+    else:
+        user = get_user(session['user_id'])
+        user_class = user['class_std'] or '9'
+        user_board = user['board'] or 'CBSE'
+
+    boards = ['CBSE', 'ICSE', 'State Board', 'IB', 'NIOS']
+    return render_template('school_resources.html',
+                           user_class=user_class,
+                           user_board=user_board,
+                           boards=boards)
+
+# ═══════════════════════════════════════════════
+#  PROGRESS TRACKER
+# ═══════════════════════════════════════════════
+@app.route('/api/save-progress', methods=['POST'])
+@login_required
+def save_progress():
+    try:
+        data     = request.json
+        subject  = data.get('subject','')
+        class_std = data.get('class_std','')
+        progress = int(data.get('progress', 0))
+
+        if session.get('guest'):
+            return jsonify({'success': True, 'note': 'guest mode, not persisted'})
+
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS user_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, subject TEXT, class_std TEXT,
+            progress INTEGER DEFAULT 0, updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, subject, class_std)
+        )''')
+        db.execute('''INSERT INTO user_progress(user_id,subject,class_std,progress,updated_at)
+            VALUES(?,?,?,?,CURRENT_TIMESTAMP)
+            ON CONFLICT(user_id,subject,class_std) DO UPDATE SET progress=excluded.progress,
+            updated_at=CURRENT_TIMESTAMP''',
+            (session['user_id'], subject, class_std, progress))
+        db.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/get-progress')
+@login_required
+def get_progress():
+    try:
+        if session.get('guest'):
+            return jsonify({'success': True, 'progress': {}})
+        db = get_db()
+        rows = db.execute(
+            'SELECT subject, class_std, progress FROM user_progress WHERE user_id=?',
+            (session['user_id'],)).fetchall()
+        result = {f"{r['class_std']}_{r['subject']}": r['progress'] for r in rows}
+        return jsonify({'success': True, 'progress': result})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ═══════════════════════════════════════════════
+#  SAVE CAREER
+# ═══════════════════════════════════════════════
+@app.route('/api/save-career', methods=['POST'])
+@login_required
+def save_career_api():
+    try:
+        data      = request.json
+        career_id = int(data.get('career_id', 0))
+
+        if session.get('guest'):
+            return jsonify({'success': True, 'note': 'guest mode'})
+
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS saved_careers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, career_id INTEGER, saved_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, career_id)
+        )''')
+        db.execute('''INSERT OR IGNORE INTO saved_careers(user_id, career_id) VALUES(?,?)''',
+                   (session['user_id'], career_id))
+        db.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/saved-careers')
+@login_required
+def get_saved_careers():
+    try:
+        if session.get('guest'):
+            return jsonify({'success': True, 'careers': []})
+        db = get_db()
+        rows = db.execute('''SELECT c.* FROM careers c
+            JOIN saved_careers sc ON sc.career_id = c.id
+            WHERE sc.user_id=? ORDER BY sc.saved_at DESC''',
+            (session['user_id'],)).fetchall()
+        return jsonify({'success': True, 'careers': [dict(r) for r in rows]})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # ═══════════════════════════════════════════════
 #  ERROR HANDLERS
