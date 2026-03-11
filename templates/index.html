@@ -85,6 +85,7 @@
 @keyframes hFloatCenter{ 0%,100%{transform:translate(-50%,-50%);} 50%{transform:translate(-50%,calc(-50% - 12px));} }
 .hv-stat { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:white; line-height:1; }
 .hv-label { font-size:0.72rem; color:rgba(255,255,255,0.4); margin-top:3px; }
+.hv-bar { height:5px; border-radius:5px; transition:width 1s; }
 .orbit {
     position: absolute; top: 50%; left: 50%;
     border: 1px dashed rgba(124,58,237,0.15);
@@ -230,16 +231,30 @@
                     <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px;">Your Career Match</div>
                     <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-bottom:12px;">The Builder 🔧</div>
                     <div style="display:flex;flex-direction:column;gap:7px;">
-                        {% for t,c,w in [('Technical','#3b82f6','85%'),('Analytical','#8b5cf6','70%'),('Creative','#f59e0b','45%')] %}
                         <div>
                             <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:rgba(255,255,255,0.45);margin-bottom:3px;">
-                                <span>{{ t }}</span><span>{{ w }}</span>
+                                <span>Technical</span><span>85%</span>
                             </div>
                             <div style="height:5px;border-radius:5px;background:rgba(255,255,255,0.08);">
-                                <div style="height:100%;width:{{ w }};border-radius:5px;background:{{ c }};transition:width 1s;"></div>
+                                <div class="hv-bar" style="width:85%;background:#3b82f6;"></div>
                             </div>
                         </div>
-                        {% endfor %}
+                        <div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:rgba(255,255,255,0.45);margin-bottom:3px;">
+                                <span>Analytical</span><span>70%</span>
+                            </div>
+                            <div style="height:5px;border-radius:5px;background:rgba(255,255,255,0.08);">
+                                <div class="hv-bar" style="width:70%;background:#8b5cf6;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:rgba(255,255,255,0.45);margin-bottom:3px;">
+                                <span>Creative</span><span>45%</span>
+                            </div>
+                            <div style="height:5px;border-radius:5px;background:rgba(255,255,255,0.08);">
+                                <div class="hv-bar" style="width:45%;background:#f59e0b;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

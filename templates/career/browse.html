@@ -73,6 +73,10 @@
 .cc-desc { font-size:0.8rem; color:var(--text-dim); line-height:1.65; flex:1; margin-bottom:14px; }
 .cc-salary { font-size:0.8rem; color:#6ee7b7; font-weight:600; margin-bottom:10px; }
 .cc-skills { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px; }
+.growth-badge { font-size:0.68rem; font-weight:600; }
+.gr-high { color:#6ee7b7; }
+.gr-med  { color:#a78bfa; }
+.gr-low  { color:var(--text-dim); }
 .cc-skill { font-size:0.68rem; padding:3px 9px; border-radius:20px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); }
 .cc-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:12px; border-top:1px solid var(--border); }
 .cc-arrow { font-size:0.8rem; color:rgba(255,255,255,0.25); transition:color 0.2s; }
@@ -121,7 +125,7 @@
             <div class="cc-top">
                 <span class="tag {% if c.category=='Technology' %}tag-cyan{% elif c.category=='Business' %}tag-purple{% elif c.category=='Creative' %}tag-pink{% elif c.category=='Healthcare' %}tag-green{% else %}tag-amber{% endif %}">{{ c.category }}</span>
                 {% if c.growth_rate %}
-                <span style="font-size:0.68rem;color:{% if 'Very High' in (c.growth_rate or '') %}#6ee7b7{% elif 'High' in (c.growth_rate or '') %}#a78bfa{% else %}var(--text-dim){% endif %};">↑ {{ c.growth_rate }}</span>
+                <span class="growth-badge {% if 'Very High' in (c.growth_rate or '') %}gr-high{% elif 'High' in (c.growth_rate or '') %}gr-med{% else %}gr-low{% endif %}">↑ {{ c.growth_rate }}</span>
                 {% endif %}
             </div>
             <div class="cc-title">{{ c.title }}</div>

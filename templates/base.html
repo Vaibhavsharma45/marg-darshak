@@ -203,7 +203,10 @@ body {
 .sec-label::after { content:''; flex:1; height:1px; background: var(--border); }
 .gradient-text {
     background: linear-gradient(135deg,#a78bfa,#f0abfc,#67e8f9);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
 }
 .btn-glow {
     display: inline-flex; align-items: center; gap: 8px;
