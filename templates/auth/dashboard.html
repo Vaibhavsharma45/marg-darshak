@@ -1,233 +1,649 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard - Marg Darshak{% endblock %}
 
-{% block content %}
-<div class="container my-5">
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== COSMIC DASHBOARD THEME ===== */
+.dash-root {
+    min-height: 100vh;
+    background: #050816;
+    position: relative;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    padding: 30px 0 60px;
+}
 
-    <!-- Welcome Header -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);overflow:hidden;">
-        <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-4 flex-wrap">
-                <div style="width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:white;flex-shrink:0;">
-                    {{ user.name[0].upper() if user.name else '?' }}
-                </div>
-                <div class="text-white">
-                    <h3 class="fw-bold mb-1">Namaste, {{ user.name }}! 🙏</h3>
-                    <div class="d-flex gap-2 flex-wrap mt-1">
-                        <span class="badge bg-white text-dark" style="font-size:0.8rem;">
-                            {{ user.user_type.title() if user.user_type else 'Student' }}
-                        </span>
-                        {% if user.state %}
-                        <span class="badge" style="background:rgba(255,255,255,0.2);font-size:0.8rem;">
-                            <i class="fas fa-map-marker-alt me-1"></i>{{ user.state }}
-                        </span>
-                        {% endif %}
-                        {% if user.current_field %}
-                        <span class="badge" style="background:rgba(255,255,255,0.2);font-size:0.8rem;">
-                            {{ user.current_field }}
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="ms-auto">
-                    <a href="/assessment" class="btn fw-bold" style="background:white;color:#667eea;border-radius:10px;">
-                        <i class="fas fa-redo me-1"></i>New Assessment
-                    </a>
+/* ===== STAR CANVAS ===== */
+#starCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ===== NEBULA BLOBS ===== */
+.nebula {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+    animation: nebulaFloat 12s ease-in-out infinite;
+}
+.nebula-1 { width: 600px; height: 600px; background: radial-gradient(#7c3aed, transparent); top: -150px; left: -100px; animation-delay: 0s; }
+.nebula-2 { width: 500px; height: 500px; background: radial-gradient(#ec4899, transparent); top: 30%; right: -100px; animation-delay: -4s; }
+.nebula-3 { width: 400px; height: 400px; background: radial-gradient(#06b6d4, transparent); bottom: 10%; left: 20%; animation-delay: -8s; }
+
+@keyframes nebulaFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+}
+
+/* ===== CONTENT LAYER ===== */
+.dash-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== WELCOME HERO ===== */
+.welcome-hero {
+    background: linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(236,72,153,0.15) 50%, rgba(6,182,212,0.15) 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+}
+.welcome-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+}
+
+/* ===== AVATAR ===== */
+.cosmic-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: 800; color: white;
+    font-family: 'Syne', sans-serif;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 0 30px rgba(124,58,237,0.6), 0 0 60px rgba(124,58,237,0.3);
+    animation: avatarPulse 3s ease infinite;
+}
+@keyframes avatarPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(124,58,237,0.6), 0 0 60px rgba(124,58,237,0.3); }
+    50% { box-shadow: 0 0 40px rgba(236,72,153,0.7), 0 0 80px rgba(236,72,153,0.35); }
+}
+.avatar-ring {
+    position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, #7c3aed, #ec4899, #06b6d4) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    animation: ringRotate 4s linear infinite;
+}
+@keyframes ringRotate { to { transform: rotate(360deg); } }
+
+/* ===== GLASS CARDS ===== */
+.glass-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s ease;
+}
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.glass-card:hover { 
+    border-color: rgba(124,58,237,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(124,58,237,0.15);
+}
+.glass-card:hover::before { opacity: 1; }
+
+/* ===== PERSONALITY BADGE ===== */
+.personality-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(236,72,153,0.2));
+    border: 1px solid rgba(124,58,237,0.4);
+    border-radius: 50px;
+    margin-bottom: 20px;
+}
+.personality-badge .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #a78bfa;
+    animation: blink 1.5s ease infinite;
+    box-shadow: 0 0 8px #a78bfa;
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* ===== TRAIT BARS ===== */
+.trait-row { margin-bottom: 14px; }
+.trait-label { color: rgba(255,255,255,0.7); font-size: 0.82rem; text-transform: capitalize; letter-spacing: 0.5px; }
+.trait-score { color: rgba(255,255,255,0.4); font-size: 0.78rem; }
+.trait-track {
+    height: 8px; border-radius: 10px;
+    background: rgba(255,255,255,0.07);
+    overflow: hidden; margin-top: 5px;
+}
+.trait-fill {
+    height: 100%; border-radius: 10px;
+    width: 0;
+    transition: width 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+.trait-fill::after {
+    content: '';
+    position: absolute; right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px; border-radius: 50%;
+    background: inherit;
+    box-shadow: 0 0 8px currentColor;
+    filter: brightness(1.5);
+}
+
+/* ===== CAREER PILLS ===== */
+.career-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.35);
+    border-radius: 50px;
+    color: #c4b5fd;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s;
+}
+.career-pill:hover {
+    background: rgba(124,58,237,0.3);
+    border-color: rgba(124,58,237,0.6);
+    color: #ede9fe;
+    transform: translateY(-1px);
+}
+.career-pill .pip {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #a78bfa;
+    box-shadow: 0 0 6px #a78bfa;
+}
+
+/* ===== STAT MINI CARDS ===== */
+.stat-mini {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 18px;
+    text-align: center;
+    transition: all 0.3s;
+}
+.stat-mini:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(124,58,237,0.4);
+    transform: translateY(-2px);
+}
+.stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a78bfa, #f0abfc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.stat-label { color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 2px; }
+
+/* ===== QUICK LINKS ===== */
+.quick-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.25s;
+    margin-bottom: 8px;
+}
+.quick-link:hover {
+    color: white;
+    background: rgba(124,58,237,0.2);
+    border-color: rgba(124,58,237,0.4);
+    transform: translateX(4px);
+}
+.quick-link .ql-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; flex-shrink: 0;
+}
+
+/* ===== SHLOKA CTA ===== */
+.shloka-cta {
+    background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(251,113,133,0.15));
+    border: 1px solid rgba(236,72,153,0.3);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.shloka-cta::after {
+    content: '🕉';
+    position: absolute;
+    right: -10px; bottom: -15px;
+    font-size: 5rem;
+    opacity: 0.08;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-assessment {
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 50px 30px;
+    text-align: center;
+}
+.pulse-ring {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 20px;
+    position: relative;
+}
+.pulse-ring::before, .pulse-ring::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(124,58,237,0.5);
+    animation: expandRing 2s ease infinite;
+}
+.pulse-ring::after { animation-delay: 1s; }
+@keyframes expandRing {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ===== TEXT ===== */
+.text-white { color: #f0f0ff !important; }
+.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 14px;
+}
+.hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 8px;
+}
+
+/* ===== BADGES ===== */
+.type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.badge-student { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+.badge-graduate { background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+.badge-professional { background: rgba(139,92,246,0.2); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+.state-badge { background: rgba(236,72,153,0.15); color: #f9a8d4; border: 1px solid rgba(236,72,153,0.25); padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; }
+
+/* DARK MODE COMPAT */
+body.dark-mode .dash-root { background: #050816; }
+body:not(.dark-mode) .dash-root { background: #0d0d2b; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Stars canvas -->
+<canvas id="starCanvas"></canvas>
+
+<!-- Nebula blobs -->
+<div class="nebula nebula-1"></div>
+<div class="nebula nebula-2"></div>
+<div class="nebula nebula-3"></div>
+
+<div class="dash-root">
+<div class="dash-content container">
+
+    <!-- ===== WELCOME HERO ===== -->
+    <div class="welcome-hero mb-4" style="animation: fadeSlideDown 0.6s ease both;">
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+            <div class="cosmic-avatar">
+                <div class="avatar-ring"></div>
+                {{ user.name[0].upper() if user.name else '?' }}
+            </div>
+            <div style="flex:1;">
+                <p class="mb-1" style="color:rgba(255,255,255,0.45);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;">Welcome back</p>
+                <h2 class="hero-name">Namaste, {{ user.name }}! 🙏</h2>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="type-badge badge-{{ user.user_type or 'student' }}">
+                        {{ user.user_type.title() if user.user_type else 'Student' }}
+                    </span>
+                    {% if user.state %}
+                    <span class="state-badge">📍 {{ user.state }}</span>
+                    {% endif %}
+                    {% if user.current_field %}
+                    <span class="state-badge">{{ user.current_field }}</span>
+                    {% endif %}
                 </div>
             </div>
+            <a href="/assessment" class="btn fw-bold px-4 py-2" style="background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:14px;color:white;font-family:'Syne',sans-serif;box-shadow:0 8px 24px rgba(124,58,237,0.4);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 30px rgba(124,58,237,0.55)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 24px rgba(124,58,237,0.4)'">
+                ✦ New Assessment
+            </a>
         </div>
     </div>
 
     <div class="row g-4">
 
-        <!-- Left Column -->
+        <!-- ===== LEFT COLUMN ===== -->
         <div class="col-lg-8">
 
             {% if assessment %}
-            <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4">
-                        <i class="fas fa-chart-pie me-2 text-primary"></i>Latest Assessment Result
-                    </h5>
+            <!-- Assessment Card -->
+            <div class="glass-card p-4 mb-4" style="animation: fadeSlideUp 0.7s ease 0.1s both;">
+                <p class="section-title">✦ Latest Assessment</p>
 
-                    <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:rgba(102,126,234,0.06);">
-                        <div style="font-size:2.5rem;">🎯</div>
-                        <div>
-                            <h4 class="fw-bold mb-0">{{ assessment.personality_type or 'Career Explorer' }}</h4>
-                            <small class="text-muted">
-                                {% if assessment.completed_at %}{{ assessment.completed_at[:10] }}{% endif %}
-                                {% if assessment.state %} &bull; {{ assessment.state }}{% endif %}
-                            </small>
-                        </div>
-                    </div>
+                <div class="personality-badge mb-3">
+                    <span class="dot"></span>
+                    <span style="color:#e2d9f3;font-weight:600;font-size:0.9rem;font-family:'Syne',sans-serif;">
+                        {{ assessment.personality_type or 'Career Explorer' }}
+                    </span>
+                </div>
 
-                    <!-- Trait bars rendered by JS only — avoids all Jinja dict issues -->
-                    <div id="traitBarsContainer">
-                        <div class="text-center py-2 text-muted small">Loading scores...</div>
-                    </div>
+                <div class="d-flex gap-3 mb-4 flex-wrap" style="font-size:0.78rem;color:rgba(255,255,255,0.35);">
+                    {% if assessment.completed_at %}
+                    <span>📅 {{ assessment.completed_at[:10] }}</span>
+                    {% endif %}
+                    {% if assessment.state %}
+                    <span>📍 {{ assessment.state }}</span>
+                    {% endif %}
+                </div>
 
-                    <!-- Recommended careers rendered by JS only -->
-                    <div id="recommendedCareersContainer"></div>
+                <!-- Trait Bars (JS rendered) -->
+                <div id="traitBarsContainer"></div>
 
-                    <div class="mt-4 d-flex gap-2 flex-wrap">
-                        <a href="/assessment" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
-                            <i class="fas fa-redo me-1"></i>Retake
-                        </a>
-                        <a href="/career/browse" class="btn btn-sm btn-outline-primary" style="border-radius:8px;">
-                            <i class="fas fa-briefcase me-1"></i>Browse Careers
-                        </a>
-                        <a href="/chat" class="btn btn-sm btn-outline-success" style="border-radius:8px;">
-                            <i class="fas fa-robot me-1"></i>Ask AI
-                        </a>
-                    </div>
+                <!-- Careers (JS rendered) -->
+                <div id="recommendedCareersContainer"></div>
+
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+                    <a href="/assessment" class="btn btn-sm px-3" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#c4b5fd;border-radius:10px;font-size:0.82rem;">↺ Retake</a>
+                    <a href="/career/browse" class="btn btn-sm px-3" style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);color:#67e8f9;border-radius:10px;font-size:0.82rem;">🎯 Browse Careers</a>
+                    <a href="/chat" class="btn btn-sm px-3" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;border-radius:10px;font-size:0.82rem;">🤖 Ask AI</a>
                 </div>
             </div>
             {% else %}
-            <div class="card border-0 mb-4" style="border-radius:16px;border:2px dashed #cbd5e1 !important;">
-                <div class="card-body p-5 text-center">
-                    <div style="font-size:3.5rem;">🧠</div>
-                    <h5 class="fw-bold mt-3 mb-2">Abhi tak assessment nahi li!</h5>
-                    <p class="text-muted mb-4">5 minute mein apna perfect career path discover karo</p>
-                    <a href="/assessment" class="btn btn-primary btn-lg" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
-                        <i class="fas fa-brain me-2"></i>Assessment Shuru Karo
-                    </a>
-                </div>
+            <!-- Empty State -->
+            <div class="empty-assessment mb-4" style="animation: fadeSlideUp 0.7s ease 0.1s both;">
+                <div class="pulse-ring">🧠</div>
+                <h5 style="color:white;font-family:'Syne',sans-serif;font-weight:700;">Assessment nahi li abhi tak!</h5>
+                <p style="color:rgba(255,255,255,0.4);font-size:0.88rem;">5 minute mein apna perfect career path discover karo</p>
+                <a href="/assessment" class="btn mt-2 px-4 py-2 fw-bold" style="background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:14px;color:white;font-family:'Syne',sans-serif;box-shadow:0 8px 24px rgba(124,58,237,0.4);">
+                    ✦ Assessment Shuru Karo
+                </a>
             </div>
             {% endif %}
 
-            <!-- Stats -->
-            <div class="row g-3">
+            <!-- Stat Mini Cards -->
+            <div class="row g-3" style="animation: fadeSlideUp 0.7s ease 0.25s both;">
                 <div class="col-4">
-                    <div class="card border-0 shadow-sm text-center p-3" style="border-radius:14px;">
-                        <div style="font-size:1.8rem;">🎯</div>
-                        <div class="fw-bold mt-1">40+</div>
-                        <small class="text-muted">Careers</small>
+                    <div class="stat-mini">
+                        <div style="font-size:1.6rem;">🎯</div>
+                        <div class="stat-num">40+</div>
+                        <div class="stat-label">Careers</div>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card border-0 shadow-sm text-center p-3" style="border-radius:14px;">
-                        <div style="font-size:1.8rem;">📚</div>
-                        <div class="fw-bold mt-1">55+</div>
-                        <small class="text-muted">Resources</small>
+                    <div class="stat-mini">
+                        <div style="font-size:1.6rem;">📚</div>
+                        <div class="stat-num">55+</div>
+                        <div class="stat-label">Resources</div>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card border-0 shadow-sm text-center p-3" style="border-radius:14px;">
-                        <div style="font-size:1.8rem;">🕉️</div>
-                        <div class="fw-bold mt-1">15+</div>
-                        <small class="text-muted">Shlokas</small>
+                    <div class="stat-mini">
+                        <div style="font-size:1.6rem;">🕉️</div>
+                        <div class="stat-num">15+</div>
+                        <div class="stat-label">Shlokas</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Column -->
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3">
-                        <i class="fas fa-bolt me-2 text-warning"></i>Quick Access
-                    </h5>
-                    <div class="d-flex flex-column gap-2">
-                        <a href="/assessment" class="btn btn-outline-primary text-start" style="border-radius:10px;">
-                            <i class="fas fa-brain me-2"></i>Career Assessment
-                        </a>
-                        <a href="/chat" class="btn btn-outline-success text-start" style="border-radius:10px;">
-                            <i class="fas fa-robot me-2"></i>AI Career Counselor
-                        </a>
-                        <a href="/career/browse" class="btn btn-outline-info text-start" style="border-radius:10px;">
-                            <i class="fas fa-briefcase me-2"></i>Browse Careers
-                        </a>
-                        <a href="/gyan" class="btn btn-outline-secondary text-start" style="border-radius:10px;">
-                            <i class="fas fa-om me-2"></i>Daily Wisdom
-                        </a>
-                        <a href="/skill" class="btn btn-outline-dark text-start" style="border-radius:10px;">
-                            <i class="fas fa-graduation-cap me-2"></i>Learning Resources
-                        </a>
-                    </div>
-                </div>
+        <!-- ===== RIGHT COLUMN ===== -->
+        <div class="col-lg-4" style="animation: fadeSlideUp 0.7s ease 0.2s both;">
+
+            <!-- Quick Access -->
+            <div class="glass-card p-4 mb-4">
+                <p class="section-title">✦ Quick Access</p>
+                <a href="/assessment" class="quick-link">
+                    <div class="ql-icon" style="background:rgba(124,58,237,0.2);">🧠</div>
+                    Career Assessment
+                </a>
+                <a href="/chat" class="quick-link">
+                    <div class="ql-icon" style="background:rgba(16,185,129,0.2);">🤖</div>
+                    AI Career Counselor
+                </a>
+                <a href="/career/browse" class="quick-link">
+                    <div class="ql-icon" style="background:rgba(6,182,212,0.2);">🎯</div>
+                    Browse Careers
+                </a>
+                <a href="/gyan" class="quick-link">
+                    <div class="ql-icon" style="background:rgba(236,72,153,0.2);">🕉️</div>
+                    Daily Wisdom
+                </a>
+                <a href="/skill" class="quick-link">
+                    <div class="ql-icon" style="background:rgba(251,191,36,0.2);">📚</div>
+                    Learning Resources
+                </a>
             </div>
 
-            <div class="card border-0" style="border-radius:16px;background:linear-gradient(135deg,#f093fb,#f5576c);">
-                <div class="card-body p-4 text-white text-center">
-                    <div style="font-size:2rem;">🕉️</div>
-                    <h6 class="fw-bold mt-2 mb-1">Aaj Ka Gyan</h6>
-                    <small style="opacity:0.9;">Bhagavad Gita se aaj ka shloka dekho</small>
-                    <div class="mt-3">
-                        <a href="/gyan" class="btn btn-sm fw-bold" style="border-radius:8px;background:white;color:#f5576c;">
-                            Shloka Dekho
-                        </a>
-                    </div>
-                </div>
+            <!-- Shloka CTA -->
+            <div class="shloka-cta">
+                <div style="font-size:2rem; margin-bottom:10px;">🕉️</div>
+                <h6 style="color:white;font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;">Aaj Ka Gyan</h6>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.82rem;margin-bottom:16px;">Bhagavad Gita se aaj ka shloka</p>
+                <a href="/gyan" class="btn btn-sm fw-bold px-4" style="background:linear-gradient(135deg,#ec4899,#f43f5e);border:none;border-radius:10px;color:white;">
+                    Shloka Dekho ✨
+                </a>
             </div>
         </div>
 
     </div>
 </div>
+</div>
 
-{# Pass data to JS via tojson filter — NO dict/list iteration in Jinja #}
-{% if assessment %}
+<!-- ===== JS: Stars + Data Render ===== -->
 <script>
+/* ---- STAR FIELD ---- */
+(function () {
+    var canvas = document.getElementById('starCanvas');
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var shootingStars = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Create stars
+    for (var i = 0; i < 220; i++) {
+        stars.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            r: Math.random() * 1.6 + 0.2,
+            alpha: Math.random() * 0.7 + 0.2,
+            speed: Math.random() * 0.4 + 0.1,
+            phase: Math.random() * Math.PI * 2,
+            color: ['#ffffff','#c4b5fd','#93c5fd','#f9a8d4','#a5f3fc'][Math.floor(Math.random()*5)]
+        });
+    }
+
+    function spawnShooting() {
+        shootingStars.push({
+            x: Math.random() * window.innerWidth * 0.7,
+            y: Math.random() * window.innerHeight * 0.4,
+            len: Math.random() * 120 + 80,
+            speed: Math.random() * 8 + 6,
+            alpha: 1,
+            angle: Math.PI / 5 + Math.random() * 0.2
+        });
+    }
+    setInterval(spawnShooting, 3500);
+
+    function draw(t) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Stars
+        stars.forEach(function(s) {
+            var twinkle = s.alpha + Math.sin(t * s.speed + s.phase) * 0.3;
+            twinkle = Math.max(0.1, Math.min(1, twinkle));
+            ctx.save();
+            ctx.globalAlpha = twinkle;
+            ctx.fillStyle = s.color;
+            ctx.shadowColor = s.color;
+            ctx.shadowBlur = s.r > 1.2 ? 6 : 0;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        });
+
+        // Shooting stars
+        shootingStars = shootingStars.filter(function(ss) {
+            ctx.save();
+            ctx.globalAlpha = ss.alpha;
+            var grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - Math.cos(ss.angle)*ss.len, ss.y - Math.sin(ss.angle)*ss.len);
+            grad.addColorStop(0, 'rgba(255,255,255,0.9)');
+            grad.addColorStop(1, 'rgba(196,181,253,0)');
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 1.5;
+            ctx.shadowColor = '#c4b5fd';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.moveTo(ss.x, ss.y);
+            ctx.lineTo(ss.x - Math.cos(ss.angle)*ss.len, ss.y - Math.sin(ss.angle)*ss.len);
+            ctx.stroke();
+            ctx.restore();
+            ss.x += Math.cos(ss.angle) * ss.speed;
+            ss.y += Math.sin(ss.angle) * ss.speed;
+            ss.alpha -= 0.018;
+            return ss.alpha > 0;
+        });
+
+        requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+})();
+
+/* ---- FADE ANIMATIONS ---- */
+var styleEl = document.createElement('style');
+styleEl.textContent = `
+@keyframes fadeSlideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeSlideUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:translateY(0); } }
+`;
+document.head.appendChild(styleEl);
+
+/* ---- ASSESSMENT DATA RENDER ---- */
+{% if assessment %}
 (function () {
     try {
-        var scoresRaw  = {{ assessment.scores | tojson | safe }};
-        var careersRaw = {{ assessment.recommended_careers | tojson | safe }};
+        var scores  = {{ assessment.scores | tojson | safe }};
+        var careers = {{ assessment.recommended_careers | tojson | safe }};
 
-        var traitColors = {
-            technical:      '#3b82f6',
-            analytical:     '#8b5cf6',
-            creative:       '#f59e0b',
-            social:         '#10b981',
-            entrepreneurial:'#ef4444',
-            leadership:     '#ec4899'
+        var traitGradients = {
+            technical:      ['#3b82f6','#06b6d4'],
+            analytical:     ['#8b5cf6','#a78bfa'],
+            creative:       ['#f59e0b','#fbbf24'],
+            social:         ['#10b981','#34d399'],
+            entrepreneurial:['#ef4444','#f87171'],
+            leadership:     ['#ec4899','#f472b6']
         };
 
-        /* ---- Trait Bars ---- */
+        /* Trait Bars */
         var barsEl = document.getElementById('traitBarsContainer');
-        if (barsEl && scoresRaw && typeof scoresRaw === 'object') {
-            var vals = Object.values(scoresRaw);
-            var maxVal = vals.length ? Math.max.apply(null, vals) : 1;
-            if (maxVal === 0) maxVal = 1;
+        if (barsEl && scores && typeof scores === 'object') {
+            var maxVal = Math.max.apply(null, Object.values(scores)) || 1;
             var html = '';
-            Object.keys(scoresRaw).forEach(function (trait) {
-                var score = scoresRaw[trait];
+            var delay = 0;
+            Object.keys(scores).forEach(function (trait) {
+                var score = scores[trait];
                 var pct   = Math.min(Math.round((score / maxVal) * 100), 100);
-                var color = traitColors[trait] || '#667eea';
-                html += '<div class="mb-2">'
-                    + '<div class="d-flex justify-content-between small mb-1">'
-                    + '<span class="text-capitalize fw-semibold">' + trait + '</span>'
-                    + '<span class="text-muted">' + score + ' pts</span>'
+                var grad  = (traitGradients[trait] || ['#7c3aed','#c4b5fd']);
+                html += '<div class="trait-row" style="animation:fadeSlideUp 0.5s ease ' + delay + 's both;">'
+                    + '<div class="d-flex justify-content-between">'
+                    + '<span class="trait-label">' + trait + '</span>'
+                    + '<span class="trait-score">' + score + ' pts</span>'
                     + '</div>'
-                    + '<div style="background:#e5e7eb;border-radius:8px;height:9px;">'
-                    + '<div style="width:' + pct + '%;height:9px;border-radius:8px;background:' + color + ';transition:width 1.2s ease;"></div>'
+                    + '<div class="trait-track">'
+                    + '<div class="trait-fill" id="tf_' + trait + '" style="background:linear-gradient(90deg,' + grad[0] + ',' + grad[1] + ');"></div>'
                     + '</div></div>';
+                delay += 0.08;
             });
-            barsEl.innerHTML = html || '<p class="text-muted small">No score data</p>';
-        } else if (barsEl) {
-            barsEl.innerHTML = '<p class="text-muted small">Score data unavailable</p>';
+            barsEl.innerHTML = html;
+
+            // Animate fills after paint
+            setTimeout(function () {
+                Object.keys(scores).forEach(function (trait) {
+                    var maxVal2 = Math.max.apply(null, Object.values(scores)) || 1;
+                    var pct = Math.min(Math.round((scores[trait] / maxVal2) * 100), 100);
+                    var el = document.getElementById('tf_' + trait);
+                    if (el) el.style.width = pct + '%';
+                });
+            }, 200);
         }
 
-        /* ---- Recommended Careers ---- */
+        /* Recommended Careers */
         var careersEl = document.getElementById('recommendedCareersContainer');
-        if (careersEl && careersRaw && Array.isArray(careersRaw) && careersRaw.length > 0) {
-            var cHtml = '<div class="mt-3 pt-3" style="border-top:1px solid #e5e7eb;">'
-                + '<p class="small text-muted fw-semibold text-uppercase mb-2">Recommended Careers</p>'
+        if (careersEl && Array.isArray(careers) && careers.length > 0) {
+            var cHtml = '<div class="mt-4 pt-3" style="border-top:1px solid rgba(255,255,255,0.07);">'
+                + '<p class="section-title" style="margin-bottom:10px;">✦ Recommended Careers</p>'
                 + '<div class="d-flex flex-wrap gap-2">';
-            careersRaw.forEach(function (career) {
-                cHtml += '<a href="/career/browse" class="badge text-decoration-none px-3 py-2" '
-                    + 'style="background:linear-gradient(135deg,#667eea,#764ba2);font-size:0.8rem;">'
-                    + career + '</a>';
+            careers.forEach(function (c) {
+                cHtml += '<a href="/career/browse" class="career-pill"><span class="pip"></span>' + c + '</a>';
             });
             cHtml += '</div></div>';
             careersEl.innerHTML = cHtml;
         }
     } catch (e) {
-        console.error('Dashboard render error:', e);
-        var b = document.getElementById('traitBarsContainer');
-        if (b) b.innerHTML = '<p class="text-muted small">Could not load score data</p>';
+        console.error('Dashboard render err:', e);
     }
 })();
-</script>
 {% endif %}
+</script>
 
 {% endblock %}
