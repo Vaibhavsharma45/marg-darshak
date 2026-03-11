@@ -1,334 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Marg Darshak - जीवन के हर पड़ाव पर सही दिशा{% endblock %}</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    {% block extra_css %}{% endblock %}
-    
-    <style>
-        body { transition: background-color 0.3s, color 0.3s; }
-        
-        /* ===== DARK MODE ===== */
-        body.dark-mode { background-color: #111827; color: #e5e7eb; }
-        body.dark-mode .card { background-color: #1f2937; color: #e5e7eb; border-color: #374151; }
-        body.dark-mode .navbar { background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%) !important; }
-        body.dark-mode .bg-light { background-color: #1f2937 !important; }
-        body.dark-mode .text-muted { color: #9ca3af !important; }
-        body.dark-mode .sidebar { background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%); }
-        body.dark-mode footer { background-color: #030712 !important; }
-        body.dark-mode .form-control, body.dark-mode .form-select { background-color: #1f2937; color: #e5e7eb; border-color: #374151; }
-        body.dark-mode .modal-content { background-color: #1f2937; color: #e5e7eb; }
-        body.dark-mode .alert { border-color: #374151; }
-        
-        /* ===== NAVBAR USER BADGE ===== */
-        .user-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 6px 14px; border-radius: 20px;
-            background: rgba(255,255,255,0.15);
-            color: white; font-size: 0.85rem; font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .user-badge:hover { background: rgba(255,255,255,0.25); color: white; text-decoration: none; }
-        .user-avatar {
-            width: 28px; height: 28px; border-radius: 50%;
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            display: inline-flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 700; color: white;
-        }
-        .user-type-badge {
-            font-size: 0.65rem; padding: 2px 8px;
-            border-radius: 10px; font-weight: 600;
-        }
-        .badge-student { background: #10b981; }
-        .badge-graduate { background: #3b82f6; }
-        .badge-professional { background: #8b5cf6; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Marg Darshak — जीवन के हर पड़ाव पर सही दिशा{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block extra_css %}{% endblock %}
+<style>
+/* ═══════════════════════════════════════════
+   GLOBAL RESET & TOKENS
+═══════════════════════════════════════════ */
+:root {
+    --bg:       #060818;
+    --bg2:      #0c0f20;
+    --surface:  rgba(255,255,255,0.04);
+    --border:   rgba(255,255,255,0.08);
+    --border-hi:rgba(124,58,237,0.4);
+    --accent:   #7c3aed;
+    --accent2:  #ec4899;
+    --accent3:  #06b6d4;
+    --text:     #e2e8f0;
+    --text-dim: rgba(255,255,255,0.45);
+    --text-fade:rgba(255,255,255,0.22);
+    --font-head:'Syne', sans-serif;
+    --font-body:'DM Sans', sans-serif;
+    --radius:   20px;
+    --radius-sm:12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+::selection { background: rgba(124,58,237,0.35); color: white; }
 
-        /* ===== FLASH MESSAGES ===== */
-        .flash-container { position: fixed; top: 70px; right: 20px; z-index: 9998; max-width: 350px; }
-        .flash-msg { padding: 12px 18px; border-radius: 10px; margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideInRight 0.4s ease;
-            display: flex; align-items: center; gap: 10px; }
-        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: linear-gradient(#7c3aed, #ec4899); border-radius: 6px; }
 
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100vh;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            padding: 20px; transition: left 0.3s ease; z-index: 1050;
-            overflow-y: auto; box-shadow: 2px 0 20px rgba(0,0,0,0.3);
-        }
-        .sidebar.active { left: 0; }
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1040; display: none; }
-        .sidebar-overlay.active { display: block; }
-        .sidebar-header { color: white; margin-bottom: 25px; text-align: center; padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .sidebar-menu { list-style: none; padding: 0; }
-        .sidebar-menu li { margin-bottom: 6px; }
-        .sidebar-menu a { display: flex; align-items: center; padding: 11px 14px; color: white;
-            text-decoration: none; border-radius: 10px; transition: all 0.3s ease; font-size: 0.92rem; }
-        .sidebar-menu a:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); }
-        .sidebar-menu a i { margin-right: 12px; font-size: 1rem; width: 22px; text-align: center; }
-        .sidebar-section-title { color: rgba(255,255,255,0.6); font-size: 0.7rem;
-            text-transform: uppercase; letter-spacing: 1px; padding: 12px 14px 6px; font-weight: 700; }
-        .sidebar-user-info { background: rgba(255,255,255,0.1); border-radius: 12px;
-            padding: 12px; margin-bottom: 20px; text-align: center; }
+/* ═══════════════════════════════════════════
+   GLOBAL BACKGROUND GRADIENT
+═══════════════════════════════════════════ */
+.page-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+        radial-gradient(ellipse 800px 600px at -10% -10%, rgba(109,40,217,0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 600px 500px at 110% 40%,  rgba(219,39,119,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 50% 110%,  rgba(8,145,178,0.08) 0%, transparent 60%),
+        var(--bg);
+}
 
-        /* ===== FLOATING BUTTONS ===== */
-        .floating-buttons { position: fixed; bottom: 30px; right: 30px; z-index: 1000;
-            display: flex; flex-direction: column; gap: 12px; }
-        .floating-btn { width: 50px; height: 50px; border-radius: 50%; border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25); cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; transition: all 0.3s ease; color: white; }
-        .floating-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
-        .dark-mode-toggle { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .scroll-to-top { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: none; }
-        .sidebar-toggle-btn { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .chat-float-btn { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+/* ═══════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════ */
+.site-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(6,8,24,0.82);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+}
+.nav-inner {
+    display: flex; align-items: center;
+    gap: 8px; padding: 14px 0;
+    flex-wrap: wrap;
+}
+.nav-brand {
+    font-family: var(--font-head);
+    font-size: 1.15rem; font-weight: 800;
+    color: #a78bfa; text-decoration: none;
+    letter-spacing: -0.3px; flex-shrink: 0;
+    transition: color 0.2s;
+}
+.nav-brand:hover { color: #c4b5fd; }
+.nav-links { display: flex; gap: 2px; margin-left: 20px; flex-wrap: wrap; }
+.nav-link-item {
+    padding: 6px 13px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 500;
+    color: var(--text-dim); text-decoration: none;
+    transition: all 0.2s; border: 1px solid transparent;
+    white-space: nowrap;
+}
+.nav-link-item:hover,
+.nav-link-item.active {
+    color: #c4b5fd;
+    background: rgba(124,58,237,0.15);
+    border-color: rgba(124,58,237,0.3);
+}
+.nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.nav-user-badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 20px;
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.25);
+    font-size: 0.8rem; font-weight: 600;
+    color: #c4b5fd; text-decoration: none;
+    transition: all 0.2s;
+}
+.nav-user-badge:hover { background: rgba(124,58,237,0.22); color: #ede9fe; }
+.nav-avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800; color: white;
+}
+.nav-btn-outline {
+    padding: 6px 16px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim);
+    font-size: 0.8rem; text-decoration: none;
+    transition: all 0.2s;
+}
+.nav-btn-outline:hover { border-color: rgba(124,58,237,0.4); color: #c4b5fd; background: rgba(124,58,237,0.08); }
+.nav-btn-solid {
+    padding: 7px 18px; border-radius: 20px;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    color: white; font-size: 0.8rem; font-weight: 600;
+    text-decoration: none; border: none;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+    transition: all 0.2s;
+}
+.nav-btn-solid:hover { box-shadow: 0 6px 20px rgba(124,58,237,0.5); transform: translateY(-1px); color: white; }
 
-        /* ===== PAGE LOADER ===== */
-        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.97); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
-        body.dark-mode .page-loader { background: rgba(17,24,39,0.97); }
-        .page-loader.hidden { opacity: 0; pointer-events: none; }
-        .loader-logo { font-size: 3rem; animation: pulse 1.5s ease infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .loader-text { margin-top: 15px; font-family: 'Noto Sans Devanagari', sans-serif;
-            color: #667eea; font-size: 0.95rem; }
-        
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        body.dark-mode ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(#667eea, #764ba2); border-radius: 10px; }
+/* Mobile hamburger */
+.nav-toggle {
+    display: none; background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; color: var(--text-dim);
+    cursor: pointer; margin-left: auto;
+}
+@media(max-width:768px) {
+    .nav-links, .nav-right { display: none; }
+    .nav-links.open, .nav-right.open { display: flex; width: 100%; margin-left: 0; }
+    .nav-links.open { flex-direction: column; gap: 4px; }
+    .nav-right.open { flex-direction: row; gap: 8px; flex-wrap: wrap; }
+    .nav-toggle { display: block; }
+    .nav-inner { flex-wrap: wrap; }
+}
 
-        @media (max-width: 768px) {
-            .sidebar { width: 260px; left: -260px; }
-            .floating-buttons { bottom: 20px; right: 15px; gap: 8px; }
-            .floating-btn { width: 44px; height: 44px; font-size: 1.1rem; }
-            .flash-container { right: 10px; left: 10px; max-width: none; }
-        }
-    </style>
+/* ═══════════════════════════════════════════
+   FLASH MESSAGES
+═══════════════════════════════════════════ */
+.flash-zone {
+    position: fixed; top: 70px; right: 20px;
+    z-index: 9999; max-width: 360px;
+    display: flex; flex-direction: column; gap: 8px;
+}
+.flash-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px; border-radius: 14px;
+    backdrop-filter: blur(16px); font-size: 0.84rem;
+    font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    animation: flashIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    border: 1px solid;
+}
+@keyframes flashIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.flash-success { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+.flash-danger  { background: rgba(239,68,68,0.15);  border-color: rgba(239,68,68,0.3);  color: #fca5a5; }
+.flash-warning { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+.flash-info    { background: rgba(6,182,212,0.15);  border-color: rgba(6,182,212,0.3);  color: #67e8f9; }
+.flash-close { margin-left: auto; background: none; border: none; color: inherit; cursor: pointer; opacity: 0.6; font-size: 1rem; padding: 0 0 0 6px; }
+.flash-close:hover { opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   GLOBAL UTILITIES
+═══════════════════════════════════════════ */
+.glass {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(18px);
+    border-radius: var(--radius);
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.glass-hover:hover {
+    border-color: var(--border-hi);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 20px rgba(124,58,237,0.1);
+    transform: translateY(-3px);
+}
+.shine::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+}
+.sec-label {
+    font-size: 0.66rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2.5px;
+    color: var(--text-fade); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background: var(--border); }
+.gradient-text {
+    background: linear-gradient(135deg,#a78bfa,#f0abfc,#67e8f9);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.btn-glow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 26px; border-radius: 14px;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    color: white; font-weight: 600; font-size: 0.88rem;
+    text-decoration: none; border: none; cursor: pointer;
+    box-shadow: 0 8px 22px rgba(124,58,237,0.38);
+    transition: all 0.25s; font-family: var(--font-body);
+}
+.btn-glow:hover { box-shadow: 0 12px 28px rgba(124,58,237,0.55); transform: translateY(-2px); color: white; }
+.btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 26px; border-radius: 14px;
+    background: rgba(255,255,255,0.05); color: var(--text);
+    border: 1px solid var(--border); font-weight: 500;
+    font-size: 0.88rem; text-decoration: none; cursor: pointer;
+    transition: all 0.25s; font-family: var(--font-body);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.09); border-color: rgba(124,58,237,0.3); color: white; }
+.tag {
+    display: inline-flex; align-items: center;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 0.73rem; font-weight: 600;
+}
+.tag-purple { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); color: #c4b5fd; }
+.tag-pink   { background: rgba(236,72,153,0.12); border: 1px solid rgba(236,72,153,0.3); color: #f9a8d4; }
+.tag-cyan   { background: rgba(6,182,212,0.12);  border: 1px solid rgba(6,182,212,0.25); color: #67e8f9; }
+.tag-green  { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+.tag-amber  { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fcd34d; }
+.tag-red    { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.25);  color: #fca5a5; }
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+main { position: relative; z-index: 1; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+.site-footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    background: rgba(6,8,24,0.7);
+    backdrop-filter: blur(12px);
+    padding: 40px 0 30px; margin-top: 80px;
+}
+.footer-brand {
+    font-family: var(--font-head); font-size: 1.1rem;
+    font-weight: 800; color: #a78bfa;
+}
+.footer-tagline {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    color: var(--text-fade); font-size: 0.82rem; margin-top: 4px;
+}
+.footer-link {
+    color: var(--text-dim); text-decoration: none;
+    font-size: 0.82rem; display: block; margin-bottom: 8px;
+    transition: color 0.2s;
+}
+.footer-link:hover { color: #c4b5fd; }
+.footer-bottom {
+    border-top: 1px solid var(--border);
+    margin-top: 28px; padding-top: 20px;
+    text-align: center; color: var(--text-fade);
+    font-size: 0.76rem;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE LOADER
+═══════════════════════════════════════════ */
+.pg-loader {
+    position: fixed; inset: 0; z-index: 99999;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+.pg-loader.out { opacity: 0; visibility: hidden; }
+.loader-compass { font-size: 3rem; animation: spin360 1.2s ease infinite; }
+@keyframes spin360 { 0%{transform:rotate(0)}100%{transform:rotate(360deg)} }
+.loader-bar {
+    width: 120px; height: 3px; border-radius: 3px;
+    background: rgba(255,255,255,0.07); margin-top: 20px; overflow: hidden;
+}
+.loader-bar-fill {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg,#7c3aed,#ec4899);
+    border-radius: 3px;
+    animation: loadFill 1s ease forwards;
+}
+@keyframes loadFill { to { width: 100%; } }
+</style>
 </head>
 <body>
 
 <!-- Page Loader -->
-<div class="page-loader" id="pageLoader">
-    <div class="loader-logo">🧭</div>
-    <div class="loader-text">मार्गदर्शक लोड हो रहा है...</div>
+<div class="pg-loader" id="pgLoader">
+    <div class="loader-compass">🧭</div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
 </div>
+
+<!-- Background -->
+<div class="page-bg"></div>
 
 <!-- Flash Messages -->
-<div class="flash-container" id="flashContainer">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-            <div class="flash-msg alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'warning' if category == 'warning' else 'info' }} alert-dismissible">
-                <i class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-circle' if category == 'danger' else 'fa-info-circle' }}"></i>
-                {{ message }}
-                <button type="button" class="btn-close btn-sm" onclick="this.parentElement.remove()"></button>
-            </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+<div class="flash-zone">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cat, msg in messages %}
+<div class="flash-pill flash-{{ cat }}">
+    <span>{{ '✅' if cat=='success' else '⚠️' if cat=='warning' else '❌' if cat=='danger' else 'ℹ️' }}</span>
+    <span>{{ msg }}</span>
+    <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 </div>
 
-<!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <div style="font-size:2.5rem;">🧭</div>
-        <h5 style="color:white;margin:8px 0 2px;font-weight:700;">Marg Darshak</h5>
-        <small style="color:rgba(255,255,255,0.7);">मार्गदर्शक</small>
-    </div>
+<!-- ═══ NAVBAR ═══ -->
+<nav class="site-nav">
+    <div class="container nav-inner">
+        <a href="/" class="nav-brand">🧭 Marg Darshak</a>
 
-    {% if current_user %}
-    <div class="sidebar-user-info">
-        <div class="user-avatar mx-auto mb-2" style="width:40px;height:40px;font-size:1rem;">
-            {{ current_user.name[0].upper() }}
+        <button class="nav-toggle" onclick="toggleNav()" id="navToggle">☰</button>
+
+        <div class="nav-links" id="navLinks">
+            <a href="/assessment" class="nav-link-item {% if request.path=='/assessment' %}active{% endif %}">Assessment</a>
+            <a href="/career/browse" class="nav-link-item {% if '/career' in request.path %}active{% endif %}">Careers</a>
+            <a href="/gyan" class="nav-link-item {% if '/gyan' in request.path %}active{% endif %}">Gyan Kosh</a>
+            <a href="/skill" class="nav-link-item {% if '/skill' in request.path %}active{% endif %}">Skills</a>
+            <a href="/chat" class="nav-link-item {% if request.path=='/chat' %}active{% endif %}">🤖 AI Chat</a>
         </div>
-        <div style="color:white;font-weight:600;font-size:0.9rem;">{{ current_user.name }}</div>
-        <span class="user-type-badge badge-{{ current_user.user_type }}" style="font-size:0.7rem;padding:2px 8px;border-radius:10px;color:white;">
-            {{ current_user.user_type.title() }}
-        </span>
-    </div>
-    {% endif %}
 
-    <ul class="sidebar-menu">
-        <div class="sidebar-section-title">Main</div>
-        <li><a href="/"><i class="fas fa-home"></i>Home</a></li>
-        <li><a href="/assessment"><i class="fas fa-brain"></i>Career Assessment</a></li>
-        <li><a href="/chat"><i class="fas fa-robot"></i>AI Career Counselor</a></li>
-        
-        <div class="sidebar-section-title">Modules</div>
-        <li><a href="/career/browse"><i class="fas fa-briefcase"></i>Browse Careers</a></li>
-        <li><a href="/gyan"><i class="fas fa-om"></i>Daily Wisdom</a></li>
-        <li><a href="/gyan/search"><i class="fas fa-book-open"></i>Search Verses</a></li>
-        <li><a href="/skill"><i class="fas fa-graduation-cap"></i>Learning Resources</a></li>
-        
-        <div class="sidebar-section-title">Account</div>
-        {% if current_user %}
-        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i>My Dashboard</a></li>
-        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
-        {% else %}
-        <li><a href="/login"><i class="fas fa-sign-in-alt"></i>Login</a></li>
-        <li><a href="/register"><i class="fas fa-user-plus"></i>Register</a></li>
-        {% endif %}
-    </ul>
-    
-    <div style="position:absolute;bottom:15px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.5);font-size:0.75rem;">
-        Marg Darshak v2.0 • Major Project
-    </div>
-</div>
-
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-<!-- Floating Buttons -->
-<div class="floating-buttons">
-    <button class="floating-btn sidebar-toggle-btn" onclick="toggleSidebar()" title="Menu">
-        <i class="fas fa-bars"></i>
-    </button>
-    <a href="/chat" class="floating-btn chat-float-btn" title="AI Counselor" style="text-decoration:none;">
-        <i class="fas fa-robot"></i>
-    </a>
-    <button class="floating-btn dark-mode-toggle" onclick="toggleDarkMode()" title="Dark Mode" id="darkModeBtn">
-        <i class="fas fa-moon"></i>
-    </button>
-    <button class="floating-btn scroll-to-top" onclick="scrollToTop()" id="scrollTopBtn" title="Top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-</div>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">
-            🧭 Marg Darshak
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="/assessment"><i class="fas fa-brain"></i> Assessment</a></li>
-                <li class="nav-item"><a class="nav-link" href="/career/browse"><i class="fas fa-briefcase"></i> Careers</a></li>
-                <li class="nav-item"><a class="nav-link" href="/gyan"><i class="fas fa-om"></i> Gyan</a></li>
-                <li class="nav-item"><a class="nav-link" href="/skill"><i class="fas fa-book"></i> Skills</a></li>
-                <li class="nav-item"><a class="nav-link" href="/chat"><i class="fas fa-robot"></i> AI Chat</a></li>
-            </ul>
-            <ul class="navbar-nav ms-auto align-items-center">
-                {% if current_user %}
-                <li class="nav-item me-2">
-                    <span class="user-type-badge badge-{{ current_user.user_type }}" style="font-size:0.7rem;padding:3px 10px;border-radius:10px;color:white;">
-                        {{ current_user.user_type.title() }}
-                    </span>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle user-badge" href="#" data-bs-toggle="dropdown">
-                        <span class="user-avatar">{{ current_user.name[0].upper() }}</span>
-                        {{ current_user.name.split()[0] }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                        <li><a class="dropdown-item" href="/assessment"><i class="fas fa-redo me-2"></i>Retake Assessment</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </li>
-                {% else %}
-                <li class="nav-item me-2">
-                    <a class="btn btn-outline-light btn-sm" href="/login">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn btn-light btn-sm fw-bold" href="/register" style="color:#667eea;">Register</a>
-                </li>
-                {% endif %}
-            </ul>
+        <div class="nav-right" id="navRight">
+            {% if current_user %}
+            <a href="/dashboard" class="nav-user-badge">
+                <div class="nav-avatar">{{ current_user.name[0].upper() }}</div>
+                {{ current_user.name.split()[0] }}
+            </a>
+            <a href="/logout" class="nav-btn-outline">Sign out</a>
+            {% else %}
+            <a href="/login" class="nav-btn-outline">Login</a>
+            <a href="/register" class="nav-btn-solid">Join Free</a>
+            {% endif %}
         </div>
     </div>
 </nav>
 
+<!-- Main Content -->
 <main>{% block content %}{% endblock %}</main>
 
-<footer class="bg-dark text-white py-4 mt-5">
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <h6 class="fw-bold">🧭 Marg Darshak</h6>
-                <p class="small text-muted">"जीवन के हर पड़ाव पर सही दिशा"<br>India's Complete Career Guidance Platform</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="footer-brand">🧭 Marg Darshak</div>
+                <div class="footer-tagline">"जीवन के हर पड़ाव पर सही दिशा"</div>
+                <p style="color:var(--text-dim);font-size:0.8rem;margin-top:12px;line-height:1.7;">
+                    India's smartest career guidance platform for students, graduates &amp; professionals.
+                </p>
             </div>
-            <div class="col-md-4 mb-3">
-                <h6 class="fw-bold">Quick Links</h6>
-                <div class="d-flex flex-column gap-1">
-                    <a href="/assessment" class="text-muted small text-decoration-none">Career Assessment</a>
-                    <a href="/gyan" class="text-muted small text-decoration-none">Gyan Kosh</a>
-                    <a href="/skill" class="text-muted small text-decoration-none">Learning Resources</a>
-                    <a href="/chat" class="text-muted small text-decoration-none">AI Counselor</a>
-                </div>
+            <div class="col-md-2 col-6">
+                <p style="color:var(--text-fade);font-size:0.68rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;">Platform</p>
+                <a href="/assessment" class="footer-link">Assessment</a>
+                <a href="/career/browse" class="footer-link">Careers</a>
+                <a href="/chat" class="footer-link">AI Counselor</a>
+                <a href="/skill" class="footer-link">Resources</a>
             </div>
-            <div class="col-md-4 mb-3">
-                <h6 class="fw-bold">For</h6>
-                <div class="d-flex flex-column gap-1">
-                    <span class="text-muted small">🎓 Students (School Level)</span>
-                    <span class="text-muted small">📚 Graduates</span>
-                    <span class="text-muted small">💼 Professionals</span>
+            <div class="col-md-2 col-6">
+                <p style="color:var(--text-fade);font-size:0.68rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;">Wisdom</p>
+                <a href="/gyan" class="footer-link">Daily Shloka</a>
+                <a href="/gyan/search" class="footer-link">Search Verses</a>
+            </div>
+            <div class="col-md-4">
+                <p style="color:var(--text-fade);font-size:0.68rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;">For</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="tag tag-green">🎓 Students</span>
+                    <span class="tag tag-purple">📚 Graduates</span>
+                    <span class="tag tag-cyan">💼 Professionals</span>
                 </div>
+                <p style="color:var(--text-fade);font-size:0.76rem;margin-top:14px;">Covering all 33 Indian states &amp; UTs</p>
             </div>
         </div>
-        <hr class="border-secondary">
-        <div class="text-center">
-            <small class="text-muted">© 2025 Marg Darshak | Made with ❤️ by Vaibhav Sharma | Major Project</small>
+        <div class="footer-bottom">
+            © 2025 Marg Darshak &nbsp;·&nbsp; Made with ❤️ by Vaibhav Sharma &nbsp;·&nbsp; Major Project
         </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
 <script>
-    window.addEventListener('load', () => setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 400));
-
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-        document.querySelector('#darkModeBtn i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('darkMode') === 'enabled') {
-            document.body.classList.add('dark-mode');
-            document.querySelector('#darkModeBtn i').className = 'fas fa-sun';
-        }
-        // Auto-dismiss flash messages
-        setTimeout(() => {
-            document.querySelectorAll('.flash-msg').forEach(el => el.style.opacity = '0');
-            setTimeout(() => document.querySelectorAll('.flash-msg').forEach(el => el.remove()), 500);
-        }, 4000);
+// Page loader
+window.addEventListener('load', function() {
+    setTimeout(function() { document.getElementById('pgLoader').classList.add('out'); }, 500);
+});
+// Nav toggle
+function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+    document.getElementById('navRight').classList.toggle('open');
+}
+// Auto-dismiss flashes
+setTimeout(function() {
+    document.querySelectorAll('.flash-pill').forEach(function(el) {
+        el.style.transition = 'opacity 0.5s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 500);
     });
-
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('sidebarOverlay').classList.toggle('active');
-        document.body.style.overflow = document.getElementById('sidebar').classList.contains('active') ? 'hidden' : '';
-    }
-    document.querySelectorAll('.sidebar-menu a').forEach(link => link.addEventListener('click', () => setTimeout(toggleSidebar, 200)));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getElementById('sidebar').classList.remove('active'); document.getElementById('sidebarOverlay').classList.remove('active'); document.body.style.overflow = ''; } });
-
-    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    window.addEventListener('scroll', () => {
-        document.getElementById('scrollTopBtn').style.display = window.pageYOffset > 300 ? 'flex' : 'none';
-    });
+}, 4000);
 </script>
-
 {% block extra_js %}{% endblock %}
 </body>
 </html>

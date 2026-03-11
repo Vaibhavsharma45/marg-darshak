@@ -1,165 +1,403 @@
 {% extends 'base.html' %}
+{% block title %}Marg Darshak — Career Guidance for Every Indian{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ════ HERO ════ */
+.hero {
+    min-height: 92vh;
+    display: flex; align-items: center;
+    position: relative; overflow: hidden;
+    padding: 60px 0 80px;
+}
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+}
+@media(max-width:900px){ .hero-grid{grid-template-columns:1fr; text-align:center;} .hero-visual{display:none;} }
+
+/* Headline */
+.hero-kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 20px;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.3);
+    color: #c4b5fd; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.5px; margin-bottom: 24px;
+}
+.hero-kicker .dot { width:7px;height:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px #a78bfa;animation:blink 1.4s ease infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+.hero-h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    font-weight: 800; line-height: 1.12;
+    color: white; margin-bottom: 8px;
+}
+.hero-h1 .hl {
+    background: linear-gradient(135deg,#a78bfa 0%,#f0abfc 50%,#67e8f9 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-deva {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 1rem; color: rgba(255,255,255,0.4);
+    margin-bottom: 20px; font-style: italic;
+}
+.hero-sub {
+    font-size: 1.05rem; color: rgba(255,255,255,0.58);
+    max-width: 500px; line-height: 1.75; margin-bottom: 36px;
+}
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+@media(max-width:900px){ .hero-ctas{justify-content:center;} }
+
+/* Hero Visual - floating cards */
+.hero-visual { position: relative; height: 480px; }
+.hv-card {
+    position: absolute;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 18px; padding: 18px 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+.hv-card-main {
+    width: 280px; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg,rgba(124,58,237,0.2),rgba(236,72,153,0.12));
+    border-color: rgba(124,58,237,0.3);
+    animation: hFloat 5s ease-in-out infinite;
+}
+.hv-card-a {
+    width: 180px; top: 8%; right: 0%;
+    animation: hFloat 6s ease-in-out infinite 1s;
+}
+.hv-card-b {
+    width: 160px; bottom: 12%; left: -2%;
+    animation: hFloat 7s ease-in-out infinite 2s;
+}
+.hv-card-c {
+    width: 150px; top: 20%; left: 0%;
+    animation: hFloat 5.5s ease-in-out infinite 0.5s;
+}
+@keyframes hFloat{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);} }
+.hv-card-main { animation: hFloatCenter 5s ease-in-out infinite; }
+@keyframes hFloatCenter{ 0%,100%{transform:translate(-50%,-50%);} 50%{transform:translate(-50%,calc(-50% - 12px));} }
+.hv-stat { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:white; line-height:1; }
+.hv-label { font-size:0.72rem; color:rgba(255,255,255,0.4); margin-top:3px; }
+.orbit {
+    position: absolute; top: 50%; left: 50%;
+    border: 1px dashed rgba(124,58,237,0.15);
+    border-radius: 50%; transform: translate(-50%,-50%);
+    animation: orbitSpin 20s linear infinite;
+}
+@keyframes orbitSpin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+/* ════ STATS BAR ════ */
+.stats-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 0; margin: 0;
+    background: rgba(255,255,255,0.02);
+}
+.stat-item { text-align: center; }
+.stat-n {
+    font-family: 'Syne',sans-serif;
+    font-size: 2rem; font-weight: 800;
+    background: linear-gradient(135deg,#a78bfa,#f0abfc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+.stat-l { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; }
+
+/* ════ USER TYPE CARDS ════ */
+.type-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+@media(max-width:768px){ .type-cards{grid-template-columns:1fr;} }
+.type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px; padding: 32px 26px;
+    text-decoration: none; color: var(--text);
+    position: relative; overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.34,1.3,0.64,1);
+    display: block;
+}
+.type-card::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: 22px;
+    opacity: 0; transition: opacity 0.3s;
+}
+.type-card:hover { transform: translateY(-8px); color: var(--text); }
+.type-card:hover::before { opacity: 1; }
+.tc-student::before  { background: linear-gradient(135deg,rgba(16,185,129,0.08),transparent); border: 1px solid rgba(16,185,129,0.3); }
+.tc-graduate::before { background: linear-gradient(135deg,rgba(124,58,237,0.12),transparent); border: 1px solid rgba(124,58,237,0.35); }
+.tc-pro::before      { background: linear-gradient(135deg,rgba(6,182,212,0.08),transparent); border: 1px solid rgba(6,182,212,0.3); }
+.type-card:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+.tc-icon { font-size: 2.6rem; margin-bottom: 16px; display: block; }
+.tc-title { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:white; margin-bottom:8px; }
+.tc-desc { font-size:0.85rem; color:var(--text-dim); line-height:1.7; margin-bottom:18px; }
+.tc-pills { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+.tc-cta {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:0.82rem; font-weight:600;
+    color:var(--text-dim); transition:color 0.2s;
+}
+.type-card:hover .tc-cta { color: #c4b5fd; }
+.tc-featured {
+    background: linear-gradient(135deg,rgba(124,58,237,0.12),rgba(236,72,153,0.08));
+    border-color: rgba(124,58,237,0.3);
+}
+.tc-featured-badge {
+    position:absolute; top:16px; right:16px;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    color:white; font-size:0.65rem; font-weight:700;
+    padding:3px 10px; border-radius:20px; letter-spacing:0.5px;
+}
+
+/* ════ FEATURES GRID ════ */
+.features-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media(max-width:900px){ .features-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:480px){ .features-grid{grid-template-columns:1fr;} }
+.feat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 26px 22px;
+    transition: all 0.3s; cursor: pointer; text-decoration: none; display: block; color: var(--text);
+}
+.feat-card:hover { border-color: var(--border-hi); transform: translateY(-4px); background: rgba(124,58,237,0.06); color: var(--text); }
+.feat-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+.feat-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:white; margin-bottom:6px; }
+.feat-desc { font-size:0.78rem; color:var(--text-dim); line-height:1.65; }
+
+/* ════ CTA STRIP ════ */
+.cta-strip {
+    background: linear-gradient(135deg,rgba(124,58,237,0.18),rgba(236,72,153,0.12),rgba(6,182,212,0.1));
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 26px; padding: 56px 48px;
+    text-align: center; position: relative; overflow: hidden;
+}
+.cta-strip::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent);
+}
+
+/* Section spacing */
+.section { padding: 80px 0; }
+.section-sm { padding: 50px 0; }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:80px 0 60px;">
-    <div class="container text-center">
-        <div style="font-size:5rem;animation:bounce 2s ease infinite;">🧭</div>
-        <h1 class="display-3 fw-bold mt-3">Marg Darshak</h1>
-        <h3 style="font-family:'Noto Sans Devanagari',sans-serif;opacity:0.9;" class="mb-3">
-            "जीवन के हर पड़ाव पर सही दिशा"
-        </h3>
-        <p class="lead mb-4" style="opacity:0.9;max-width:550px;margin:0 auto;">
-            India's smartest career guidance platform — students, graduates aur professionals ke liye
-        </p>
-        
-        {% if current_user %}
-        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
-            <a href="/assessment" class="btn btn-light btn-lg fw-bold" style="border-radius:12px;color:#667eea;">
-                <i class="fas fa-brain me-2"></i>New Assessment Lo
-            </a>
-            <a href="/dashboard" class="btn btn-outline-light btn-lg" style="border-radius:12px;">
-                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-            </a>
-        </div>
-        {% else %}
-        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
-            <a href="/register" class="btn btn-light btn-lg fw-bold" style="border-radius:12px;color:#667eea;">
-                <i class="fas fa-rocket me-2"></i>Free Mein Shuru Karo
-            </a>
-            <a href="/assessment" class="btn btn-outline-light btn-lg" style="border-radius:12px;">
-                <i class="fas fa-play me-2"></i>Assessment Try Karo
-            </a>
-        </div>
-        <p class="mt-3" style="opacity:0.7;font-size:0.85rem;">No credit card • No fees • 100% Free</p>
-        {% endif %}
-        
-        <!-- Stats -->
-        <div class="row mt-5 justify-content-center">
-            <div class="col-auto"><div class="px-4"><h3 class="fw-bold mb-0">{{ stats.careers }}+</h3><small style="opacity:0.8;">Career Paths</small></div></div>
-            <div class="col-auto"><div class="px-4" style="border-left:1px solid rgba(255,255,255,0.3);border-right:1px solid rgba(255,255,255,0.3);"><h3 class="fw-bold mb-0">{{ stats.shlokas }}+</h3><small style="opacity:0.8;">Wisdom Verses</small></div></div>
-            <div class="col-auto"><div class="px-4"><h3 class="fw-bold mb-0">{{ stats.resources }}+</h3><small style="opacity:0.8;">Free Resources</small></div></div>
-        </div>
-    </div>
-</div>
 
-<!-- 3 User Types -->
-<div class="container my-5">
-    <h2 class="text-center fw-bold mb-2">Aap Kaun Ho? 👤</h2>
-    <p class="text-center text-muted mb-5">Marg Darshak har kisi ke liye hai</p>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/assessment?type=student'">
-                <div class="card-body p-4">
-                    <div style="font-size:3.5rem;">🎓</div>
-                    <h4 class="fw-bold mt-3">Student</h4>
-                    <p class="text-muted mb-3" style="font-size:0.9rem;">10th/12th ya college mein ho? Confusion hai kya career choose karein? Hum guide karenge!</p>
-                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-                        <span class="badge bg-success-subtle text-success">Career Quiz</span>
-                        <span class="badge bg-info-subtle text-info">College Guide</span>
-                        <span class="badge bg-warning-subtle text-warning">Entrance Exams</span>
-                    </div>
-                    <a href="/assessment" class="btn btn-outline-success" style="border-radius:10px;">Start Assessment <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;background:linear-gradient(135deg,rgba(102,126,234,0.08),rgba(118,75,162,0.08));border:2px solid #667eea!important;" onclick="location.href='/assessment?type=graduate'">
-                <div class="card-body p-4">
-                    <div style="font-size:3.5rem;">📚</div>
-                    <span class="badge mb-2" style="background:linear-gradient(135deg,#667eea,#764ba2);">Most Popular</span>
-                    <h4 class="fw-bold mt-1">Graduate</h4>
-                    <p class="text-muted mb-3" style="font-size:0.9rem;">College complete ho gayi? Job dhundh rahe ho? Placement, skills aur career switch — sab yahan hai.</p>
-                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-                        <span class="badge bg-primary-subtle text-primary">Job Market</span>
-                        <span class="badge bg-success-subtle text-success">Skill Building</span>
-                        <span class="badge bg-danger-subtle text-danger">Salary Info</span>
-                    </div>
-                    <a href="/assessment" class="btn btn-primary" style="border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">Start Assessment <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/assessment?type=professional'">
-                <div class="card-body p-4">
-                    <div style="font-size:3.5rem;">💼</div>
-                    <h4 class="fw-bold mt-3">Professional</h4>
-                    <p class="text-muted mb-3" style="font-size:0.9rem;">Working professional ho? Growth, upskilling ya domain switch chahiye? AI se personalized guidance lo.</p>
-                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-                        <span class="badge bg-purple-subtle text-purple" style="background:rgba(139,92,246,0.1)!important;color:#8b5cf6!important;">AI/ML Skills</span>
-                        <span class="badge bg-warning-subtle text-warning">Leadership</span>
-                        <span class="badge bg-info-subtle text-info">Upskilling</span>
-                    </div>
-                    <a href="/assessment" class="btn btn-outline-secondary" style="border-radius:10px;">Start Assessment <i class="fas fa-arrow-right ms-1"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 4 Main Features -->
-<div class="bg-light py-5">
+<!-- ════ HERO ════ -->
+<section class="hero">
     <div class="container">
-        <h2 class="text-center fw-bold mb-2">Platform Features 🚀</h2>
-        <p class="text-center text-muted mb-5">Sab kuch ek jagah</p>
-        <div class="row g-4">
-            <div class="col-md-3 col-6">
-                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/assessment'">
-                    <div class="card-body p-4">
-                        <div style="font-size:2.5rem;margin-bottom:12px;">🧠</div>
-                        <h6 class="fw-bold">Smart Assessment</h6>
-                        <p class="text-muted small">AI-powered personality + career matching</p>
+        <div class="hero-grid">
+            <div>
+                <div class="hero-kicker">
+                    <span class="dot"></span>
+                    India's #1 Career Guidance Platform
+                </div>
+                <h1 class="hero-h1">
+                    Find Your<br>
+                    <span class="hl">Perfect Path</span><br>
+                    in Life
+                </h1>
+                <p class="hero-deva">"जीवन के हर पड़ाव पर सही दिशा"</p>
+                <p class="hero-sub">
+                    AI-powered career guidance for students, graduates &amp; professionals across all 33 Indian states. Assessment, roadmaps, resources — sab ek jagah.
+                </p>
+                <div class="hero-ctas">
+                    {% if current_user %}
+                    <a href="/assessment" class="btn-glow">✦ New Assessment</a>
+                    <a href="/dashboard"  class="btn-ghost">My Dashboard →</a>
+                    {% else %}
+                    <a href="/register"   class="btn-glow">✦ Start for Free</a>
+                    <a href="/assessment" class="btn-ghost">Try Assessment →</a>
+                    {% endif %}
+                </div>
+                <p style="font-size:0.74rem;color:var(--text-fade);margin-top:16px;">
+                    Free forever &nbsp;·&nbsp; No credit card &nbsp;·&nbsp; 5 min assessment
+                </p>
+            </div>
+
+            <!-- Floating Visual -->
+            <div class="hero-visual">
+                <div class="orbit" style="width:380px;height:380px;"></div>
+                <div class="orbit" style="width:260px;height:260px;animation-duration:14s;animation-direction:reverse;"></div>
+
+                <div class="hv-card hv-card-main">
+                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px;">Your Career Match</div>
+                    <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-bottom:12px;">The Builder 🔧</div>
+                    <div style="display:flex;flex-direction:column;gap:7px;">
+                        {% for t,c,w in [('Technical','#3b82f6','85%'),('Analytical','#8b5cf6','70%'),('Creative','#f59e0b','45%')] %}
+                        <div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:rgba(255,255,255,0.45);margin-bottom:3px;">
+                                <span>{{ t }}</span><span>{{ w }}</span>
+                            </div>
+                            <div style="height:5px;border-radius:5px;background:rgba(255,255,255,0.08);">
+                                <div style="height:100%;width:{{ w }};border-radius:5px;background:{{ c }};transition:width 1s;"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/career/browse'">
-                    <div class="card-body p-4">
-                        <div style="font-size:2.5rem;margin-bottom:12px;">🎯</div>
-                        <h6 class="fw-bold">Career Compass</h6>
-                        <p class="text-muted small">{{ stats.careers }}+ careers with full roadmaps</p>
-                    </div>
+
+                <div class="hv-card hv-card-a">
+                    <div class="hv-stat">{{ stats.careers }}+</div>
+                    <div class="hv-label">Career Paths</div>
+                </div>
+                <div class="hv-card hv-card-b">
+                    <div class="hv-stat">{{ stats.resources }}+</div>
+                    <div class="hv-label">Free Resources</div>
+                </div>
+                <div class="hv-card hv-card-c">
+                    <div style="font-size:1.3rem;">🕉️</div>
+                    <div class="hv-label" style="margin-top:4px;">{{ stats.shlokas }}+ Shlokas</div>
                 </div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/gyan'">
-                    <div class="card-body p-4">
-                        <div style="font-size:2.5rem;margin-bottom:12px;">📿</div>
-                        <h6 class="fw-bold">Gyan Kosh</h6>
-                        <p class="text-muted small">Bhagavad Gita wisdom for modern life</p>
-                    </div>
+        </div>
+    </div>
+</section>
+
+<!-- ════ STATS BAR ════ -->
+<div class="stats-bar">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-n">{{ stats.careers }}+</div>
+                    <div class="stat-l">Career Paths</div>
                 </div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/chat'">
-                    <div class="card-body p-4">
-                        <div style="font-size:2.5rem;margin-bottom:12px;">🤖</div>
-                        <h6 class="fw-bold">AI Counselor</h6>
-                        <p class="text-muted small">24/7 Hinglish career guidance chatbot</p>
-                    </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-n">{{ stats.shlokas }}+</div>
+                    <div class="stat-l">Wisdom Verses</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-n">{{ stats.resources }}+</div>
+                    <div class="stat-l">Free Resources</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-n">33</div>
+                    <div class="stat-l">Indian States Covered</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CTA -->
-<div class="container text-center my-5 py-3">
-    <h2 class="fw-bold mb-3">Apna Path Dhundho Aaj! 🧭</h2>
-    <p class="text-muted mb-4">Lakhs of Indian students already apna career clear kar chuke hain</p>
-    {% if not current_user %}
-    <a href="/register" class="btn btn-primary btn-lg me-3 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
-        Free Mein Join Karo
-    </a>
-    {% endif %}
-    <a href="/assessment" class="btn btn-outline-primary btn-lg" style="border-radius:12px;">
-        Assessment Lo
-    </a>
-</div>
+<!-- ════ FOR WHOM ════ -->
+<section class="section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="sec-label" style="justify-content:center;gap:12px;">Who it's for</p>
+            <h2 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:white;">
+                Built for <span class="gradient-text">Every Stage</span> of Your Journey
+            </h2>
+            <p style="color:var(--text-dim);margin-top:10px;max-width:480px;margin-inline:auto;">
+                Whether you're in school, just graduated, or a working professional — Marg Darshak guides you.
+            </p>
+        </div>
+        <div class="type-cards">
+            <a href="/assessment" class="type-card tc-student">
+                <span class="tc-icon">🎓</span>
+                <div class="tc-title">Student</div>
+                <p class="tc-desc">School mein ho ya 10th/12th? Career confusion? Personality test se apna ideal path jaano.</p>
+                <div class="tc-pills">
+                    <span class="tag tag-green">Career Quiz</span>
+                    <span class="tag tag-green">College Guide</span>
+                    <span class="tag tag-green">Entrance Exams</span>
+                </div>
+                <span class="tc-cta">Start Assessment ›</span>
+            </a>
+            <a href="/assessment" class="type-card tc-graduate tc-featured">
+                <div class="tc-featured-badge">POPULAR</div>
+                <span class="tc-icon">📚</span>
+                <div class="tc-title">Graduate</div>
+                <p class="tc-desc">College complete? Job ya higher studies? AI se personalized roadmap, skills aur salary insights pao.</p>
+                <div class="tc-pills">
+                    <span class="tag tag-purple">Job Market</span>
+                    <span class="tag tag-purple">Skill Building</span>
+                    <span class="tag tag-purple">Salary Data</span>
+                </div>
+                <span class="tc-cta">Get Recommendations ›</span>
+            </a>
+            <a href="/assessment" class="type-card tc-pro">
+                <span class="tc-icon">💼</span>
+                <div class="tc-title">Professional</div>
+                <p class="tc-desc">Working ho aur growth chahiye? Domain switch, upskilling ya leadership — AI plan banata hai.</p>
+                <div class="tc-pills">
+                    <span class="tag tag-cyan">AI/ML Upskill</span>
+                    <span class="tag tag-cyan">Leadership</span>
+                    <span class="tag tag-cyan">Career Switch</span>
+                </div>
+                <span class="tc-cta">Explore Growth Paths ›</span>
+            </a>
+        </div>
+    </div>
+</section>
 
-<style>
-.hover-card { transition: all 0.3s ease; }
-.hover-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important; }
-@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-</style>
+<!-- ════ FEATURES ════ -->
+<section class="section-sm" style="padding-top:0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <p class="sec-label" style="justify-content:center;">What's Inside</p>
+            <h2 style="font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:white;">
+                4 Powerful <span class="gradient-text">Modules</span>
+            </h2>
+        </div>
+        <div class="features-grid">
+            <a href="/assessment" class="feat-card">
+                <span class="feat-icon">🧠</span>
+                <div class="feat-title">Smart Assessment</div>
+                <p class="feat-desc">Psychometric quiz — student/graduate/professional ke liye alag alag. State-based recommendations.</p>
+            </a>
+            <a href="/career/browse" class="feat-card">
+                <span class="feat-icon">🎯</span>
+                <div class="feat-title">Career Compass</div>
+                <p class="feat-desc">40+ careers with full roadmaps, salary data, top colleges, and job roles — all in one place.</p>
+            </a>
+            <a href="/gyan" class="feat-card">
+                <span class="feat-icon">🕉️</span>
+                <div class="feat-title">Gyan Kosh</div>
+                <p class="feat-desc">Bhagavad Gita verses with modern career applications. Daily wisdom to guide your decisions.</p>
+            </a>
+            <a href="/chat" class="feat-card">
+                <span class="feat-icon">🤖</span>
+                <div class="feat-title">AI Counselor</div>
+                <p class="feat-desc">Groq-powered Hinglish chatbot. Ask anything about JEE, UPSC, salaries, skills — 24/7.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ════ CTA ════ -->
+<section class="section">
+    <div class="container">
+        <div class="cta-strip">
+            <p class="sec-label" style="justify-content:center;">Get Started</p>
+            <h2 style="font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:white;margin-bottom:14px;">
+                Apna Marg Dhundho Aaj 🧭
+            </h2>
+            <p style="color:var(--text-dim);max-width:420px;margin:0 auto 32px;font-size:0.95rem;">
+                Free assessment lo, apna personality type jaano, aur perfect career roadmap pao — sirf 5 minutes mein.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{% if current_user %}/assessment{% else %}/register{% endif %}" class="btn-glow" style="font-size:1rem;padding:13px 32px;">
+                    ✦ {% if current_user %}Assessment Lo{% else %}Free Mein Join Karo{% endif %}
+                </a>
+                <a href="/career/browse" class="btn-ghost" style="font-size:1rem;padding:13px 32px;">
+                    Careers Browse Karo →
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

@@ -1,87 +1,159 @@
 {% extends 'base.html' %}
-{% block title %}Browse Careers - Marg Darshak{% endblock %}
+{% block title %}Career Explorer — Marg Darshak{% endblock %}
+{% block extra_css %}
+<style>
+.browse-hero {
+    padding: 60px 0 40px;
+    text-align: center;
+    position: relative;
+}
+.browse-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 600px 300px at 50% 0%, rgba(124,58,237,0.12), transparent);
+    pointer-events: none;
+}
+.search-bar {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 50px;
+    padding: 6px 6px 6px 22px;
+    display: flex; align-items: center; gap: 10px;
+    max-width: 560px; margin: 28px auto 0;
+    transition: border-color 0.3s;
+}
+.search-bar:focus-within { border-color: rgba(124,58,237,0.5); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.search-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    color: white; font-size: 0.9rem; font-family: var(--font-body);
+}
+.search-bar input::placeholder { color: var(--text-dim); }
+.search-bar button {
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    border: none; border-radius: 40px;
+    padding: 9px 22px; color: white;
+    font-weight: 600; font-size: 0.82rem; cursor: pointer;
+    transition: opacity 0.2s;
+}
+.search-bar button:hover { opacity: 0.88; }
+.filter-pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
+.fp {
+    padding: 6px 16px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-dim); font-size: 0.78rem; font-weight: 500;
+    text-decoration: none; transition: all 0.2s; cursor: pointer;
+}
+.fp:hover, .fp.on {
+    background: rgba(124,58,237,0.18);
+    border-color: rgba(124,58,237,0.45);
+    color: #c4b5fd;
+}
+.careers-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+@media(max-width:900px){ .careers-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:560px){ .careers-grid{grid-template-columns:1fr;} }
+.career-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 22px;
+    text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column;
+    transition: all 0.3s; position: relative; overflow: hidden;
+}
+.career-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg,#7c3aed,#ec4899);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+}
+.career-card:hover { transform: translateY(-5px); border-color: rgba(124,58,237,0.35); color: var(--text); box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
+.career-card:hover::before { transform: scaleX(1); }
+.cc-top { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+.cc-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:white; margin: 8px 0 6px; }
+.cc-desc { font-size:0.8rem; color:var(--text-dim); line-height:1.65; flex:1; margin-bottom:14px; }
+.cc-salary { font-size:0.8rem; color:#6ee7b7; font-weight:600; margin-bottom:10px; }
+.cc-skills { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px; }
+.cc-skill { font-size:0.68rem; padding:3px 9px; border-radius:20px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); }
+.cc-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:12px; border-top:1px solid var(--border); }
+.cc-arrow { font-size:0.8rem; color:rgba(255,255,255,0.25); transition:color 0.2s; }
+.career-card:hover .cc-arrow { color:#a78bfa; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="text-center mb-5">
-        <h1 class="fw-bold">🎯 Career Explorer</h1>
-        <p class="text-muted">{{ careers|length }} careers available — apna perfect match dhundho</p>
-    </div>
+<div style="position:relative;z-index:1;">
 
-    <!-- Filters -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius:14px;">
-        <div class="card-body p-3">
-            <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <input type="text" name="search" class="form-control" value="{{ search or '' }}" placeholder="🔍 Career ya skill dhundho..." style="border-radius:10px;">
-                </div>
-                <div class="col-md-4">
-                    <select name="category" class="form-select" style="border-radius:10px;">
-                        <option value="all" {% if selected_category=='all' %}selected{% endif %}>All Categories</option>
-                        {% for cat in categories %}
-                        <option value="{{ cat }}" {% if selected_category==cat %}selected{% endif %}>{{ cat }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100" style="border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- Browse Hero -->
+<div class="browse-hero">
+    <div class="container" style="position:relative;z-index:1;">
+        <p class="sec-label" style="justify-content:center;">Explore</p>
+        <h1 style="font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:white;">
+            Career <span class="gradient-text">Explorer</span>
+        </h1>
+        <p style="color:var(--text-dim);margin-top:8px;">{{ careers|length }} careers — salary, roadmap, skills, colleges sab dekho</p>
 
-    <!-- Category Badges -->
-    <div class="d-flex flex-wrap gap-2 mb-4">
-        <a href="/career/browse" class="badge {% if selected_category=='all' %}bg-primary{% else %}bg-light text-dark{% endif %} p-2 text-decoration-none" style="border-radius:20px;font-size:0.8rem;">All</a>
-        {% for cat in categories %}
-        <a href="/career/browse?category={{ cat }}" class="badge {% if selected_category==cat %}bg-primary{% else %}bg-light text-dark{% endif %} p-2 text-decoration-none" style="border-radius:20px;font-size:0.8rem;">{{ cat }}</a>
-        {% endfor %}
-    </div>
-
-    <!-- Career Grid -->
-    {% if careers %}
-    <div class="row g-4">
-        {% for career in careers %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius:14px;transition:all 0.3s;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge px-2 py-1" style="background:linear-gradient(135deg,#667eea,#764ba2);font-size:0.72rem;">{{ career.category }}</span>
-                        {% if career.growth_rate %}
-                        <span class="badge bg-success-subtle text-success" style="font-size:0.72rem;">{{ career.growth_rate }}</span>
-                        {% endif %}
-                    </div>
-                    <h5 class="fw-bold mt-2 mb-2">{{ career.title }}</h5>
-                    <p class="text-muted small mb-3">{{ (career.description or '')[:100] }}...</p>
-                    {% if career.avg_salary_inr %}
-                    <div class="small text-success fw-semibold mb-3">
-                        <i class="fas fa-rupee-sign me-1"></i>
-                        {% if career.avg_salary_inr >= 100000 %}{{ (career.avg_salary_inr / 100000)|round(1) }}L{% else %}{{ (career.avg_salary_inr / 1000)|round(0)|int }}K{% endif %}/year avg
-                    </div>
-                    {% endif %}
-                    {% if career.required_skills %}
-                    <div class="d-flex flex-wrap gap-1 mb-3">
-                        {% for skill in career.required_skills.split(';')[:3] %}
-                        <span class="badge bg-light text-dark" style="font-size:0.7rem;">{{ skill }}</span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <a href="/career/detail/{{ career.id }}" class="btn btn-outline-primary btn-sm w-100" style="border-radius:8px;">
-                        Full Roadmap <i class="fas fa-arrow-right ms-1"></i>
-                    </a>
-                </div>
+        <!-- Search -->
+        <form method="GET" action="/career/browse">
+            <input type="hidden" name="category" value="{{ selected_category }}">
+            <div class="search-bar">
+                <span style="color:var(--text-dim);">🔍</span>
+                <input type="text" name="search" value="{{ search or '' }}" placeholder="Search career, skill ya domain...">
+                <button type="submit">Search</button>
             </div>
+        </form>
+
+        <!-- Category pills -->
+        <div class="filter-pills">
+            <a href="/career/browse?category=all" class="fp {{ 'on' if selected_category=='all' }}">All ({{ careers|length }})</a>
+            {% for cat in categories %}
+            <a href="/career/browse?category={{ cat }}" class="fp {{ 'on' if selected_category==cat }}">{{ cat }}</a>
+            {% endfor %}
         </div>
+    </div>
+</div>
+
+<!-- Grid -->
+<div class="container pb-5">
+    {% if careers %}
+    <div class="careers-grid">
+        {% for c in careers %}
+        <a href="/career/detail/{{ c.id }}" class="career-card">
+            <div class="cc-top">
+                <span class="tag {% if c.category=='Technology' %}tag-cyan{% elif c.category=='Business' %}tag-purple{% elif c.category=='Creative' %}tag-pink{% elif c.category=='Healthcare' %}tag-green{% else %}tag-amber{% endif %}">{{ c.category }}</span>
+                {% if c.growth_rate %}
+                <span style="font-size:0.68rem;color:{% if 'Very High' in (c.growth_rate or '') %}#6ee7b7{% elif 'High' in (c.growth_rate or '') %}#a78bfa{% else %}var(--text-dim){% endif %};">↑ {{ c.growth_rate }}</span>
+                {% endif %}
+            </div>
+            <div class="cc-title">{{ c.title }}</div>
+            <p class="cc-desc">{{ (c.description or '')[:110] }}{% if (c.description or '')|length > 110 %}...{% endif %}</p>
+            {% if c.avg_salary_inr %}
+            <div class="cc-salary">
+                ₹{% if c.avg_salary_inr >= 100000 %}{{ "%.1f"|format(c.avg_salary_inr/100000) }}L{% else %}{{ (c.avg_salary_inr/1000)|int }}K{% endif %}/yr avg
+            </div>
+            {% endif %}
+            {% if c.required_skills %}
+            <div class="cc-skills">
+                {% for sk in c.required_skills.split(';')[:4] %}
+                <span class="cc-skill">{{ sk }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="cc-footer">
+                <span style="font-size:0.78rem;color:var(--text-dim);">View Roadmap</span>
+                <span class="cc-arrow">›</span>
+            </div>
+        </a>
         {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-5">
-        <div style="font-size:3rem;">😕</div>
-        <h5 class="mt-3">Koi career nahi mila</h5>
-        <a href="/career/browse" class="btn btn-outline-primary mt-2">Clear Filters</a>
+    <div style="text-align:center;padding:80px 0;">
+        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+        <h5 style="color:white;font-family:'Syne',sans-serif;">Koi career nahi mila</h5>
+        <p style="color:var(--text-dim);margin-bottom:20px;">Try karo different search term</p>
+        <a href="/career/browse" class="btn-ghost">Clear Filters</a>
     </div>
     {% endif %}
+</div>
+
 </div>
 {% endblock %}

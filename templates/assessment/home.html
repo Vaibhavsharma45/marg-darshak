@@ -1,173 +1,196 @@
 {% extends 'base.html' %}
-{% block title %}Career Assessment - Marg Darshak{% endblock %}
+{% block title %}Career Assessment — Marg Darshak{% endblock %}
+{% block extra_css %}
+<style>
+.assess-wrap { padding: 60px 0 80px; position: relative; z-index: 1; }
+.assess-wrap::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 700px 500px at 50% -10%, rgba(124,58,237,0.12), transparent);
+    pointer-events: none; z-index: 0;
+}
+.assess-inner { position: relative; z-index: 1; }
+.type-selector { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 28px; }
+@media(max-width:600px){ .type-selector{grid-template-columns:1fr;} }
+.type-opt { position: relative; }
+.type-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+.type-opt label {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; padding: 24px 16px; border-radius: 18px; cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    transition: all 0.28s cubic-bezier(0.34,1.3,0.64,1);
+    text-align: center;
+}
+.type-opt label:hover { border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.07); transform: translateY(-2px); }
+.type-opt input:checked + label {
+    border-color: rgba(124,58,237,0.6);
+    background: linear-gradient(135deg,rgba(124,58,237,0.15),rgba(236,72,153,0.08));
+    box-shadow: 0 8px 24px rgba(124,58,237,0.2);
+    transform: translateY(-4px);
+}
+.type-opt .opt-ico { font-size: 2rem; }
+.type-opt .opt-title { font-family:'Syne',sans-serif; font-weight:700; color:white; font-size:0.95rem; }
+.type-opt .opt-sub { font-size:0.72rem; color:var(--text-dim); line-height:1.5; }
+.form-field { margin-bottom: 22px; }
+.form-field label { display:block; font-size:0.8rem; font-weight:600; color:var(--text-dim); margin-bottom:8px; letter-spacing:0.5px; text-transform:uppercase; }
+.form-field select, .form-field input {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border); border-radius: 12px;
+    color: white; padding: 12px 16px; font-size: 0.9rem;
+    font-family: var(--font-body); outline: none;
+    transition: border-color 0.2s;
+}
+.form-field select:focus, .form-field input:focus { border-color: rgba(124,58,237,0.5); }
+.form-field select option { background: #1a1a2e; color: white; }
+.info-panel {
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 14px; padding: 18px 20px;
+    margin-bottom: 24px;
+}
+.info-row { display:flex; gap:10px; align-items:flex-start; margin-bottom:8px; font-size:0.82rem; color:var(--text-dim); }
+.info-row:last-child { margin-bottom: 0; }
+.info-row span:first-child { flex-shrink: 0; }
+.right-panel { position: sticky; top: 90px; }
+.benefit-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px; border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface); margin-bottom: 12px;
+    transition: all 0.25s;
+}
+.benefit-item:hover { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); }
+.bi-icon { width: 36px; height: 36px; border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.bi-title { font-size:0.84rem; font-weight:600; color:white; margin-bottom:3px; }
+.bi-desc { font-size:0.75rem; color:var(--text-dim); line-height:1.6; }
+.quote-card {
+    background: linear-gradient(135deg,rgba(124,58,237,0.2),rgba(236,72,153,0.12));
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 16px; padding: 20px;
+    margin-top: 20px; text-align: center;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    
+<div class="assess-wrap">
+<div class="assess-inner container">
+
     <!-- Header -->
     <div class="text-center mb-5">
-        <div style="font-size:4rem;">🧠</div>
-        <h1 class="fw-bold mt-3" style="background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-            Career Assessment
+        <p class="sec-label" style="justify-content:center;">Psychometric Assessment</p>
+        <h1 style="font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:white;">
+            Discover Your <span class="gradient-text">Career Path</span>
         </h1>
-        <p class="lead text-muted">Apna perfect career dhundho — 5 minute mein!</p>
-        <div class="d-flex justify-content-center gap-3 flex-wrap mt-3">
-            <span class="badge bg-primary p-2"><i class="fas fa-user-graduate me-1"></i>Student</span>
-            <span class="badge bg-success p-2"><i class="fas fa-university me-1"></i>Graduate</span>
-            <span class="badge bg-purple p-2" style="background:#8b5cf6!important;"><i class="fas fa-briefcase me-1"></i>Professional</span>
-        </div>
+        <p style="color:var(--text-dim);margin-top:10px;">5 minute ka test — lifetime guidance</p>
     </div>
 
-    <!-- Assessment Form Card -->
-    <div class="row justify-content-center">
-        <div class="col-lg-7">
-            <div class="card shadow-lg border-0" style="border-radius:20px;overflow:hidden;">
-                <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:25px 30px;">
-                    <h4 class="text-white mb-1 fw-bold">Shuru karte hain! 🚀</h4>
-                    <p class="text-white mb-0" style="opacity:0.85;">Pehle kuch basic information do</p>
+    <div class="row justify-content-center g-5">
+
+        <!-- Form -->
+        <div class="col-lg-6">
+            <div class="glass shine p-4">
+                <form action="/assessment/start" method="POST">
+
+                    <!-- User Type -->
+                    <div class="form-field">
+                        <label>Aap kaun ho?</label>
+                        <div class="type-selector">
+                            <div class="type-opt">
+                                <input type="radio" name="user_type" id="ts" value="student" required
+                                    {% if current_user and current_user.user_type=='student' %}checked{% endif %}>
+                                <label for="ts">
+                                    <span class="opt-ico">🎓</span>
+                                    <span class="opt-title">Student</span>
+                                    <span class="opt-sub">School / 10th / 12th</span>
+                                </label>
+                            </div>
+                            <div class="type-opt">
+                                <input type="radio" name="user_type" id="tg" value="graduate"
+                                    {% if not current_user or current_user.user_type=='graduate' %}checked{% endif %}>
+                                <label for="tg">
+                                    <span class="opt-ico">📚</span>
+                                    <span class="opt-title">Graduate</span>
+                                    <span class="opt-sub">College / Fresher</span>
+                                </label>
+                            </div>
+                            <div class="type-opt">
+                                <input type="radio" name="user_type" id="tp" value="professional"
+                                    {% if current_user and current_user.user_type=='professional' %}checked{% endif %}>
+                                <label for="tp">
+                                    <span class="opt-ico">💼</span>
+                                    <span class="opt-title">Professional</span>
+                                    <span class="opt-sub">Working / Experienced</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- State -->
+                    <div class="form-field">
+                        <label>📍 Aapki State</label>
+                        <select name="state" required>
+                            <option value="">— Select State —</option>
+                            {% for s in states %}
+                            <option value="{{ s }}" {% if current_user and current_user.state==s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <div style="font-size:0.72rem;color:var(--text-fade);margin-top:6px;">State-specific colleges aur government job opportunities dikhaye jayenge</div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="info-panel">
+                        <div class="info-row"><span>⏱️</span><span>Sirf 5-6 multiple choice questions — 3 minute enough</span></div>
+                        <div class="info-row"><span>🧠</span><span>Personality type + 6 trait scores milenge</span></div>
+                        <div class="info-row"><span>🎯</span><span>Top 3 career matches with full roadmap</span></div>
+                        <div class="info-row"><span>📚</span><span>Free learning resources automatically recommend honge</span></div>
+                    </div>
+
+                    <button type="submit" class="btn-glow w-100" style="justify-content:center;font-size:1rem;padding:14px;">
+                        ✦ Assessment Shuru Karo
+                    </button>
+                </form>
+
+                {% if current_user %}
+                <div style="text-align:center;margin-top:14px;">
+                    <a href="/dashboard" style="font-size:0.78rem;color:var(--text-dim);text-decoration:none;">← Previous result dekho</a>
                 </div>
-                <div class="card-body p-4">
-                    <form action="/assessment/start" method="POST" id="assessmentForm">
-                        
-                        <!-- Step 1: User Type -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold mb-3">
-                                <i class="fas fa-user-circle me-2 text-primary"></i>
-                                Aap kaun ho? <span class="text-danger">*</span>
-                            </label>
-                            <div class="row g-3">
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="user_type" id="type_student" value="student" required
-                                           {% if current_user and current_user.user_type == 'student' %}checked{% endif %}>
-                                    <label class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center py-3 type-card" for="type_student">
-                                        <span style="font-size:2rem;">🎓</span>
-                                        <strong class="mt-1" style="font-size:0.85rem;">Student</strong>
-                                        <small class="text-muted" style="font-size:0.7rem;">School / 10th / 12th</small>
-                                    </label>
-                                </div>
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="user_type" id="type_graduate" value="graduate"
-                                           {% if current_user and current_user.user_type == 'graduate' %}checked{% endif %}>
-                                    <label class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center py-3 type-card" for="type_graduate">
-                                        <span style="font-size:2rem;">📚</span>
-                                        <strong class="mt-1" style="font-size:0.85rem;">Graduate</strong>
-                                        <small class="text-muted" style="font-size:0.7rem;">College / Fresher</small>
-                                    </label>
-                                </div>
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="user_type" id="type_professional" value="professional"
-                                           {% if current_user and current_user.user_type == 'professional' %}checked{% endif %}>
-                                    <label class="btn btn-outline-purple w-100 h-100 d-flex flex-column align-items-center py-3 type-card" for="type_professional" style="border-color:#8b5cf6;color:#8b5cf6;">
-                                        <span style="font-size:2rem;">💼</span>
-                                        <strong class="mt-1" style="font-size:0.85rem;">Professional</strong>
-                                        <small class="text-muted" style="font-size:0.7rem;">Working / Experienced</small>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: State Selection -->
-                        <div class="mb-4">
-                            <label for="state" class="form-label fw-bold">
-                                <i class="fas fa-map-marker-alt me-2 text-danger"></i>
-                                Aap kis state mein ho? <span class="text-danger">*</span>
-                            </label>
-                            <select class="form-select" name="state" id="state" required>
-                                <option value="">-- State select karo --</option>
-                                {% for state in states %}
-                                <option value="{{ state }}" {% if current_user and current_user.state == state %}selected{% endif %}>
-                                    {{ state }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1 text-info"></i>
-                                State ke hisaab se local colleges aur government job opportunities bhi dikhaye jayenge
-                            </div>
-                        </div>
-
-                        <!-- Info Box -->
-                        <div class="alert border-0 mb-4" style="background:linear-gradient(135deg,rgba(102,126,234,0.1),rgba(118,75,162,0.1));border-radius:12px;">
-                            <div class="d-flex align-items-start gap-3">
-                                <span style="font-size:1.5rem;">💡</span>
-                                <div>
-                                    <strong>Assessment mein kya hoga?</strong>
-                                    <ul class="mb-0 mt-1 small text-muted ps-3">
-                                        <li>5-6 multiple choice questions — sirf 3-5 minute</li>
-                                        <li>Aapki personality type identify hogi</li>
-                                        <li>Top career matches milenge with roadmap</li>
-                                        <li>State-specific colleges aur opportunities</li>
-                                        <li>Free learning resources recommend honge</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
-                            <i class="fas fa-play me-2"></i>Assessment Shuru Karo
-                        </button>
-                    </form>
-                </div>
+                {% endif %}
             </div>
-
-            <!-- Already have result? -->
-            {% if current_user %}
-            <div class="text-center mt-3">
-                <a href="/dashboard" class="text-muted small text-decoration-none">
-                    <i class="fas fa-history me-1"></i>Apna previous result dekho
-                </a>
-            </div>
-            {% endif %}
         </div>
 
-        <!-- Right side info -->
-        <div class="col-lg-4 mt-4 mt-lg-0">
-            <h5 class="fw-bold mb-3">Why Assessment? 🤔</h5>
-            
-            <div class="d-flex flex-column gap-3">
-                <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background:rgba(16,185,129,0.1);">
-                    <span style="font-size:1.5rem;">🎯</span>
-                    <div>
-                        <strong class="d-block" style="font-size:0.9rem;">Personalized</strong>
-                        <small class="text-muted">Aapki personality ke hisaab se career suggest hoga</small>
-                    </div>
+        <!-- Right info panel -->
+        <div class="col-lg-4">
+            <div class="right-panel">
+                <div class="benefit-item">
+                    <div class="bi-icon" style="background:rgba(124,58,237,0.18);">🎯</div>
+                    <div><div class="bi-title">Personalized Results</div><div class="bi-desc">Aapki personality ke hisaab se career — generic advice nahi</div></div>
                 </div>
-                <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background:rgba(59,130,246,0.1);">
-                    <span style="font-size:1.5rem;">🗺️</span>
-                    <div>
-                        <strong class="d-block" style="font-size:0.9rem;">State-Specific</strong>
-                        <small class="text-muted">Aapke state ke colleges aur government jobs bhi</small>
-                    </div>
+                <div class="benefit-item">
+                    <div class="bi-icon" style="background:rgba(6,182,212,0.18);">🗺️</div>
+                    <div><div class="bi-title">State-Specific</div><div class="bi-desc">Local colleges, government jobs aur regional opportunities</div></div>
                 </div>
-                <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background:rgba(245,87,92,0.1);">
-                    <span style="font-size:1.5rem;">📊</span>
-                    <div>
-                        <strong class="d-block" style="font-size:0.9rem;">Data-Driven</strong>
-                        <small class="text-muted">Salary, growth rate aur demand ke saath</small>
-                    </div>
+                <div class="benefit-item">
+                    <div class="bi-icon" style="background:rgba(16,185,129,0.18);">💰</div>
+                    <div><div class="bi-title">Real Salary Data</div><div class="bi-desc">Actual Indian market packages — entry to senior level</div></div>
                 </div>
-                <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background:rgba(139,92,246,0.1);">
-                    <span style="font-size:1.5rem;">🤖</span>
-                    <div>
-                        <strong class="d-block" style="font-size:0.9rem;">AI-Powered</strong>
-                        <small class="text-muted">Machine learning se accurate recommendations</small>
-                    </div>
+                <div class="benefit-item">
+                    <div class="bi-icon" style="background:rgba(245,158,11,0.18);">🤖</div>
+                    <div><div class="bi-title">AI-Powered</div><div class="bi-desc">Machine learning se accurate recommendations — improve hote rehte hain</div></div>
                 </div>
-            </div>
 
-            <!-- Testimonial -->
-            <div class="card border-0 mt-4 p-3" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:15px;">
-                <p class="text-white mb-2" style="font-size:0.85rem;font-style:italic;">
-                    "Mujhe pata hi nahi tha ki Data Science mera passion hai. Assessment ke baad sab clear ho gaya!"
-                </p>
-                <small class="text-white" style="opacity:0.8;">— Rahul, Lucknow (Graduate)</small>
+                <div class="quote-card">
+                    <div style="font-size:1.4rem;margin-bottom:8px;">🕉️</div>
+                    <p style="font-style:italic;color:rgba(255,255,255,0.6);font-size:0.82rem;line-height:1.7;margin-bottom:8px;">
+                        "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन"
+                    </p>
+                    <div style="font-size:0.72rem;color:var(--text-fade);">Focus on the journey, not just the destination</div>
+                </div>
             </div>
         </div>
+
     </div>
 </div>
-
-<style>
-.type-card { border-radius: 12px !important; transition: all 0.3s; }
-.btn-check:checked + .type-card { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(102,126,234,0.3); }
-</style>
+</div>
 {% endblock %}

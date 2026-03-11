@@ -1,63 +1,72 @@
 {% extends 'base.html' %}
-{% block title %}Register - Marg Darshak{% endblock %}
-
+{% block title %}Register — Marg Darshak{% endblock %}
+{% block extra_css %}
+<style>
+.auth-wrap { min-height: calc(100vh - 62px); display:flex; align-items:center; justify-content:center; padding:40px 20px; position:relative; z-index:1; }
+.auth-wrap::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse 600px 500px at 50% 0%,rgba(124,58,237,0.12),transparent); pointer-events:none; z-index:0; }
+.auth-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(24px); border-radius:24px; width:100%; max-width:460px; overflow:hidden; position:relative; z-index:1; }
+.auth-top { background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(236,72,153,0.18)); padding:32px 36px 24px; text-align:center; position:relative; }
+.auth-top::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent); }
+.auth-body { padding:28px 36px; }
+.auth-field { margin-bottom:18px; }
+.auth-field label { display:block; font-size:0.73rem; font-weight:600; color:var(--text-dim); margin-bottom:7px; text-transform:uppercase; letter-spacing:.8px; }
+.auth-field input { width:100%; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:12px; color:white; padding:12px 16px; font-size:0.9rem; font-family:var(--font-body); outline:none; transition:border-color .2s; }
+.auth-field input:focus { border-color:rgba(124,58,237,0.5); box-shadow:0 0 0 3px rgba(124,58,237,0.1); }
+.auth-field input::placeholder { color:var(--text-dim); }
+.type-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.type-opt input { display:none; }
+.type-opt label { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px; border-radius:14px; cursor:pointer; border:1.5px solid var(--border); background:var(--surface); transition:all .25s; text-align:center; font-size:0.78rem; }
+.type-opt label:hover { border-color:rgba(124,58,237,0.35); background:rgba(124,58,237,0.07); }
+.type-opt input:checked + label { border-color:rgba(124,58,237,0.6); background:rgba(124,58,237,0.15); }
+.type-opt label span:first-child { font-size:1.5rem; }
+.type-opt label strong { color:white; display:block; }
+</style>
+{% endblock %}
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
-                <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:30px;text-align:center;">
-                    <div style="font-size:3rem;">🎓</div>
-                    <h3 class="text-white fw-bold mt-2 mb-1">Join Marg Darshak</h3>
-                    <p class="text-white mb-0" style="opacity:0.85;">Apna career journey shuru karo</p>
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-top">
+            <div style="font-size:2.5rem;margin-bottom:12px;">🎓</div>
+            <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:white;margin:0 0 6px;">Join Marg Darshak</h2>
+            <p style="color:rgba(255,255,255,0.45);font-size:0.82rem;margin:0;">Free forever · 5 min setup · No credit card</p>
+        </div>
+        <div class="auth-body">
+            <form method="POST">
+                <div class="auth-field">
+                    <label>Aapka Naam</label>
+                    <input type="text" name="name" placeholder="Jaise: Rahul Sharma" required>
                 </div>
-                <div class="card-body p-4">
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-user me-2 text-primary"></i>Aapka Naam</label>
-                            <input type="text" name="name" class="form-control" style="border-radius:10px;" placeholder="Jaise: Rahul Sharma" required>
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="your@email.com" required>
+                </div>
+                <div class="auth-field">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Minimum 6 characters" required minlength="6">
+                </div>
+                <div class="auth-field">
+                    <label>Aap Kaun Ho?</label>
+                    <div class="type-row">
+                        <div class="type-opt">
+                            <input type="radio" name="user_type" id="rs" value="student" checked>
+                            <label for="rs"><span>🎓</span><strong>Student</strong><span style="color:var(--text-dim)">School/12th</span></label>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-envelope me-2 text-primary"></i>Email</label>
-                            <input type="email" name="email" class="form-control" style="border-radius:10px;" placeholder="your@email.com" required>
+                        <div class="type-opt">
+                            <input type="radio" name="user_type" id="rg" value="graduate">
+                            <label for="rg"><span>📚</span><strong>Graduate</strong><span style="color:var(--text-dim)">College</span></label>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-lock me-2 text-primary"></i>Password</label>
-                            <input type="password" name="password" class="form-control" style="border-radius:10px;" placeholder="Kam se kam 6 characters" required minlength="6">
+                        <div class="type-opt">
+                            <input type="radio" name="user_type" id="rp" value="professional">
+                            <label for="rp"><span>💼</span><strong>Pro</strong><span style="color:var(--text-dim)">Working</span></label>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold"><i class="fas fa-user-circle me-2 text-primary"></i>Aap kaun ho?</label>
-                            <div class="row g-2">
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="user_type" id="r_student" value="student" checked>
-                                    <label class="btn btn-outline-primary w-100 d-flex flex-column align-items-center py-2" for="r_student" style="border-radius:10px;font-size:0.8rem;">
-                                        <span>🎓</span><strong>Student</strong>
-                                    </label>
-                                </div>
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="user_type" id="r_grad" value="graduate">
-                                    <label class="btn btn-outline-success w-100 d-flex flex-column align-items-center py-2" for="r_grad" style="border-radius:10px;font-size:0.8rem;">
-                                        <span>📚</span><strong>Graduate</strong>
-                                    </label>
-                                </div>
-                                <div class="col-4">
-                                    <input type="radio" class="btn-check" name="user_type" id="r_pro" value="professional">
-                                    <label class="btn btn-outline-secondary w-100 d-flex flex-column align-items-center py-2" for="r_pro" style="border-radius:10px;font-size:0.8rem;">
-                                        <span>💼</span><strong>Professional</strong>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
-                            <i class="fas fa-rocket me-2"></i>Register Karo
-                        </button>
-                    </form>
-                    <hr class="my-4">
-                    <div class="text-center">
-                        <p class="text-muted mb-2">Pehle se account hai?</p>
-                        <a href="/login" class="btn btn-outline-primary fw-bold" style="border-radius:10px;">Login Karo</a>
                     </div>
                 </div>
+                <button type="submit" class="btn-glow w-100" style="justify-content:center;padding:13px;font-size:0.95rem;margin-top:4px;">
+                    ✦ Join Free — Start Assessment
+                </button>
+            </form>
+            <div style="text-align:center;margin-top:18px;font-size:0.82rem;color:var(--text-dim);">
+                Pehle se account hai? <a href="/login" style="color:#a78bfa;text-decoration:none;font-weight:600;">Login karo →</a>
             </div>
         </div>
     </div>

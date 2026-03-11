@@ -1,212 +1,254 @@
 {% extends 'base.html' %}
-{% block title %}AI Career Counselor - Marg Darshak{% endblock %}
+{% block title %}AI Career Counselor — Marg Darshak{% endblock %}
+{% block extra_css %}
+<style>
+.chat-wrap {
+    height: calc(100vh - 62px);
+    display: flex; flex-direction: column;
+    position: relative; z-index: 1;
+    background: rgba(6,8,24,0.6);
+}
+.chat-header {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(6,8,24,0.8);
+    backdrop-filter: blur(20px);
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+}
+.ai-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg,#7c3aed,#06b6d4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    animation: aiBeat 2.5s ease infinite;
+}
+@keyframes aiBeat{0%,100%{box-shadow:0 0 20px rgba(124,58,237,0.4);}50%{box-shadow:0 0 30px rgba(6,182,212,0.5);}}
+.ai-status { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+.ai-online { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; animation: blink 1.4s ease infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.chat-messages {
+    flex: 1; overflow-y: auto; padding: 24px;
+    display: flex; flex-direction: column; gap: 20px;
+}
+.msg-row { display: flex; gap: 12px; }
+.msg-row.user { flex-direction: row-reverse; }
+.msg-av {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0; align-self: flex-end;
+}
+.msg-av.bot { background: linear-gradient(135deg,#7c3aed,#06b6d4); }
+.msg-av.user { background: linear-gradient(135deg,#ec4899,#f43f5e); font-family:'Syne',sans-serif; font-weight:800; font-size:0.75rem; color:white; }
+.msg-bubble {
+    max-width: 72%; padding: 13px 17px;
+    border-radius: 18px; font-size: 0.88rem; line-height: 1.7;
+}
+.msg-bubble.bot {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    color: var(--text); border-radius: 4px 18px 18px 18px;
+}
+.msg-bubble.user {
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    color: white; border-radius: 18px 4px 18px 18px;
+}
+.msg-bubble strong { color: #c4b5fd; }
+.msg-bubble.user strong { color: #fde68a; }
+.msg-time { font-size: 0.66rem; color: var(--text-fade); margin-top: 4px; }
+
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 24px 16px; }
+.chip {
+    padding: 7px 15px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim); font-size: 0.77rem;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.chip:hover { border-color: rgba(124,58,237,0.4); color: #c4b5fd; background: rgba(124,58,237,0.1); }
+
+.chat-input-area {
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    background: rgba(6,8,24,0.85);
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+}
+.chat-input-row {
+    display: flex; gap: 10px; align-items: flex-end;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 10px 10px 10px 18px;
+    transition: border-color 0.2s;
+}
+.chat-input-row:focus-within { border-color: rgba(124,58,237,0.4); }
+.chat-input-row textarea {
+    flex: 1; background: none; border: none; outline: none;
+    color: white; font-size: 0.9rem; font-family: var(--font-body);
+    resize: none; max-height: 120px; line-height: 1.5;
+}
+.chat-input-row textarea::placeholder { color: var(--text-dim); }
+.send-btn {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    border: none; color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+    transition: all 0.2s; box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+}
+.send-btn:hover { transform: scale(1.06); box-shadow: 0 6px 18px rgba(124,58,237,0.5); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.chat-meta { text-align: center; margin-top: 8px; font-size: 0.68rem; color: var(--text-fade); }
+
+/* typing indicator */
+.typing-ind { display: flex; gap: 4px; align-items: center; padding: 10px 4px; }
+.typing-ind span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(167,139,250,0.6);
+    animation: typDot 1.4s ease infinite;
+}
+.typing-ind span:nth-child(2){ animation-delay: .2s; }
+.typing-ind span:nth-child(3){ animation-delay: .4s; }
+@keyframes typDot{0%,80%,100%{transform:scale(.7);opacity:.5;}40%{transform:scale(1);opacity:1;}}
+</style>
+{% endblock %}
 
 {% block content %}
-<div style="height:calc(100vh - 130px);display:flex;flex-direction:column;" class="container-fluid px-0">
-    
-    <!-- Chat Header -->
-    <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:16px 24px;flex-shrink:0;">
-        <div class="container d-flex align-items-center gap-3">
-            <div style="width:45px;height:45px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🤖</div>
-            <div class="text-white">
-                <h5 class="mb-0 fw-bold">Marg Darshak AI</h5>
-                <small style="opacity:0.85;">Career Counselor • Always Online</small>
-            </div>
-            <div class="ms-auto">
-                <button class="btn btn-sm btn-white" onclick="clearChat()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:0.8rem;">
-                    <i class="fas fa-trash me-1"></i>Clear
-                </button>
+<div class="chat-wrap">
+
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="ai-avatar">🤖</div>
+        <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:0.95rem;">Marg Darshak AI</div>
+            <div class="ai-status">
+                <span class="ai-online"></span>
+                Career Counselor &nbsp;·&nbsp; ⚡ Groq Llama 3 &nbsp;·&nbsp; Always Online
             </div>
         </div>
+        <button onclick="clearChat()" style="margin-left:auto;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);padding:6px 14px;font-size:0.76rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='rgba(239,68,68,0.4)';this.style.color='#fca5a5'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">
+            Clear ✕
+        </button>
     </div>
 
-    <!-- Chat Messages -->
-    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:20px 0;background:#f8fafc;" class="container">
-        
-        <!-- Welcome message -->
-        <div class="d-flex gap-3 mb-4">
-            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🤖</div>
-            <div class="bot-bubble" style="background:white;padding:14px 18px;border-radius:0 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);max-width:70%;">
-                <p class="mb-2">Namaste! 🙏 Main <strong>Marg Darshak AI</strong> hoon — aapka personal career counselor!</p>
-                <p class="mb-2">Main aapki help kar sakta hoon:</p>
-                <ul class="mb-2 ps-3" style="font-size:0.9rem;">
-                    <li>Career selection aur guidance</li>
-                    <li>Indian colleges aur entrance exams (JEE, NEET, CAT, GATE)</li>
-                    <li>Kaunsi skills seekhni chahiye</li>
-                    <li>Salary aur job market insights</li>
-                    <li>Data Science, AI/ML career path</li>
-                    <li>State-specific opportunities</li>
-                </ul>
-                <p class="mb-0">Kya poochna hai aapko? 😊</p>
-            </div>
-        </div>
-
-        <!-- Suggestion chips -->
-        <div class="d-flex flex-wrap gap-2 mb-4" id="suggestionChips">
-            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Data Science career kaise banayein?</button>
-            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">12th ke baad kya karein?</button>
-            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Software Engineer ki salary kya hai?</button>
-            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Career switch kaise karein?</button>
-            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Government job vs private job?</button>
-        </div>
-
-    </div>
-
-    <!-- Chat Input -->
-    <div style="background:white;border-top:1px solid #e5e7eb;padding:14px 0;flex-shrink:0;">
-        <div class="container">
-            <div class="d-flex gap-2 align-items-end">
-                <div class="flex-grow-1">
-                    <textarea id="chatInput" class="form-control" rows="1" 
-                        style="border-radius:14px;border:2px solid #e5e7eb;resize:none;padding:12px 16px;font-size:0.95rem;max-height:120px;overflow-y:auto;transition:border 0.2s;"
-                        placeholder="Career ke baare mein kuch bhi pooch sakte ho... 🤔"
-                        onkeydown="handleKeyDown(event)"
-                        oninput="autoResize(this)"></textarea>
+    <!-- Messages -->
+    <div id="chatMsgs" class="chat-messages">
+        <div class="msg-row">
+            <div class="msg-av bot">🤖</div>
+            <div>
+                <div class="msg-bubble bot">
+                    <strong>Namaste! 🙏</strong> Main <strong>Marg Darshak AI</strong> hoon — aapka personal career counselor.<br><br>
+                    Main help kar sakta hoon:<br>
+                    🎯 Career selection &amp; roadmap<br>
+                    📚 JEE, NEET, CAT, UPSC, GATE prep<br>
+                    💰 Salary aur job market insights<br>
+                    🔧 Kaunsi skills seekhni chahiye<br>
+                    🤖 Data Science / AI/ML career path<br><br>
+                    Kya poochna hai? 😊
                 </div>
-                <button id="sendBtn" onclick="sendMessage()" 
-                    style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;font-size:1.1rem;flex-shrink:0;transition:all 0.3s;">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-            <div class="text-center mt-2">
-                <small class="text-muted" style="font-size:0.72rem;">Powered by Claude AI • Career advice only, not medical/legal advice</small>
+                <div class="msg-time">Just now</div>
             </div>
         </div>
+    </div>
+
+    <!-- Suggestion Chips -->
+    <div class="chips-row" id="chips">
+        <div class="chip" onclick="useChip(this)">🎯 Data Science career kaise banayein?</div>
+        <div class="chip" onclick="useChip(this)">📚 12th ke baad kya karein?</div>
+        <div class="chip" onclick="useChip(this)">💰 Software Engineer salary kya hai?</div>
+        <div class="chip" onclick="useChip(this)">🔄 Career switch kaise karein?</div>
+        <div class="chip" onclick="useChip(this)">🏛️ UPSC preparation guide</div>
+        <div class="chip" onclick="useChip(this)">🤖 AI/ML mein career kaise banayein?</div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+        <div class="chat-input-row">
+            <textarea id="inp" rows="1" placeholder="Career ke baare mein kuch bhi pooch sakte ho..." onkeydown="handleKey(event)" oninput="autoH(this)"></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
+        </div>
+        <div class="chat-meta">⚡ Powered by Groq + Llama 3 &nbsp;·&nbsp; Career guidance only, not medical/legal advice</div>
     </div>
 
 </div>
 
-<style>
-.bot-bubble { background: white; }
-body.dark-mode .bot-bubble { background: #1f2937; color: #e5e7eb; }
-body.dark-mode #chatMessages { background: #111827; }
-body.dark-mode .chip-btn { background: #1f2937 !important; border-color: #667eea !important; }
-body.dark-mode #chatInput { background: #1f2937; color: #e5e7eb; border-color: #374151; }
-body.dark-mode #chatInput:focus { border-color: #667eea; }
-.user-msg { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 16px; border-radius: 16px 0 16px 16px; max-width: 70%; }
-#chatInput:focus { border-color: #667eea; box-shadow: none; }
-#sendBtn:hover { transform: scale(1.05); }
-.typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; display: inline-block; animation: typing 1.4s infinite ease-in-out; }
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typing { 0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
-</style>
-
 <script>
-let chatHistory = [];
+var history = [];
+var userInitial = "{{ current_user.name[0].upper() if current_user else 'U' }}";
 
-function handleKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
+function autoH(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+function handleKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} }
+function useChip(el){
+    document.getElementById('inp').value=el.textContent.replace(/^[^\s]+\s/,'');
+    document.getElementById('chips').style.display='none';
+    sendMsg();
+}
+
+function now(){
+    var d=new Date();
+    return d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
+}
+
+function addMsg(type, text){
+    var box=document.getElementById('chatMsgs');
+    var row=document.createElement('div');
+    row.className='msg-row'+(type==='user'?' user':'');
+    var avHtml = type==='user'
+        ? '<div class="msg-av user">'+userInitial+'</div>'
+        : '<div class="msg-av bot">🤖</div>';
+    var bubbleClass = 'msg-bubble '+(type==='user'?'user':'bot');
+    var formatted = text
+        .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\n\n/g,'<br><br>')
+        .replace(/\n/g,'<br>');
+    row.innerHTML = avHtml
+        + '<div><div class="'+bubbleClass+'">'+formatted+'</div>'
+        + '<div class="msg-time">'+now()+'</div></div>';
+    if(type==='user') row.children[1].style.alignItems='flex-end';
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+}
+
+function showTyping(){
+    var box=document.getElementById('chatMsgs');
+    var row=document.createElement('div');
+    row.className='msg-row'; row.id='typing';
+    row.innerHTML='<div class="msg-av bot">🤖</div>'
+        +'<div class="msg-bubble bot"><div class="typing-ind"><span></span><span></span><span></span></div></div>';
+    box.appendChild(row); box.scrollTop=box.scrollHeight;
+}
+function hideTyping(){ var el=document.getElementById('typing'); if(el)el.remove(); }
+
+async function sendMsg(){
+    var inp=document.getElementById('inp');
+    var msg=inp.value.trim();
+    if(!msg) return;
+    inp.value=''; inp.style.height='auto';
+    document.getElementById('chips').style.display='none';
+    document.getElementById('sendBtn').disabled=true;
+    addMsg('user',msg);
+    history.push({role:'user',content:msg});
+    showTyping();
+    try{
+        var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({message:msg,history:history.slice(-8)})});
+        var d=await r.json();
+        hideTyping();
+        var reply=d.message||'Sorry, kuch error aa gaya. Please try again.';
+        addMsg('bot',reply);
+        history.push({role:'assistant',content:reply});
+    }catch(e){
+        hideTyping();
+        addMsg('bot','Network error aa gaya. Please internet check karo. 📶');
     }
+    document.getElementById('sendBtn').disabled=false;
 }
 
-function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
-
-function sendChip(btn) {
-    document.getElementById('chatInput').value = btn.textContent;
-    document.getElementById('suggestionChips').style.display = 'none';
-    sendMessage();
-}
-
-async function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    input.value = '';
-    input.style.height = 'auto';
-    
-    // Add user message
-    addMessage('user', msg);
-    chatHistory.push({role: 'user', content: msg});
-
-    // Show typing indicator
-    const typingId = showTyping();
-
-    try {
-        const resp = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({message: msg, history: chatHistory.slice(-8)})
-        });
-        const data = await resp.json();
-        
-        removeTyping(typingId);
-        
-        if (data.success) {
-            addMessage('bot', data.message);
-            chatHistory.push({role: 'assistant', content: data.message});
-        } else {
-            addMessage('bot', 'Sorry, abhi AI service temporarily unavailable hai. Please thodi der baad try karo. 🙏');
-        }
-    } catch(e) {
-        removeTyping(typingId);
-        addMessage('bot', 'Network error aaya. Please check karo internet connection. 📶');
-    }
-}
-
-function addMessage(type, text) {
-    const container = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    
-    if (type === 'user') {
-        div.className = 'd-flex justify-content-end mb-4';
-        div.innerHTML = `<div class="user-msg">${formatText(text)}</div>`;
-    } else {
-        div.className = 'd-flex gap-3 mb-4';
-        div.innerHTML = `
-            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🤖</div>
-            <div class="bot-bubble" style="padding:14px 18px;border-radius:0 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);max-width:75%;">${formatText(text)}</div>
-        `;
-    }
-    
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-}
-
-function formatText(text) {
-    return text
-        .replace(/\n\n/g, '</p><p class="mb-2">')
-        .replace(/\n/g, '<br>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/^/, '<p class="mb-2">').replace(/$/, '</p>');
-}
-
-function showTyping() {
-    const container = document.getElementById('chatMessages');
-    const id = 'typing-' + Date.now();
-    const div = document.createElement('div');
-    div.id = id;
-    div.className = 'd-flex gap-3 mb-4';
-    div.innerHTML = `
-        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🤖</div>
-        <div class="bot-bubble d-flex align-items-center gap-1" style="padding:14px 18px;border-radius:0 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-            <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
-        </div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-    return id;
-}
-
-function removeTyping(id) {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-}
-
-function clearChat() {
-    if (!confirm('Chat clear karoge?')) return;
-    chatHistory = [];
-    const container = document.getElementById('chatMessages');
-    // Keep only the first welcome message elements
-    const msgs = container.querySelectorAll('.d-flex.gap-3, .d-flex.justify-content-end, .d-flex.flex-wrap');
-    msgs.forEach(m => m.remove());
-    // Re-add welcome
+function clearChat(){
+    if(!confirm('Chat clear karein?')) return;
+    history=[];
     location.reload();
 }
 </script>
