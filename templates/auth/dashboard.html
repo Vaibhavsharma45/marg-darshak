@@ -484,6 +484,14 @@ body:not(.dark-mode) .dash-root { background: #0d0d2b; }
 </div>
 </div>
 
+<!-- Hidden data element — Jinja renders here, JS reads from here — no linter errors -->
+{% if assessment %}
+<div id="__assessmentData"
+     data-scores='{{ assessment.scores | tojson }}'
+     data-careers='{{ assessment.recommended_careers | tojson }}'
+     style="display:none;"></div>
+{% endif %}
+
 <!-- ===== JS: Stars + Data Render ===== -->
 <script>
 /* ---- STAR FIELD ---- */
@@ -579,11 +587,12 @@ styleEl.textContent = `
 document.head.appendChild(styleEl);
 
 /* ---- ASSESSMENT DATA RENDER ---- */
-{% if assessment %}
 (function () {
     try {
-        var scores  = {{ assessment.scores | tojson | safe }};
-        var careers = {{ assessment.recommended_careers | tojson | safe }};
+        var dataEl  = document.getElementById('__assessmentData');
+        if (!dataEl) return;
+        var scores  = JSON.parse(dataEl.getAttribute('data-scores')  || '{}');
+        var careers = JSON.parse(dataEl.getAttribute('data-careers') || '[]');
 
         var traitGradients = {
             technical:      ['#3b82f6','#06b6d4'],
@@ -643,7 +652,6 @@ document.head.appendChild(styleEl);
         console.error('Dashboard render err:', e);
     }
 })();
-{% endif %}
 </script>
 
 {% endblock %}
