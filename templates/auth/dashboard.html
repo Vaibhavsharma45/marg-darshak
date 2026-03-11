@@ -1,657 +1,787 @@
 {% extends 'base.html' %}
-{% block title %}Dashboard - Marg Darshak{% endblock %}
+{% block title %}Dashboard — Marg Darshak{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ===== COSMIC DASHBOARD THEME ===== */
-.dash-root {
+/* ══════════════════════════════════════════
+   ROOT & BACKGROUND
+══════════════════════════════════════════ */
+.db-wrap {
     min-height: 100vh;
-    background: #050816;
+    background: #060818;
+    font-family: 'DM Sans', sans-serif;
     position: relative;
     overflow-x: hidden;
-    font-family: 'Inter', sans-serif;
-    padding: 30px 0 60px;
+    padding: 0 0 80px;
+    color: #e2e8f0;
 }
-
-/* ===== STAR CANVAS ===== */
 #starCanvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
 }
-
-/* ===== NEBULA BLOBS ===== */
 .nebula {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.18;
-    pointer-events: none;
-    z-index: 0;
-    animation: nebulaFloat 12s ease-in-out infinite;
+    position: fixed; border-radius: 50%;
+    filter: blur(90px); opacity: 0.15;
+    pointer-events: none; z-index: 0;
+    animation: nFloat 14s ease-in-out infinite;
 }
-.nebula-1 { width: 600px; height: 600px; background: radial-gradient(#7c3aed, transparent); top: -150px; left: -100px; animation-delay: 0s; }
-.nebula-2 { width: 500px; height: 500px; background: radial-gradient(#ec4899, transparent); top: 30%; right: -100px; animation-delay: -4s; }
-.nebula-3 { width: 400px; height: 400px; background: radial-gradient(#06b6d4, transparent); bottom: 10%; left: 20%; animation-delay: -8s; }
+.n1{width:700px;height:700px;background:radial-gradient(#6d28d9,transparent);top:-200px;left:-150px;}
+.n2{width:550px;height:550px;background:radial-gradient(#db2777,transparent);top:35%;right:-120px;animation-delay:-5s;}
+.n3{width:450px;height:450px;background:radial-gradient(#0891b2,transparent);bottom:5%;left:25%;animation-delay:-9s;}
+@keyframes nFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-28px) scale(1.04);}}
 
-@keyframes nebulaFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-30px) scale(1.05); }
+/* ══════════════════════════════════════════
+   TOP NAV BAR
+══════════════════════════════════════════ */
+.db-topbar {
+    position: relative; z-index: 10;
+    padding: 20px 0 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 32px;
 }
-
-/* ===== CONTENT LAYER ===== */
-.dash-content {
-    position: relative;
-    z-index: 1;
+.db-topbar-inner {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; padding-bottom: 18px;
 }
-
-/* ===== WELCOME HERO ===== */
-.welcome-hero {
-    background: linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(236,72,153,0.15) 50%, rgba(6,182,212,0.15) 100%);
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 32px;
-    margin-bottom: 28px;
-    position: relative;
-    overflow: hidden;
-}
-.welcome-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-}
-
-/* ===== AVATAR ===== */
-.cosmic-avatar {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #ec4899);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; font-weight: 800; color: white;
+.db-logo {
     font-family: 'Syne', sans-serif;
-    position: relative;
-    flex-shrink: 0;
-    box-shadow: 0 0 30px rgba(124,58,237,0.6), 0 0 60px rgba(124,58,237,0.3);
-    animation: avatarPulse 3s ease infinite;
-}
-@keyframes avatarPulse {
-    0%, 100% { box-shadow: 0 0 30px rgba(124,58,237,0.6), 0 0 60px rgba(124,58,237,0.3); }
-    50% { box-shadow: 0 0 40px rgba(236,72,153,0.7), 0 0 80px rgba(236,72,153,0.35); }
-}
-.avatar-ring {
-    position: absolute; inset: -4px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    background: linear-gradient(135deg, #7c3aed, #ec4899, #06b6d4) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
-    animation: ringRotate 4s linear infinite;
-}
-@keyframes ringRotate { to { transform: rotate(360deg); } }
-
-/* ===== GLASS CARDS ===== */
-.glass-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.09);
-    backdrop-filter: blur(16px);
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.35s ease;
-}
-.glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.glass-card:hover { 
-    border-color: rgba(124,58,237,0.4);
-    transform: translateY(-3px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(124,58,237,0.15);
-}
-.glass-card:hover::before { opacity: 1; }
-
-/* ===== PERSONALITY BADGE ===== */
-.personality-badge {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(236,72,153,0.2));
-    border: 1px solid rgba(124,58,237,0.4);
-    border-radius: 50px;
-    margin-bottom: 20px;
-}
-.personality-badge .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #a78bfa;
-    animation: blink 1.5s ease infinite;
-    box-shadow: 0 0 8px #a78bfa;
-}
-@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
-
-/* ===== TRAIT BARS ===== */
-.trait-row { margin-bottom: 14px; }
-.trait-label { color: rgba(255,255,255,0.7); font-size: 0.82rem; text-transform: capitalize; letter-spacing: 0.5px; }
-.trait-score { color: rgba(255,255,255,0.4); font-size: 0.78rem; }
-.trait-track {
-    height: 8px; border-radius: 10px;
-    background: rgba(255,255,255,0.07);
-    overflow: hidden; margin-top: 5px;
-}
-.trait-fill {
-    height: 100%; border-radius: 10px;
-    width: 0;
-    transition: width 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-}
-.trait-fill::after {
-    content: '';
-    position: absolute; right: 0; top: 50%;
-    transform: translateY(-50%);
-    width: 10px; height: 10px; border-radius: 50%;
-    background: inherit;
-    box-shadow: 0 0 8px currentColor;
-    filter: brightness(1.5);
-}
-
-/* ===== CAREER PILLS ===== */
-.career-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 14px;
-    background: rgba(124,58,237,0.15);
-    border: 1px solid rgba(124,58,237,0.35);
-    border-radius: 50px;
-    color: #c4b5fd;
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-size: 1.1rem; font-weight: 700;
+    color: #a78bfa; letter-spacing: 0.5px;
     text-decoration: none;
-    transition: all 0.25s;
 }
-.career-pill:hover {
-    background: rgba(124,58,237,0.3);
-    border-color: rgba(124,58,237,0.6);
-    color: #ede9fe;
-    transform: translateY(-1px);
+.db-nav-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.db-nav-pill {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 0.78rem; font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none; border: none;
+    background: transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
-.career-pill .pip {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #a78bfa;
-    box-shadow: 0 0 6px #a78bfa;
+.db-nav-pill:hover,.db-nav-pill.active {
+    background: rgba(124,58,237,0.2);
+    color: #c4b5fd;
+    border-radius: 20px;
+}
+.db-nav-pill.active { border: 1px solid rgba(124,58,237,0.4); }
+
+/* ══════════════════════════════════════════
+   CONTENT LAYER
+══════════════════════════════════════════ */
+.db-content { position: relative; z-index: 1; }
+
+/* ══════════════════════════════════════════
+   HERO WELCOME STRIP
+══════════════════════════════════════════ */
+.hero-strip {
+    background: linear-gradient(120deg,
+        rgba(109,40,217,0.22) 0%,
+        rgba(219,39,119,0.12) 50%,
+        rgba(8,145,178,0.12) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(24px);
+    border-radius: 22px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    position: relative; overflow: hidden;
+}
+.hero-strip::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent);
+}
+/* Decorative corner glow */
+.hero-strip::after {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(rgba(124,58,237,0.3), transparent 70%);
+    border-radius: 50%; pointer-events: none;
 }
 
-/* ===== STAT MINI CARDS ===== */
-.stat-mini {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 18px;
-    text-align: center;
-    transition: all 0.3s;
+/* ══════════════════════════════════════════
+   AVATAR
+══════════════════════════════════════════ */
+.cosmo-avatar {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem; font-weight: 800; color: white;
+    flex-shrink: 0; position: relative;
+    animation: avGlow 3s ease infinite;
 }
-.stat-mini:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(124,58,237,0.4);
+@keyframes avGlow{
+    0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0),0 0 24px rgba(124,58,237,0.5);}
+    50%{box-shadow:0 0 0 6px rgba(124,58,237,0.08),0 0 32px rgba(236,72,153,0.5);}
+}
+.av-ring {
+    position: absolute; inset: -5px; border-radius: 50%;
+    background: conic-gradient(#7c3aed,#ec4899,#06b6d4,#7c3aed);
+    z-index: -1; animation: avSpin 5s linear infinite;
+    mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),white calc(100% - 2.5px));
+    -webkit-mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),white calc(100% - 2.5px));
+}
+@keyframes avSpin{to{transform:rotate(360deg);}}
+
+/* ══════════════════════════════════════════
+   SECTION GRID
+══════════════════════════════════════════ */
+.db-grid { display: grid; gap: 20px; }
+.db-grid-2col { grid-template-columns: 1fr 340px; }
+@media(max-width:992px){.db-grid-2col{grid-template-columns:1fr;}}
+
+/* ══════════════════════════════════════════
+   GLASS PANEL
+══════════════════════════════════════════ */
+.glass {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+    border-radius: 20px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.glass:hover {
+    border-color: rgba(124,58,237,0.3);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 18px rgba(124,58,237,0.1);
     transform: translateY(-2px);
 }
-.stat-num {
+.glass-shine::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
+}
+
+/* Section label */
+.sec-label {
+    font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: rgba(255,255,255,0.3); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+}
+.sec-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: rgba(255,255,255,0.07);
+}
+
+/* ══════════════════════════════════════════
+   PERSONALITY HERO CARD
+══════════════════════════════════════════ */
+.pers-card {
+    background: linear-gradient(135deg,
+        rgba(124,58,237,0.18) 0%,
+        rgba(236,72,153,0.1) 100%);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 16px; padding: 20px;
+    margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.pers-card::before {
+    content: attr(data-emoji);
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem; opacity: 0.12;
+    pointer-events: none;
+}
+.pers-name {
     font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #a78bfa, #f0abfc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 1.3rem; font-weight: 800;
+    color: white; margin: 0 0 4px;
 }
-.stat-label { color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 2px; }
+.live-dot {
+    display: inline-block;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #4ade80; margin-right: 6px;
+    box-shadow: 0 0 8px #4ade80;
+    animation: ldot 1.4s ease infinite;
+}
+@keyframes ldot{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
-/* ===== QUICK LINKS ===== */
-.quick-link {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 500;
-    border: 1px solid rgba(255,255,255,0.07);
+/* ══════════════════════════════════════════
+   TRAIT BARS — CIRCULAR MINI + BAR
+══════════════════════════════════════════ */
+.trait-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 20px;
+}
+.trait-item {
     background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 12px 14px;
     transition: all 0.25s;
-    margin-bottom: 8px;
 }
-.quick-link:hover {
-    color: white;
-    background: rgba(124,58,237,0.2);
-    border-color: rgba(124,58,237,0.4);
-    transform: translateX(4px);
-}
-.quick-link .ql-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.95rem; flex-shrink: 0;
-}
+.trait-item:hover { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); }
+.trait-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.trait-name { font-size: 0.78rem; color: rgba(255,255,255,0.65); text-transform: capitalize; font-weight: 500; }
+.trait-val { font-family: 'Syne',sans-serif; font-size: 0.9rem; font-weight: 700; }
+.trait-bar-bg { height: 5px; border-radius: 5px; background: rgba(255,255,255,0.07); overflow: hidden; }
+.trait-bar-fg { height: 100%; border-radius: 5px; width: 0; transition: width 1.6s cubic-bezier(0.34,1.3,0.64,1); }
 
-/* ===== SHLOKA CTA ===== */
-.shloka-cta {
-    background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(251,113,133,0.15));
-    border: 1px solid rgba(236,72,153,0.3);
-    border-radius: 20px;
-    padding: 24px;
-    text-align: center;
-    position: relative;
+/* ══════════════════════════════════════════
+   CAREER ROADMAP PREVIEW
+══════════════════════════════════════════ */
+.roadmap-list { display: flex; flex-direction: column; gap: 10px; }
+.roadmap-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; text-decoration: none;
+    transition: all 0.25s; position: relative;
     overflow: hidden;
 }
-.shloka-cta::after {
-    content: '🕉';
-    position: absolute;
-    right: -10px; bottom: -15px;
-    font-size: 5rem;
-    opacity: 0.08;
-}
-
-/* ===== EMPTY STATE ===== */
-.empty-assessment {
-    border: 1px dashed rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 50px 30px;
-    text-align: center;
-}
-.pulse-ring {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #ec4899);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem;
-    margin: 0 auto 20px;
-    position: relative;
-}
-.pulse-ring::before, .pulse-ring::after {
+.roadmap-item::before {
     content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; border-radius: 3px 0 0 3px;
+    background: linear-gradient(#7c3aed,#ec4899);
+    opacity: 0; transition: opacity 0.25s;
+}
+.roadmap-item:hover { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); transform: translateX(4px); }
+.roadmap-item:hover::before { opacity: 1; }
+.roadmap-rank {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg,rgba(124,58,237,0.3),rgba(236,72,153,0.2));
+    border: 1px solid rgba(124,58,237,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne',sans-serif; font-size: 0.75rem; font-weight: 700;
+    color: #c4b5fd; flex-shrink: 0;
+}
+.roadmap-title { color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 600; }
+.roadmap-arrow { margin-left: auto; color: rgba(255,255,255,0.25); font-size: 0.8rem; transition: color 0.2s; }
+.roadmap-item:hover .roadmap-arrow { color: #a78bfa; }
+
+/* ══════════════════════════════════════════
+   STRENGTHS TAGS
+══════════════════════════════════════════ */
+.strength-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 0.76rem; font-weight: 500;
+    background: rgba(6,182,212,0.12);
+    border: 1px solid rgba(6,182,212,0.25);
+    color: #67e8f9;
+}
+.strength-tag::before { content: '✦'; font-size: 0.6rem; }
+
+/* ══════════════════════════════════════════
+   PROGRESS RING (SVG)
+══════════════════════════════════════════ */
+.progress-ring-wrap { position: relative; display: inline-flex; }
+.ring-label {
     position: absolute; inset: 0;
-    border-radius: 50%;
-    border: 2px solid rgba(124,58,237,0.5);
-    animation: expandRing 2s ease infinite;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
 }
-.pulse-ring::after { animation-delay: 1s; }
-@keyframes expandRing {
-    0% { transform: scale(1); opacity: 0.8; }
-    100% { transform: scale(2.2); opacity: 0; }
+.ring-pct { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 800; color: white; line-height: 1; }
+.ring-sub { font-size: 0.62rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+/* ══════════════════════════════════════════
+   QUICK ACTION BUTTONS
+══════════════════════════════════════════ */
+.qa-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px; border-radius: 14px;
+    text-decoration: none; font-size: 0.84rem; font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.7);
+    transition: all 0.22s; margin-bottom: 8px;
+    position: relative; overflow: hidden;
+}
+.qa-btn::after {
+    content: '→';
+    margin-left: auto; color: rgba(255,255,255,0.2);
+    transition: all 0.2s; font-size: 0.9rem;
+}
+.qa-btn:hover { color: white; transform: translateX(4px); }
+.qa-btn:hover::after { color: #a78bfa; transform: translateX(3px); }
+.qa-ico {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
 }
 
-/* ===== TEXT ===== */
-.text-white { color: #f0f0ff !important; }
-.section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 14px;
+/* ══════════════════════════════════════════
+   ACTIVITY / TIMELINE
+══════════════════════════════════════════ */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 14px; padding-bottom: 16px; position: relative; }
+.tl-item:not(:last-child)::before {
+    content: '';
+    position: absolute; left: 15px; top: 32px; bottom: 0;
+    width: 1px; background: rgba(255,255,255,0.07);
 }
-.hero-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: white;
-    margin: 0 0 8px;
+.tl-dot {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);
+}
+.tl-body { padding-top: 4px; }
+.tl-title { font-size: 0.82rem; color: rgba(255,255,255,0.8); font-weight: 500; }
+.tl-time { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
+
+/* ══════════════════════════════════════════
+   SHLOKA BANNER
+══════════════════════════════════════════ */
+.shloka-banner {
+    background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(244,63,94,0.12));
+    border: 1px solid rgba(236,72,153,0.25);
+    border-radius: 18px; padding: 22px;
+    text-align: center; position: relative; overflow: hidden;
+}
+.shloka-banner::after {
+    content: '🕉';
+    position: absolute; right: 12px; bottom: -8px;
+    font-size: 5rem; opacity: 0.07; pointer-events: none;
 }
 
-/* ===== BADGES ===== */
-.type-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+/* ══════════════════════════════════════════
+   STAT CHIPS
+══════════════════════════════════════════ */
+.stat-chips { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.stat-chip {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 16px 10px;
+    text-align: center; transition: all 0.25s;
 }
-.badge-student { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
-.badge-graduate { background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
-.badge-professional { background: rgba(139,92,246,0.2); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
-.state-badge { background: rgba(236,72,153,0.15); color: #f9a8d4; border: 1px solid rgba(236,72,153,0.25); padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; }
+.stat-chip:hover { border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.07); transform: translateY(-2px); }
+.chip-num {
+    font-family: 'Syne',sans-serif; font-size: 1.5rem; font-weight: 800;
+    background: linear-gradient(135deg,#a78bfa,#f0abfc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+.chip-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 4px; letter-spacing: 0.5px; }
 
-/* DARK MODE COMPAT */
-body.dark-mode .dash-root { background: #050816; }
-body:not(.dark-mode) .dash-root { background: #0d0d2b; }
+/* ══════════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════════ */
+.empty-state {
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 20px; padding: 48px 28px; text-align: center;
+}
+.pulse-orb {
+    width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 20px;
+    background: linear-gradient(135deg,#7c3aed,#ec4899);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; position: relative;
+}
+.pulse-orb::before,.pulse-orb::after {
+    content:''; position:absolute; inset:0; border-radius:50%;
+    border:2px solid rgba(124,58,237,0.4); animation:pOrb 2s ease infinite;
+}
+.pulse-orb::after{animation-delay:1s;}
+@keyframes pOrb{0%{transform:scale(1);opacity:.8;}100%{transform:scale(2.1);opacity:0;}}
+
+/* ══════════════════════════════════════════
+   TYPE BADGES
+══════════════════════════════════════════ */
+.tb { display:inline-block; padding:3px 12px; border-radius:20px; font-size:0.72rem; font-weight:600; }
+.tb-student  { background:rgba(16,185,129,0.15); color:#6ee7b7; border:1px solid rgba(16,185,129,0.25); }
+.tb-graduate { background:rgba(59,130,246,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.25); }
+.tb-professional { background:rgba(139,92,246,0.15); color:#c4b5fd; border:1px solid rgba(139,92,246,0.25); }
+.tb-state { background:rgba(236,72,153,0.12); color:#f9a8d4; border:1px solid rgba(236,72,153,0.22); }
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════════ */
+@keyframes fSlideDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fSlideUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.anim-d0{animation:fSlideDown .55s ease both;}
+.anim-u1{animation:fSlideUp .6s ease .1s both;}
+.anim-u2{animation:fSlideUp .6s ease .2s both;}
+.anim-u3{animation:fSlideUp .6s ease .3s both;}
+.anim-u4{animation:fSlideUp .6s ease .4s both;}
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Stars canvas -->
 <canvas id="starCanvas"></canvas>
+<div class="nebula n1"></div>
+<div class="nebula n2"></div>
+<div class="nebula n3"></div>
 
-<!-- Nebula blobs -->
-<div class="nebula nebula-1"></div>
-<div class="nebula nebula-2"></div>
-<div class="nebula nebula-3"></div>
+<div class="db-wrap">
 
-<div class="dash-root">
-<div class="dash-content container">
-
-    <!-- ===== WELCOME HERO ===== -->
-    <div class="welcome-hero mb-4" style="animation: fadeSlideDown 0.6s ease both;">
-        <div class="d-flex align-items-center gap-4 flex-wrap">
-            <div class="cosmic-avatar">
-                <div class="avatar-ring"></div>
-                {{ user.name[0].upper() if user.name else '?' }}
-            </div>
-            <div style="flex:1;">
-                <p class="mb-1" style="color:rgba(255,255,255,0.45);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;">Welcome back</p>
-                <h2 class="hero-name">Namaste, {{ user.name }}! 🙏</h2>
-                <div class="d-flex gap-2 flex-wrap">
-                    <span class="type-badge badge-{{ user.user_type or 'student' }}">
-                        {{ user.user_type.title() if user.user_type else 'Student' }}
-                    </span>
-                    {% if user.state %}
-                    <span class="state-badge">📍 {{ user.state }}</span>
-                    {% endif %}
-                    {% if user.current_field %}
-                    <span class="state-badge">{{ user.current_field }}</span>
-                    {% endif %}
-                </div>
-            </div>
-            <a href="/assessment" class="btn fw-bold px-4 py-2" style="background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:14px;color:white;font-family:'Syne',sans-serif;box-shadow:0 8px 24px rgba(124,58,237,0.4);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 30px rgba(124,58,237,0.55)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 24px rgba(124,58,237,0.4)'">
-                ✦ New Assessment
-            </a>
+    <!-- ── TOP NAV ── -->
+    <div class="db-topbar">
+        <div class="container db-topbar-inner">
+            <a href="/" class="db-logo">🧭 Marg Darshak</a>
+            <nav class="db-nav-pills">
+                <a href="/dashboard"  class="db-nav-pill active">Dashboard</a>
+                <a href="/assessment" class="db-nav-pill">Assessment</a>
+                <a href="/career/browse" class="db-nav-pill">Careers</a>
+                <a href="/chat"       class="db-nav-pill">AI Chat</a>
+                <a href="/gyan"       class="db-nav-pill">Gyan</a>
+                <a href="/skill"      class="db-nav-pill">Skills</a>
+            </nav>
+            <a href="/logout" style="font-size:0.78rem;color:rgba(255,255,255,0.3);text-decoration:none;padding:6px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;transition:all .2s;" onmouseover="this.style.color='#f9a8d4'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Sign out</a>
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="db-content container">
 
-        <!-- ===== LEFT COLUMN ===== -->
-        <div class="col-lg-8">
-
-            {% if assessment %}
-            <!-- Assessment Card -->
-            <div class="glass-card p-4 mb-4" style="animation: fadeSlideUp 0.7s ease 0.1s both;">
-                <p class="section-title">✦ Latest Assessment</p>
-
-                <div class="personality-badge mb-3">
-                    <span class="dot"></span>
-                    <span style="color:#e2d9f3;font-weight:600;font-size:0.9rem;font-family:'Syne',sans-serif;">
-                        {{ assessment.personality_type or 'Career Explorer' }}
-                    </span>
+        <!-- ── HERO STRIP ── -->
+        <div class="hero-strip anim-d0">
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <div class="cosmo-avatar">
+                    <div class="av-ring"></div>
+                    {{ user.name[0].upper() if user.name else '?' }}
                 </div>
-
-                <div class="d-flex gap-3 mb-4 flex-wrap" style="font-size:0.78rem;color:rgba(255,255,255,0.35);">
-                    {% if assessment.completed_at %}
-                    <span>📅 {{ assessment.completed_at[:10] }}</span>
-                    {% endif %}
-                    {% if assessment.state %}
-                    <span>📍 {{ assessment.state }}</span>
-                    {% endif %}
-                </div>
-
-                <!-- Trait Bars (JS rendered) -->
-                <div id="traitBarsContainer"></div>
-
-                <!-- Careers (JS rendered) -->
-                <div id="recommendedCareersContainer"></div>
-
-                <div class="mt-4 d-flex gap-2 flex-wrap">
-                    <a href="/assessment" class="btn btn-sm px-3" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#c4b5fd;border-radius:10px;font-size:0.82rem;">↺ Retake</a>
-                    <a href="/career/browse" class="btn btn-sm px-3" style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);color:#67e8f9;border-radius:10px;font-size:0.82rem;">🎯 Browse Careers</a>
-                    <a href="/chat" class="btn btn-sm px-3" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;border-radius:10px;font-size:0.82rem;">🤖 Ask AI</a>
-                </div>
-            </div>
-            {% else %}
-            <!-- Empty State -->
-            <div class="empty-assessment mb-4" style="animation: fadeSlideUp 0.7s ease 0.1s both;">
-                <div class="pulse-ring">🧠</div>
-                <h5 style="color:white;font-family:'Syne',sans-serif;font-weight:700;">Assessment nahi li abhi tak!</h5>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.88rem;">5 minute mein apna perfect career path discover karo</p>
-                <a href="/assessment" class="btn mt-2 px-4 py-2 fw-bold" style="background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:14px;color:white;font-family:'Syne',sans-serif;box-shadow:0 8px 24px rgba(124,58,237,0.4);">
-                    ✦ Assessment Shuru Karo
-                </a>
-            </div>
-            {% endif %}
-
-            <!-- Stat Mini Cards -->
-            <div class="row g-3" style="animation: fadeSlideUp 0.7s ease 0.25s both;">
-                <div class="col-4">
-                    <div class="stat-mini">
-                        <div style="font-size:1.6rem;">🎯</div>
-                        <div class="stat-num">40+</div>
-                        <div class="stat-label">Careers</div>
+                <div style="flex:1; min-width:200px;">
+                    <p style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:0 0 4px;">Your Space</p>
+                    <h2 style="font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:white;margin:0 0 10px;">
+                        Namaste, {{ user.name.split()[0] if user.name else 'Explorer' }}! 🙏
+                    </h2>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="tb tb-{{ user.user_type or 'student' }}">{{ user.user_type.title() if user.user_type else 'Student' }}</span>
+                        {% if user.state %}<span class="tb tb-state">📍 {{ user.state }}</span>{% endif %}
+                        {% if user.current_field %}<span class="tb tb-state">{{ user.current_field }}</span>{% endif %}
                     </div>
                 </div>
-                <div class="col-4">
-                    <div class="stat-mini">
-                        <div style="font-size:1.6rem;">📚</div>
-                        <div class="stat-num">55+</div>
-                        <div class="stat-label">Resources</div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="stat-mini">
-                        <div style="font-size:1.6rem;">🕉️</div>
-                        <div class="stat-num">15+</div>
-                        <div class="stat-label">Shlokas</div>
-                    </div>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="/assessment" style="padding:10px 22px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:white;text-decoration:none;font-weight:600;font-size:0.85rem;box-shadow:0 8px 22px rgba(124,58,237,0.4);transition:all .3s;border:none;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 28px rgba(124,58,237,0.55)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 22px rgba(124,58,237,0.4)'">
+                        ✦ New Assessment
+                    </a>
+                    <a href="/chat" style="padding:10px 22px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);text-decoration:none;font-weight:500;font-size:0.85rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                        🤖 Ask AI
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- ===== RIGHT COLUMN ===== -->
-        <div class="col-lg-4" style="animation: fadeSlideUp 0.7s ease 0.2s both;">
+        <!-- ── MAIN GRID ── -->
+        <div class="db-grid db-grid-2col">
 
-            <!-- Quick Access -->
-            <div class="glass-card p-4 mb-4">
-                <p class="section-title">✦ Quick Access</p>
-                <a href="/assessment" class="quick-link">
-                    <div class="ql-icon" style="background:rgba(124,58,237,0.2);">🧠</div>
-                    Career Assessment
-                </a>
-                <a href="/chat" class="quick-link">
-                    <div class="ql-icon" style="background:rgba(16,185,129,0.2);">🤖</div>
-                    AI Career Counselor
-                </a>
-                <a href="/career/browse" class="quick-link">
-                    <div class="ql-icon" style="background:rgba(6,182,212,0.2);">🎯</div>
-                    Browse Careers
-                </a>
-                <a href="/gyan" class="quick-link">
-                    <div class="ql-icon" style="background:rgba(236,72,153,0.2);">🕉️</div>
-                    Daily Wisdom
-                </a>
-                <a href="/skill" class="quick-link">
-                    <div class="ql-icon" style="background:rgba(251,191,36,0.2);">📚</div>
-                    Learning Resources
-                </a>
+            <!-- ════ LEFT COLUMN ════ -->
+            <div>
+
+                {% if assessment %}
+                <!-- PERSONALITY + TRAITS -->
+                <div class="glass glass-shine p-4 mb-5 anim-u1">
+                    <p class="sec-label">Career Profile</p>
+
+                    <!-- Personality badge -->
+                    <div class="pers-card mb-4" data-emoji="🎯">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                            <span class="live-dot"></span>
+                            <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;">Personality Type</span>
+                        </div>
+                        <div class="pers-name">{{ assessment.personality_type or 'Career Explorer' }}</div>
+                        <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-top:4px;">
+                            {% if assessment.completed_at %}📅 {{ assessment.completed_at[:10] }}{% endif %}
+                            {% if assessment.state %} &nbsp;·&nbsp; 📍 {{ assessment.state }}{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Trait Grid — rendered by JS -->
+                    <p class="sec-label" style="margin-top:0;">Trait Breakdown</p>
+                    <div class="trait-grid" id="traitGrid">
+                        <!-- JS fills this -->
+                    </div>
+
+                    <!-- Strengths -->
+                    <div id="strengthsRow" style="margin-bottom:20px;"></div>
+                </div>
+
+                <!-- CAREER ROADMAP PREVIEW -->
+                <div class="glass glass-shine p-4 mb-5 anim-u2">
+                    <p class="sec-label">Recommended Career Paths</p>
+                    <div class="roadmap-list" id="roadmapList">
+                        <!-- JS fills this -->
+                    </div>
+                    <a href="/career/browse" style="display:block;text-align:center;margin-top:16px;padding:10px;border-radius:12px;border:1px dashed rgba(124,58,237,0.3);color:rgba(167,139,250,0.7);text-decoration:none;font-size:0.82rem;transition:all .25s;" onmouseover="this.style.background='rgba(124,58,237,0.08)'" onmouseout="this.style.background=''">
+                        Explore all 40+ careers →
+                    </a>
+                </div>
+
+                {% else %}
+                <!-- EMPTY STATE -->
+                <div class="empty-state mb-5 anim-u1">
+                    <div class="pulse-orb">🧠</div>
+                    <h5 style="font-family:'Syne',sans-serif;font-weight:800;color:white;margin-bottom:8px;">Assessment nahi li abhi tak</h5>
+                    <p style="color:rgba(255,255,255,0.38);font-size:0.88rem;max-width:320px;margin:0 auto 24px;">5 minute ka psychometric test lo aur apna personality type, top careers aur skill roadmap pao</p>
+                    <a href="/assessment" style="display:inline-block;padding:12px 30px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:white;text-decoration:none;font-weight:700;font-family:'Syne',sans-serif;font-size:0.9rem;box-shadow:0 8px 22px rgba(124,58,237,0.4);">
+                        ✦ Assessment Shuru Karo
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- PLATFORM STATS -->
+                <div class="anim-u3">
+                    <p class="sec-label">Platform At a Glance</p>
+                    <div class="stat-chips">
+                        <div class="stat-chip">
+                            <div style="font-size:1.4rem;margin-bottom:6px;">🎯</div>
+                            <div class="chip-num">40+</div>
+                            <div class="chip-lbl">Careers</div>
+                        </div>
+                        <div class="stat-chip">
+                            <div style="font-size:1.4rem;margin-bottom:6px;">📚</div>
+                            <div class="chip-num">55+</div>
+                            <div class="chip-lbl">Resources</div>
+                        </div>
+                        <div class="stat-chip">
+                            <div style="font-size:1.4rem;margin-bottom:6px;">🕉️</div>
+                            <div class="chip-num">15+</div>
+                            <div class="chip-lbl">Shlokas</div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Shloka CTA -->
-            <div class="shloka-cta">
-                <div style="font-size:2rem; margin-bottom:10px;">🕉️</div>
-                <h6 style="color:white;font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;">Aaj Ka Gyan</h6>
-                <p style="color:rgba(255,255,255,0.5);font-size:0.82rem;margin-bottom:16px;">Bhagavad Gita se aaj ka shloka</p>
-                <a href="/gyan" class="btn btn-sm fw-bold px-4" style="background:linear-gradient(135deg,#ec4899,#f43f5e);border:none;border-radius:10px;color:white;">
-                    Shloka Dekho ✨
-                </a>
+            <!-- ════ RIGHT COLUMN ════ -->
+            <div class="d-flex flex-column gap-4">
+
+                {% if assessment %}
+                <!-- PROFILE COMPLETENESS RING -->
+                <div class="glass glass-shine p-4 anim-u1">
+                    <p class="sec-label">Profile Strength</p>
+                    <div class="d-flex align-items-center gap-4">
+                        <div class="progress-ring-wrap">
+                            <svg width="90" height="90" viewBox="0 0 90 90">
+                                <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="7"/>
+                                <circle cx="45" cy="45" r="36" fill="none"
+                                    stroke="url(#ringGrad)" stroke-width="7"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="226" stroke-dashoffset="56"
+                                    transform="rotate(-90 45 45)"/>
+                                <defs>
+                                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#7c3aed"/>
+                                        <stop offset="100%" stop-color="#ec4899"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="ring-label">
+                                <div class="ring-pct">75%</div>
+                                <div class="ring-sub">done</div>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:10px;">Complete karo profile:</div>
+                            <div style="display:flex;flex-direction:column;gap:6px;font-size:0.76rem;">
+                                <div style="color:#4ade80;">✅ Account created</div>
+                                <div style="color:#4ade80;">✅ Assessment completed</div>
+                                <div style="color:rgba(255,255,255,0.35);">○ Profile photo add karo</div>
+                                <div style="color:rgba(255,255,255,0.35);">○ Skills update karo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- QUICK ACTIONS -->
+                <div class="glass glass-shine p-4 anim-u2">
+                    <p class="sec-label">Quick Actions</p>
+                    <a href="/assessment" class="qa-btn">
+                        <div class="qa-ico" style="background:rgba(124,58,237,0.18);">🧠</div> Career Assessment
+                    </a>
+                    <a href="/chat" class="qa-btn">
+                        <div class="qa-ico" style="background:rgba(16,185,129,0.18);">🤖</div> AI Career Counselor
+                    </a>
+                    <a href="/career/browse" class="qa-btn">
+                        <div class="qa-ico" style="background:rgba(6,182,212,0.18);">🎯</div> Browse All Careers
+                    </a>
+                    <a href="/skill" class="qa-btn">
+                        <div class="qa-ico" style="background:rgba(251,191,36,0.18);">📚</div> Free Resources
+                    </a>
+                    <a href="/gyan" class="qa-btn">
+                        <div class="qa-ico" style="background:rgba(236,72,153,0.18);">🕉️</div> Daily Wisdom
+                    </a>
+                </div>
+
+                <!-- ACTIVITY / WHAT TO DO NEXT -->
+                <div class="glass glass-shine p-4 anim-u3">
+                    <p class="sec-label">What To Do Next</p>
+                    <div class="timeline">
+                        {% if not assessment %}
+                        <div class="tl-item">
+                            <div class="tl-dot" style="background:rgba(124,58,237,0.2);border-color:rgba(124,58,237,0.4);">🧠</div>
+                            <div class="tl-body">
+                                <div class="tl-title">Assessment lo — career path clear karo</div>
+                                <div class="tl-time">Step 1 · 5 minute</div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="tl-item">
+                            <div class="tl-dot" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);">✅</div>
+                            <div class="tl-body">
+                                <div class="tl-title">Assessment completed!</div>
+                                <div class="tl-time">Done · {{ assessment.completed_at[:10] if assessment.completed_at else '' }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="tl-item">
+                            <div class="tl-dot" style="background:rgba(6,182,212,0.15);border-color:rgba(6,182,212,0.3);">🎯</div>
+                            <div class="tl-body">
+                                <div class="tl-title">Career detail page dekho — roadmap explore karo</div>
+                                <div class="tl-time">Step 2 · Recommended</div>
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.3);">📚</div>
+                            <div class="tl-body">
+                                <div class="tl-title">Free resources se skill building shuru karo</div>
+                                <div class="tl-time">Step 3 · Ongoing</div>
+                            </div>
+                        </div>
+                        <div class="tl-item">
+                            <div class="tl-dot" style="background:rgba(236,72,153,0.15);border-color:rgba(236,72,153,0.3);">🤖</div>
+                            <div class="tl-body">
+                                <div class="tl-title">AI Counselor se doubts clear karo</div>
+                                <div class="tl-time">Step 4 · Anytime</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SHLOKA BANNER -->
+                <div class="shloka-banner anim-u4">
+                    <div style="font-size:1.8rem;margin-bottom:8px;">🕉️</div>
+                    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:white;margin-bottom:4px;">Aaj Ka Gyan</div>
+                    <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:16px;">Bhagavad Gita se career wisdom</div>
+                    <a href="/gyan" style="display:inline-block;padding:8px 22px;border-radius:10px;background:linear-gradient(135deg,#ec4899,#f43f5e);color:white;text-decoration:none;font-weight:600;font-size:0.82rem;">
+                        Shloka Dekho ✨
+                    </a>
+                </div>
+
             </div>
         </div>
 
     </div>
 </div>
-</div>
 
-<!-- Hidden data element — Jinja renders here, JS reads from here — no linter errors -->
+<!-- ══ JINJA DATA — outside all script tags ══ -->
 {% if assessment %}
-<div id="__assessmentData"
+<div id="__db"
      data-scores='{{ assessment.scores | tojson }}'
      data-careers='{{ assessment.recommended_careers | tojson }}'
+     data-strengths='{{ assessment.strengths | tojson if assessment.strengths else "[]" }}'
      style="display:none;"></div>
 {% endif %}
 
-<!-- ===== JS: Stars + Data Render ===== -->
 <script>
-/* ---- STAR FIELD ---- */
-(function () {
-    var canvas = document.getElementById('starCanvas');
-    var ctx = canvas.getContext('2d');
-    var stars = [];
-    var shootingStars = [];
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Create stars
-    for (var i = 0; i < 220; i++) {
-        stars.push({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            r: Math.random() * 1.6 + 0.2,
-            alpha: Math.random() * 0.7 + 0.2,
-            speed: Math.random() * 0.4 + 0.1,
-            phase: Math.random() * Math.PI * 2,
-            color: ['#ffffff','#c4b5fd','#93c5fd','#f9a8d4','#a5f3fc'][Math.floor(Math.random()*5)]
+/* ════ STAR FIELD ════ */
+(function(){
+    var c=document.getElementById('starCanvas');
+    var x=c.getContext('2d');
+    var S=[],SS=[];
+    function rsz(){c.width=window.innerWidth;c.height=window.innerHeight;}
+    rsz(); window.addEventListener('resize',rsz);
+    var cols=['#ffffff','#c4b5fd','#93c5fd','#f9a8d4','#a5f3fc','#fde68a'];
+    for(var i=0;i<240;i++) S.push({
+        x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight,
+        r:Math.random()*1.7+0.15, a:Math.random()*.7+.2,
+        sp:Math.random()*.35+.08, ph:Math.random()*Math.PI*2,
+        col:cols[Math.floor(Math.random()*cols.length)]
+    });
+    function spawn(){SS.push({x:Math.random()*innerWidth*.7,y:Math.random()*innerHeight*.35,
+        len:Math.random()*130+70,spd:Math.random()*9+5,a:1,ang:Math.PI/5+Math.random()*.25});}
+    setInterval(spawn,3800);
+    function draw(t){
+        x.clearRect(0,0,c.width,c.height);
+        S.forEach(function(s){
+            var tw=Math.max(.08,Math.min(1,s.a+Math.sin(t*.001*s.sp+s.ph)*.32));
+            x.save();x.globalAlpha=tw;x.fillStyle=s.col;
+            if(s.r>1.1){x.shadowColor=s.col;x.shadowBlur=7;}
+            x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();x.restore();
         });
-    }
-
-    function spawnShooting() {
-        shootingStars.push({
-            x: Math.random() * window.innerWidth * 0.7,
-            y: Math.random() * window.innerHeight * 0.4,
-            len: Math.random() * 120 + 80,
-            speed: Math.random() * 8 + 6,
-            alpha: 1,
-            angle: Math.PI / 5 + Math.random() * 0.2
+        SS=SS.filter(function(ss){
+            x.save();x.globalAlpha=ss.a;
+            var g=x.createLinearGradient(ss.x,ss.y,ss.x-Math.cos(ss.ang)*ss.len,ss.y-Math.sin(ss.ang)*ss.len);
+            g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(196,181,253,0)');
+            x.strokeStyle=g;x.lineWidth=1.6;x.shadowColor='#c4b5fd';x.shadowBlur=6;
+            x.beginPath();x.moveTo(ss.x,ss.y);
+            x.lineTo(ss.x-Math.cos(ss.ang)*ss.len,ss.y-Math.sin(ss.ang)*ss.len);
+            x.stroke();x.restore();
+            ss.x+=Math.cos(ss.ang)*ss.spd;ss.y+=Math.sin(ss.ang)*ss.spd;ss.a-=.016;
+            return ss.a>0;
         });
-    }
-    setInterval(spawnShooting, 3500);
-
-    function draw(t) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Stars
-        stars.forEach(function(s) {
-            var twinkle = s.alpha + Math.sin(t * s.speed + s.phase) * 0.3;
-            twinkle = Math.max(0.1, Math.min(1, twinkle));
-            ctx.save();
-            ctx.globalAlpha = twinkle;
-            ctx.fillStyle = s.color;
-            ctx.shadowColor = s.color;
-            ctx.shadowBlur = s.r > 1.2 ? 6 : 0;
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        });
-
-        // Shooting stars
-        shootingStars = shootingStars.filter(function(ss) {
-            ctx.save();
-            ctx.globalAlpha = ss.alpha;
-            var grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - Math.cos(ss.angle)*ss.len, ss.y - Math.sin(ss.angle)*ss.len);
-            grad.addColorStop(0, 'rgba(255,255,255,0.9)');
-            grad.addColorStop(1, 'rgba(196,181,253,0)');
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 1.5;
-            ctx.shadowColor = '#c4b5fd';
-            ctx.shadowBlur = 8;
-            ctx.beginPath();
-            ctx.moveTo(ss.x, ss.y);
-            ctx.lineTo(ss.x - Math.cos(ss.angle)*ss.len, ss.y - Math.sin(ss.angle)*ss.len);
-            ctx.stroke();
-            ctx.restore();
-            ss.x += Math.cos(ss.angle) * ss.speed;
-            ss.y += Math.sin(ss.angle) * ss.speed;
-            ss.alpha -= 0.018;
-            return ss.alpha > 0;
-        });
-
         requestAnimationFrame(draw);
     }
     requestAnimationFrame(draw);
 })();
 
-/* ---- FADE ANIMATIONS ---- */
-var styleEl = document.createElement('style');
-styleEl.textContent = `
-@keyframes fadeSlideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-@keyframes fadeSlideUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:translateY(0); } }
-`;
-document.head.appendChild(styleEl);
+/* ════ ASSESSMENT DATA RENDER ════ */
+(function(){
+    var el=document.getElementById('__db');
+    if(!el) return;
+    var scores, careers, strengths;
+    try{
+        scores   = JSON.parse(el.getAttribute('data-scores')   || '{}');
+        careers  = JSON.parse(el.getAttribute('data-careers')  || '[]');
+        strengths= JSON.parse(el.getAttribute('data-strengths')|| '[]');
+    } catch(e){ return; }
 
-/* ---- ASSESSMENT DATA RENDER ---- */
-(function () {
-    try {
-        var dataEl  = document.getElementById('__assessmentData');
-        if (!dataEl) return;
-        var scores  = JSON.parse(dataEl.getAttribute('data-scores')  || '{}');
-        var careers = JSON.parse(dataEl.getAttribute('data-careers') || '[]');
+    var GRAD={
+        technical:      ['#3b82f6','#06b6d4'],
+        analytical:     ['#8b5cf6','#a78bfa'],
+        creative:       ['#f59e0b','#fbbf24'],
+        social:         ['#10b981','#34d399'],
+        entrepreneurial:['#ef4444','#f87171'],
+        leadership:     ['#ec4899','#f472b6']
+    };
 
-        var traitGradients = {
-            technical:      ['#3b82f6','#06b6d4'],
-            analytical:     ['#8b5cf6','#a78bfa'],
-            creative:       ['#f59e0b','#fbbf24'],
-            social:         ['#10b981','#34d399'],
-            entrepreneurial:['#ef4444','#f87171'],
-            leadership:     ['#ec4899','#f472b6']
-        };
-
-        /* Trait Bars */
-        var barsEl = document.getElementById('traitBarsContainer');
-        if (barsEl && scores && typeof scores === 'object') {
-            var maxVal = Math.max.apply(null, Object.values(scores)) || 1;
-            var html = '';
-            var delay = 0;
-            Object.keys(scores).forEach(function (trait) {
-                var score = scores[trait];
-                var pct   = Math.min(Math.round((score / maxVal) * 100), 100);
-                var grad  = (traitGradients[trait] || ['#7c3aed','#c4b5fd']);
-                html += '<div class="trait-row" style="animation:fadeSlideUp 0.5s ease ' + delay + 's both;">'
-                    + '<div class="d-flex justify-content-between">'
-                    + '<span class="trait-label">' + trait + '</span>'
-                    + '<span class="trait-score">' + score + ' pts</span>'
-                    + '</div>'
-                    + '<div class="trait-track">'
-                    + '<div class="trait-fill" id="tf_' + trait + '" style="background:linear-gradient(90deg,' + grad[0] + ',' + grad[1] + ');"></div>'
-                    + '</div></div>';
-                delay += 0.08;
+    /* ---- Trait Grid ---- */
+    var grid=document.getElementById('traitGrid');
+    if(grid && typeof scores==='object'){
+        var maxV=Math.max.apply(null,Object.values(scores))||1;
+        var h='';
+        Object.keys(scores).forEach(function(t){
+            var sc=scores[t];
+            var pct=Math.min(Math.round(sc/maxV*100),100);
+            var g=GRAD[t]||['#7c3aed','#c4b5fd'];
+            h+='<div class="trait-item">'
+             +'<div class="trait-top">'
+             +'<span class="trait-name">'+t+'</span>'
+             +'<span class="trait-val" style="color:'+g[0]+'">'+sc+'</span>'
+             +'</div>'
+             +'<div class="trait-bar-bg">'
+             +'<div class="trait-bar-fg" id="tb_'+t+'" style="background:linear-gradient(90deg,'+g[0]+','+g[1]+')"></div>'
+             +'</div></div>';
+        });
+        grid.innerHTML=h;
+        setTimeout(function(){
+            Object.keys(scores).forEach(function(t){
+                var bar=document.getElementById('tb_'+t);
+                if(bar) bar.style.width=Math.min(Math.round(scores[t]/maxV*100),100)+'%';
             });
-            barsEl.innerHTML = html;
+        },250);
+    }
 
-            // Animate fills after paint
-            setTimeout(function () {
-                Object.keys(scores).forEach(function (trait) {
-                    var maxVal2 = Math.max.apply(null, Object.values(scores)) || 1;
-                    var pct = Math.min(Math.round((scores[trait] / maxVal2) * 100), 100);
-                    var el = document.getElementById('tf_' + trait);
-                    if (el) el.style.width = pct + '%';
-                });
-            }, 200);
-        }
+    /* ---- Strengths ---- */
+    var sRow=document.getElementById('strengthsRow');
+    if(sRow && Array.isArray(strengths) && strengths.length){
+        var sh='<p class="sec-label">Your Strengths</p><div class="d-flex flex-wrap gap-2">';
+        strengths.forEach(function(s){ sh+='<span class="strength-tag">'+s+'</span>'; });
+        sh+='</div>';
+        sRow.innerHTML=sh;
+    }
 
-        /* Recommended Careers */
-        var careersEl = document.getElementById('recommendedCareersContainer');
-        if (careersEl && Array.isArray(careers) && careers.length > 0) {
-            var cHtml = '<div class="mt-4 pt-3" style="border-top:1px solid rgba(255,255,255,0.07);">'
-                + '<p class="section-title" style="margin-bottom:10px;">✦ Recommended Careers</p>'
-                + '<div class="d-flex flex-wrap gap-2">';
-            careers.forEach(function (c) {
-                cHtml += '<a href="/career/browse" class="career-pill"><span class="pip"></span>' + c + '</a>';
-            });
-            cHtml += '</div></div>';
-            careersEl.innerHTML = cHtml;
-        }
-    } catch (e) {
-        console.error('Dashboard render err:', e);
+    /* ---- Career Roadmap ---- */
+    var rList=document.getElementById('roadmapList');
+    if(rList && Array.isArray(careers) && careers.length){
+        var rh='';
+        careers.forEach(function(c,i){
+            rh+='<a href="/career/browse" class="roadmap-item">'
+              +'<div class="roadmap-rank">'+(i+1)+'</div>'
+              +'<div>'
+              +'<div class="roadmap-title">'+c+'</div>'
+              +'<div style="font-size:0.71rem;color:rgba(255,255,255,0.3);margin-top:2px;">Tap to explore full roadmap</div>'
+              +'</div>'
+              +'<div class="roadmap-arrow">›</div>'
+              +'</a>';
+        });
+        rList.innerHTML=rh;
     }
 })();
 </script>
-
 {% endblock %}
