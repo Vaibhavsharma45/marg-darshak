@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Login - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:30px;text-align:center;">
+                    <div style="font-size:3rem;">🧭</div>
+                    <h3 class="text-white fw-bold mt-2 mb-1">Welcome Back!</h3>
+                    <p class="text-white mb-0" style="opacity:0.85;">Apne account mein login karo</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-envelope me-2 text-primary"></i>Email</label>
+                            <input type="email" name="email" class="form-control" style="border-radius:10px;" placeholder="your@email.com" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold"><i class="fas fa-lock me-2 text-primary"></i>Password</label>
+                            <input type="password" name="password" class="form-control" style="border-radius:10px;" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login Karo
+                        </button>
+                    </form>
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Account nahi hai?</p>
+                        <a href="/register" class="btn btn-outline-primary fw-bold" style="border-radius:10px;">
+                            <i class="fas fa-user-plus me-2"></i>Register Karo
+                        </a>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="/assessment" class="text-muted small text-decoration-none">
+                            <i class="fas fa-user-secret me-1"></i>Login ke bina bhi assessment lo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

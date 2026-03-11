@@ -2,168 +2,164 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-    <div class="container">
-        <h1 class="display-3 fw-bold mb-3">🧭 Marg Darshak</h1>
-        <h2 class="h4 mb-4" style="font-family: 'Noto Sans Devanagari', sans-serif;">
+<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:80px 0 60px;">
+    <div class="container text-center">
+        <div style="font-size:5rem;animation:bounce 2s ease infinite;">🧭</div>
+        <h1 class="display-3 fw-bold mt-3">Marg Darshak</h1>
+        <h3 style="font-family:'Noto Sans Devanagari',sans-serif;opacity:0.9;" class="mb-3">
             "जीवन के हर पड़ाव पर सही दिशा"
-        </h2>
-        <p class="lead mb-4">Your Complete Guide to Career, Wisdom & Learning</p>
+        </h3>
+        <p class="lead mb-4" style="opacity:0.9;max-width:550px;margin:0 auto;">
+            India's smartest career guidance platform — students, graduates aur professionals ke liye
+        </p>
+        
+        {% if current_user %}
+        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+            <a href="/assessment" class="btn btn-light btn-lg fw-bold" style="border-radius:12px;color:#667eea;">
+                <i class="fas fa-brain me-2"></i>New Assessment Lo
+            </a>
+            <a href="/dashboard" class="btn btn-outline-light btn-lg" style="border-radius:12px;">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+        </div>
+        {% else %}
+        <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+            <a href="/register" class="btn btn-light btn-lg fw-bold" style="border-radius:12px;color:#667eea;">
+                <i class="fas fa-rocket me-2"></i>Free Mein Shuru Karo
+            </a>
+            <a href="/assessment" class="btn btn-outline-light btn-lg" style="border-radius:12px;">
+                <i class="fas fa-play me-2"></i>Assessment Try Karo
+            </a>
+        </div>
+        <p class="mt-3" style="opacity:0.7;font-size:0.85rem;">No credit card • No fees • 100% Free</p>
+        {% endif %}
         
         <!-- Stats -->
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <div class="stat-box">
-                    <h3 class="display-4">{{ stats.careers }}</h3>
-                    <p>Career Paths</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-box">
-                    <h3 class="display-4">{{ stats.shlokas }}</h3>
-                    <p>Wisdom Verses</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-box">
-                    <h3 class="display-4">{{ stats.resources }}</h3>
-                    <p>Learning Resources</p>
-                </div>
-            </div>
+        <div class="row mt-5 justify-content-center">
+            <div class="col-auto"><div class="px-4"><h3 class="fw-bold mb-0">{{ stats.careers }}+</h3><small style="opacity:0.8;">Career Paths</small></div></div>
+            <div class="col-auto"><div class="px-4" style="border-left:1px solid rgba(255,255,255,0.3);border-right:1px solid rgba(255,255,255,0.3);"><h3 class="fw-bold mb-0">{{ stats.shlokas }}+</h3><small style="opacity:0.8;">Wisdom Verses</small></div></div>
+            <div class="col-auto"><div class="px-4"><h3 class="fw-bold mb-0">{{ stats.resources }}+</h3><small style="opacity:0.8;">Free Resources</small></div></div>
         </div>
     </div>
 </div>
 
-<!-- Three Modules Section -->
+<!-- 3 User Types -->
 <div class="container my-5">
+    <h2 class="text-center fw-bold mb-2">Aap Kaun Ho? 👤</h2>
+    <p class="text-center text-muted mb-5">Marg Darshak har kisi ke liye hai</p>
     <div class="row g-4">
-        
-        <!-- Career Compass -->
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center">
-                    <div class="icon-box mb-3" style="font-size: 3rem; color: #667eea;">
-                        <i class="fas fa-briefcase"></i>
+            <div class="card border-0 shadow-sm h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/assessment?type=student'">
+                <div class="card-body p-4">
+                    <div style="font-size:3.5rem;">🎓</div>
+                    <h4 class="fw-bold mt-3">Student</h4>
+                    <p class="text-muted mb-3" style="font-size:0.9rem;">10th/12th ya college mein ho? Confusion hai kya career choose karein? Hum guide karenge!</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                        <span class="badge bg-success-subtle text-success">Career Quiz</span>
+                        <span class="badge bg-info-subtle text-info">College Guide</span>
+                        <span class="badge bg-warning-subtle text-warning">Entrance Exams</span>
                     </div>
-                    <h3 class="card-title">Career Compass</h3>
-                    <p class="card-text">
-                        Discover your perfect career path with AI-powered recommendations, 
-                        personalized roadmaps, and skill guidance.
-                    </p>
-                    <a href="/career" class="btn btn-primary">Start Quiz <i class="fas fa-arrow-right"></i></a>
+                    <a href="/assessment" class="btn btn-outline-success" style="border-radius:10px;">Start Assessment <i class="fas fa-arrow-right ms-1"></i></a>
                 </div>
             </div>
         </div>
-        
-        <!-- Gyan Kosh -->
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center">
-                    <div class="icon-box mb-3" style="font-size: 3rem; color: #f093fb;">
-                        <i class="fas fa-om"></i>
+            <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;background:linear-gradient(135deg,rgba(102,126,234,0.08),rgba(118,75,162,0.08));border:2px solid #667eea!important;" onclick="location.href='/assessment?type=graduate'">
+                <div class="card-body p-4">
+                    <div style="font-size:3.5rem;">📚</div>
+                    <span class="badge mb-2" style="background:linear-gradient(135deg,#667eea,#764ba2);">Most Popular</span>
+                    <h4 class="fw-bold mt-1">Graduate</h4>
+                    <p class="text-muted mb-3" style="font-size:0.9rem;">College complete ho gayi? Job dhundh rahe ho? Placement, skills aur career switch — sab yahan hai.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                        <span class="badge bg-primary-subtle text-primary">Job Market</span>
+                        <span class="badge bg-success-subtle text-success">Skill Building</span>
+                        <span class="badge bg-danger-subtle text-danger">Salary Info</span>
                     </div>
-                    <h3 class="card-title">Gyan Kosh</h3>
-                    <h6 style="font-family: 'Noto Sans Devanagari', sans-serif;">ज्ञान कोश</h6>
-                    <p class="card-text">
-                        Daily spiritual wisdom from Bhagavad Gita and ancient scriptures 
-                        with practical applications for modern life.
-                    </p>
-                    <a href="/gyan" class="btn btn-primary">Daily Wisdom <i class="fas fa-arrow-right"></i></a>
+                    <a href="/assessment" class="btn btn-primary" style="border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">Start Assessment <i class="fas fa-arrow-right ms-1"></i></a>
                 </div>
             </div>
         </div>
-        
-        <!-- Skill Saathi -->
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center">
-                    <div class="icon-box mb-3" style="font-size: 3rem; color: #4facfe;">
-                        <i class="fas fa-graduation-cap"></i>
+            <div class="card border-0 shadow-sm h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/assessment?type=professional'">
+                <div class="card-body p-4">
+                    <div style="font-size:3.5rem;">💼</div>
+                    <h4 class="fw-bold mt-3">Professional</h4>
+                    <p class="text-muted mb-3" style="font-size:0.9rem;">Working professional ho? Growth, upskilling ya domain switch chahiye? AI se personalized guidance lo.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                        <span class="badge bg-purple-subtle text-purple" style="background:rgba(139,92,246,0.1)!important;color:#8b5cf6!important;">AI/ML Skills</span>
+                        <span class="badge bg-warning-subtle text-warning">Leadership</span>
+                        <span class="badge bg-info-subtle text-info">Upskilling</span>
                     </div>
-                    <h3 class="card-title">Skill Saathi</h3>
-                    <p class="card-text">
-                        Curated learning resources from top platforms - YouTube, Coursera, 
-                        Udemy and more, all in one place.
-                    </p>
-                    <a href="/skill" class="btn btn-primary">Browse Resources <i class="fas fa-arrow-right"></i></a>
+                    <a href="/assessment" class="btn btn-outline-secondary" style="border-radius:10px;">Start Assessment <i class="fas fa-arrow-right ms-1"></i></a>
                 </div>
             </div>
         </div>
-        
     </div>
 </div>
 
-<!-- How It Works -->
+<!-- 4 Main Features -->
 <div class="bg-light py-5">
     <div class="container">
-        <h2 class="text-center mb-5">How Marg Darshak Helps You</h2>
-        <div class="row">
-            <div class="col-md-3 text-center">
-                <div class="step-number">1</div>
-                <h5>Discover</h5>
-                <p>Take the career quiz or explore wisdom</p>
+        <h2 class="text-center fw-bold mb-2">Platform Features 🚀</h2>
+        <p class="text-center text-muted mb-5">Sab kuch ek jagah</p>
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/assessment'">
+                    <div class="card-body p-4">
+                        <div style="font-size:2.5rem;margin-bottom:12px;">🧠</div>
+                        <h6 class="fw-bold">Smart Assessment</h6>
+                        <p class="text-muted small">AI-powered personality + career matching</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="step-number">2</div>
-                <h5>Learn</h5>
-                <p>Get personalized recommendations</p>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/career/browse'">
+                    <div class="card-body p-4">
+                        <div style="font-size:2.5rem;margin-bottom:12px;">🎯</div>
+                        <h6 class="fw-bold">Career Compass</h6>
+                        <p class="text-muted small">{{ stats.careers }}+ careers with full roadmaps</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="step-number">3</div>
-                <h5>Grow</h5>
-                <p>Access curated learning resources</p>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/gyan'">
+                    <div class="card-body p-4">
+                        <div style="font-size:2.5rem;margin-bottom:12px;">📿</div>
+                        <h6 class="fw-bold">Gyan Kosh</h6>
+                        <p class="text-muted small">Bhagavad Gita wisdom for modern life</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 text-center">
-                <div class="step-number">4</div>
-                <h5>Succeed</h5>
-                <p>Achieve your goals with guidance</p>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 h-100 text-center hover-card" style="border-radius:16px;cursor:pointer;" onclick="location.href='/chat'">
+                    <div class="card-body p-4">
+                        <div style="font-size:2.5rem;margin-bottom:12px;">🤖</div>
+                        <h6 class="fw-bold">AI Counselor</h6>
+                        <p class="text-muted small">24/7 Hinglish career guidance chatbot</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CTA Section -->
-<div class="container text-center my-5">
-    <h2 class="mb-4">Ready to Find Your Path?</h2>
-    <p class="lead mb-4">Join thousands of students discovering their direction</p>
-    <a href="/career" class="btn btn-lg btn-primary me-3">Start Career Quiz</a>
-    <a href="/gyan" class="btn btn-lg btn-outline-primary">Get Daily Wisdom</a>
+<!-- CTA -->
+<div class="container text-center my-5 py-3">
+    <h2 class="fw-bold mb-3">Apna Path Dhundho Aaj! 🧭</h2>
+    <p class="text-muted mb-4">Lakhs of Indian students already apna career clear kar chuke hain</p>
+    {% if not current_user %}
+    <a href="/register" class="btn btn-primary btn-lg me-3 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
+        Free Mein Join Karo
+    </a>
+    {% endif %}
+    <a href="/assessment" class="btn btn-outline-primary btn-lg" style="border-radius:12px;">
+        Assessment Lo
+    </a>
 </div>
 
 <style>
-    .hover-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .hover-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    .step-number {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        border-radius: 50%;
-        background: #667eea;
-        color: white;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 0 auto 1rem;
-    }
-    .stat-box h3, .stat-box p {
-        margin: 0;
-    }
-@keyframes countUp {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.stat-box h3 {
-    animation: countUp 0.6s ease-out;
-}
-
-.stat-box:nth-child(1) h3 { animation-delay: 0.1s; }
-.stat-box:nth-child(2) h3 { animation-delay: 0.2s; }
-.stat-box:nth-child(3) h3 { animation-delay: 0.3s; }
-
+.hover-card { transition: all 0.3s ease; }
+.hover-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important; }
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 </style>
 {% endblock %}

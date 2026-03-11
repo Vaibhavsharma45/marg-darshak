@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}AI Career Counselor - Marg Darshak{% endblock %}
+
+{% block content %}
+<div style="height:calc(100vh - 130px);display:flex;flex-direction:column;" class="container-fluid px-0">
+    
+    <!-- Chat Header -->
+    <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:16px 24px;flex-shrink:0;">
+        <div class="container d-flex align-items-center gap-3">
+            <div style="width:45px;height:45px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🤖</div>
+            <div class="text-white">
+                <h5 class="mb-0 fw-bold">Marg Darshak AI</h5>
+                <small style="opacity:0.85;">Career Counselor • Always Online</small>
+            </div>
+            <div class="ms-auto">
+                <button class="btn btn-sm btn-white" onclick="clearChat()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:0.8rem;">
+                    <i class="fas fa-trash me-1"></i>Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:20px 0;background:#f8fafc;" class="container">
+        
+        <!-- Welcome message -->
+        <div class="d-flex gap-3 mb-4">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🤖</div>
+            <div class="bot-bubble" style="background:white;padding:14px 18px;border-radius:0 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);max-width:70%;">
+                <p class="mb-2">Namaste! 🙏 Main <strong>Marg Darshak AI</strong> hoon — aapka personal career counselor!</p>
+                <p class="mb-2">Main aapki help kar sakta hoon:</p>
+                <ul class="mb-2 ps-3" style="font-size:0.9rem;">
+                    <li>Career selection aur guidance</li>
+                    <li>Indian colleges aur entrance exams (JEE, NEET, CAT, GATE)</li>
+                    <li>Kaunsi skills seekhni chahiye</li>
+                    <li>Salary aur job market insights</li>
+                    <li>Data Science, AI/ML career path</li>
+                    <li>State-specific opportunities</li>
+                </ul>
+                <p class="mb-0">Kya poochna hai aapko? 😊</p>
+            </div>
+        </div>
+
+        <!-- Suggestion chips -->
+        <div class="d-flex flex-wrap gap-2 mb-4" id="suggestionChips">
+            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Data Science career kaise banayein?</button>
+            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">12th ke baad kya karein?</button>
+            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Software Engineer ki salary kya hai?</button>
+            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Career switch kaise karein?</button>
+            <button class="btn btn-sm chip-btn" onclick="sendChip(this)" style="border:1px solid #667eea;color:#667eea;border-radius:20px;font-size:0.8rem;background:white;">Government job vs private job?</button>
+        </div>
+
+    </div>
+
+    <!-- Chat Input -->
+    <div style="background:white;border-top:1px solid #e5e7eb;padding:14px 0;flex-shrink:0;">
+        <div class="container">
+            <div class="d-flex gap-2 align-items-end">
+                <div class="flex-grow-1">
+                    <textarea id="chatInput" class="form-control" rows="1" 
+                        style="border-radius:14px;border:2px solid #e5e7eb;resize:none;padding:12px 16px;font-size:0.95rem;max-height:120px;overflow-y:auto;transition:border 0.2s;"
+                        placeholder="Career ke baare mein kuch bhi pooch sakte ho... 🤔"
+                        onkeydown="handleKeyDown(event)"
+                        oninput="autoResize(this)"></textarea>
+                </div>
+                <button id="sendBtn" onclick="sendMessage()" 
+                    style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;font-size:1.1rem;flex-shrink:0;transition:all 0.3s;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="text-center mt-2">
+                <small class="text-muted" style="font-size:0.72rem;">Powered by Claude AI • Career advice only, not medical/legal advice</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.bot-bubble { background: white; }
+body.dark-mode .bot-bubble { background: #1f2937; color: #e5e7eb; }
+body.dark-mode #chatMessages { background: #111827; }
+body.dark-mode .chip-btn { background: #1f2937 !important; border-color: #667eea !important; }
+body.dark-mode #chatInput { background: #1f2937; color: #e5e7eb; border-color: #374151; }
+body.dark-mode #chatInput:focus { border-color: #667eea; }
+.user-msg { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 16px; border-radius: 16px 0 16px 16px; max-width: 70%; }
+#chatInput:focus { border-color: #667eea; box-shadow: none; }
+#sendBtn:hover { transform: scale(1.05); }
+.typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; display: inline-block; animation: typing 1.4s infinite ease-in-out; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+</style>
+
+<script>
+let chatHistory = [];
+
+function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+}
+
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function sendChip(btn) {
+    document.getElementById('chatInput').value = btn.textContent;
+    document.getElementById('suggestionChips').style.display = 'none';
+    sendMessage();
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    
+    // Add user message
+    addMessage('user', msg);
+    chatHistory.push({role: 'user', content: msg});
+
+    // Show typing indicator
+    const typingId = showTyping();
+
+    try {
+        const resp = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: msg, history: chatHistory.slice(-8)})
+        });
+        const data = await resp.json();
+        
+        removeTyping(typingId);
+        
+        if (data.success) {
+            addMessage('bot', data.message);
+            chatHistory.push({role: 'assistant', content: data.message});
+        } else {
+            addMessage('bot', 'Sorry, abhi AI service temporarily unavailable hai. Please thodi der baad try karo. 🙏');
+        }
+    } catch(e) {
+        removeTyping(typingId);
+        addMessage('bot', 'Network error aaya. Please check karo internet connection. 📶');
+    }
+}
+
+function addMessage(type, text) {
+    const container = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    
+    if (type === 'user') {
+        div.className = 'd-flex justify-content-end mb-4';
+        div.innerHTML = `<div class="user-msg">${formatText(text)}</div>`;
+    } else {
+        div.className = 'd-flex gap-3 mb-4';
+        div.innerHTML = `
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🤖</div>
+            <div class="bot-bubble" style="padding:14px 18px;border-radius:0 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);max-width:75%;">${formatText(text)}</div>
+        `;
+    }
+    
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+function formatText(text) {
+    return text
+        .replace(/\n\n/g, '</p><p class="mb-2">')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^/, '<p class="mb-2">').replace(/$/, '</p>');
+}
+
+function showTyping() {
+    const container = document.getElementById('chatMessages');
+    const id = 'typing-' + Date.now();
+    const div = document.createElement('div');
+    div.id = id;
+    div.className = 'd-flex gap-3 mb-4';
+    div.innerHTML = `
+        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🤖</div>
+        <div class="bot-bubble d-flex align-items-center gap-1" style="padding:14px 18px;border-radius:0 16px 16px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+        </div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return id;
+}
+
+function removeTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function clearChat() {
+    if (!confirm('Chat clear karoge?')) return;
+    chatHistory = [];
+    const container = document.getElementById('chatMessages');
+    // Keep only the first welcome message elements
+    const msgs = container.querySelectorAll('.d-flex.gap-3, .d-flex.justify-content-end, .d-flex.flex-wrap');
+    msgs.forEach(m => m.remove());
+    // Re-add welcome
+    location.reload();
+}
+</script>
+{% endblock %}

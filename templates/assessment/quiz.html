@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block title %}Assessment Quiz - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- Progress Header -->
+            <div class="text-center mb-4">
+                <span class="badge mb-2 px-3 py-2" style="background:linear-gradient(135deg,#667eea,#764ba2);font-size:0.85rem;">
+                    {{ user_type.title() }} Assessment • {{ state }}
+                </span>
+                <h2 class="fw-bold">Apne interests batao 🎯</h2>
+                <p class="text-muted">Har question ke liye most honest answer choose karo</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                    <span>Progress</span>
+                    <span id="progressText">0 / {{ questions|length }}</span>
+                </div>
+                <div class="progress" style="height:10px;border-radius:10px;">
+                    <div class="progress-bar" id="progressBar" role="progressbar" style="width:0%;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;transition:width 0.5s ease;"></div>
+                </div>
+            </div>
+
+            <!-- Questions -->
+            <form id="quizForm">
+                <input type="hidden" name="user_type" value="{{ user_type }}">
+                <input type="hidden" name="state" value="{{ state }}">
+
+                {% for q in questions %}
+                <div class="question-card card border-0 shadow-sm mb-4" id="q{{ q.id }}" style="border-radius:16px;display:{% if loop.index == 1 %}block{% else %}none{% endif %};">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="question-number" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">
+                                {{ loop.index }}
+                            </div>
+                            <h5 class="mb-0 fw-bold">{{ q.question }}</h5>
+                        </div>
+
+                        <div class="options-grid d-flex flex-column gap-3">
+                            {% for option in q.options %}
+                            <label class="option-label d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer" 
+                                   style="border:2px solid #e5e7eb;transition:all 0.25s;cursor:pointer;">
+                                <input type="radio" name="q{{ q.id }}" value="{{ loop.index0 }}" 
+                                       class="quiz-option" data-question="{{ q.id }}" style="display:none;">
+                                <div class="option-circle" style="width:22px;height:22px;border-radius:50%;border:2px solid #9ca3af;flex-shrink:0;transition:all 0.25s;"></div>
+                                <span>{{ option.text }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Navigation -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="prevQuestion()" style="display:none;border-radius:10px;">
+                        <i class="fas fa-arrow-left me-2"></i>Pichla
+                    </button>
+                    <div></div>
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" style="border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;" disabled>
+                        Agla <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-lg" id="submitBtn" onclick="submitQuiz()" style="display:none;border-radius:10px;background:linear-gradient(135deg,#43e97b,#38f9d7);border:none;color:#0f172a;font-weight:700;">
+                        <i class="fas fa-chart-bar me-2"></i>Result Dekho!
+                    </button>
+                </div>
+            </form>
+
+            <!-- Loading State -->
+            <div id="loadingState" style="display:none;" class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+                <h5 class="fw-bold">AI analyze kar raha hai... 🤖</h5>
+                <p class="text-muted">Aapke answers se perfect career match dhundha ja raha hai</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+.option-label:hover { border-color: #667eea !important; background: rgba(102,126,234,0.05); }
+.option-label.selected { border-color: #667eea !important; background: rgba(102,126,234,0.1); }
+.option-label.selected .option-circle { background: #667eea; border-color: #667eea; }
+.option-label.selected .option-circle::after { content: '✓'; color: white; font-size: 12px; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+body.dark-mode .option-label { border-color: #374151; }
+body.dark-mode .option-label:hover { border-color: #667eea !important; background: rgba(102,126,234,0.1); }
+</style>
+
+<script>
+const totalQuestions = {{ questions|length }};
+let currentQuestion = 1;
+const answers = {};
+const userType = '{{ user_type }}';
+const state = '{{ state }}';
+
+// Option selection
+document.querySelectorAll('.option-label').forEach(label => {
+    label.addEventListener('click', function() {
+        const input = this.querySelector('input[type="radio"]');
+        const qId = input.dataset.question;
+        
+        // Clear previous selection for this question
+        document.querySelectorAll(`input[name="q${qId}"]`).forEach(r => {
+            r.closest('.option-label').classList.remove('selected');
+        });
+        
+        // Select this one
+        this.classList.add('selected');
+        input.checked = true;
+        answers[qId] = parseInt(input.value);
+        
+        // Enable next button
+        document.getElementById('nextBtn').disabled = false;
+        if (currentQuestion === totalQuestions) {
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'inline-block';
+        }
+        
+        updateProgress();
+    });
+});
+
+function updateProgress() {
+    const answered = Object.keys(answers).length;
+    const pct = (answered / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${answered} / ${totalQuestions}`;
+}
+
+function nextQuestion() {
+    if (currentQuestion < totalQuestions) {
+        document.getElementById('q' + currentQuestion).style.display = 'none';
+        currentQuestion++;
+        document.getElementById('q' + currentQuestion).style.display = 'block';
+        
+        // Show/hide buttons
+        document.getElementById('prevBtn').style.display = currentQuestion > 1 ? 'inline-block' : 'none';
+        
+        const alreadyAnswered = answers[currentQuestion] !== undefined;
+        document.getElementById('nextBtn').disabled = !alreadyAnswered;
+        
+        if (currentQuestion === totalQuestions) {
+            document.getElementById('nextBtn').style.display = alreadyAnswered ? 'none' : 'inline-block';
+            if (alreadyAnswered) document.getElementById('submitBtn').style.display = 'inline-block';
+        } else {
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            document.getElementById('submitBtn').style.display = 'none';
+        }
+        
+        // Scroll to top of card
+        document.getElementById('q' + currentQuestion).scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    }
+}
+
+function prevQuestion() {
+    if (currentQuestion > 1) {
+        document.getElementById('q' + currentQuestion).style.display = 'none';
+        currentQuestion--;
+        document.getElementById('q' + currentQuestion).style.display = 'block';
+        
+        document.getElementById('prevBtn').style.display = currentQuestion > 1 ? 'inline-block' : 'none';
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        document.getElementById('nextBtn').disabled = answers[currentQuestion] === undefined;
+        document.getElementById('submitBtn').style.display = 'none';
+    }
+}
+
+async function submitQuiz() {
+    if (Object.keys(answers).length < totalQuestions) {
+        alert('Sab questions answer karo pehle!');
+        return;
+    }
+    
+    document.getElementById('quizForm').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    
+    try {
+        const response = await fetch('/assessment/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_type: userType, state: state, answers: answers })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            sessionStorage.setItem('assessmentResult', JSON.stringify(data));
+            window.location.href = '/assessment/results';
+        } else {
+            alert('Error: ' + data.error);
+            document.getElementById('quizForm').style.display = 'block';
+            document.getElementById('loadingState').style.display = 'none';
+        }
+    } catch (e) {
+        alert('Network error. Please try again.');
+        document.getElementById('quizForm').style.display = 'block';
+        document.getElementById('loadingState').style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

@@ -1,41 +1,56 @@
 title,topic,platform,resource_type,url,difficulty,duration_hours,quality_score,language,is_free
-Python for Beginners Full Course,Programming,YouTube,Video,https://www.youtube.com/watch?v=rfscVS0vtbw,Beginner,20,4.7,English,TRUE
-Data Science Complete Course,Data Science,YouTube,Video,https://www.youtube.com/watch?v=ua-CiDNNj30,Intermediate,40,4.8,English,TRUE
-Machine Learning A-Z Hands-On Python,Machine Learning,Udemy,Course,https://www.udemy.com/course/machinelearning/,Intermediate,44,4.6,English,FALSE
-Web Development Bootcamp,Web Development,Udemy,Course,https://www.udemy.com/course/the-complete-web-development-bootcamp/,Beginner,65,4.7,English,FALSE
-DSA for Beginners,Data Structures,YouTube,Video,https://www.youtube.com/watch?v=BBpAmxU_NQo,Beginner,30,4.6,English,TRUE
-React JS Full Course,Frontend,YouTube,Video,https://www.youtube.com/watch?v=bMknfKXIFA8,Intermediate,12,4.5,English,TRUE
-SQL Complete Tutorial,Database,YouTube,Video,https://www.youtube.com/watch?v=HXV3zeQKqGY,Beginner,4,4.7,English,TRUE
-Digital Marketing Course,Marketing,Google,Course,https://learndigital.withgoogle.com/digitalunlocked,Beginner,40,4.5,English,TRUE
-AWS Cloud Practitioner,Cloud Computing,AWS,Course,https://aws.amazon.com/training/,Beginner,15,4.6,English,TRUE
-Graphic Design Masterclass,Design,Udemy,Course,https://www.udemy.com/course/graphic-design-masterclass/,Beginner,35,4.5,English,FALSE
-Excel for Data Analysis,Excel,YouTube,Video,https://www.youtube.com/watch?v=Vl0H-qTclOg,Beginner,8,4.6,English,TRUE
-Introduction to Cybersecurity,Cybersecurity,Cisco,Course,https://www.netacad.com/courses/cybersecurity,Beginner,15,4.5,English,TRUE
-Git and GitHub for Beginners,Version Control,YouTube,Video,https://www.youtube.com/watch?v=RGOj5yH7evk,Beginner,1,4.7,English,TRUE
-Communication Skills Course,Soft Skills,Coursera,Course,https://www.coursera.org/learn/wharton-communication-skills,Beginner,20,4.6,English,FALSE
-Financial Planning Basics,Finance,YouTube,Video,https://www.youtube.com/watch?v=gFPN3R-P4IA,Beginner,5,4.5,English,TRUE
-```
-
-**Save karo as:** `data/resources.csv`
-
----
-
-## **OPTION 2: AI Se Generate Karwao (Fast)**
-
-Agar manually typing nahi karna:
-
-### **ChatGPT/Claude ko yeh prompt de:**
-```
-Generate a CSV file with 30 diverse career options for Indian students. Include these columns:
-- title (career name)
-- category (Technology/Business/Creative/Engineering/Healthcare/etc)
-- description (1 line)
-- required_skills (semicolon separated, 3-5 skills)
-- avg_salary_inr (realistic Indian salary)
-- growth_rate (Low/Medium/High/Very High)
-- difficulty_level (Easy/Medium/Hard/Very Hard)
-- education_required (degree needed)
-- top_colleges (semicolon separated, 2-3 colleges)
-- job_roles (semicolon separated, 2-3 related roles)
-
-Give complete CSV format with header row.
+Python Full Course for Beginners,Programming,YouTube,Video,https://www.youtube.com/watch?v=rfscVS0vtbw,Beginner,20,4.7,English,TRUE
+Data Science Complete Roadmap 2024,Data Science,YouTube,Video,https://www.youtube.com/watch?v=ua-CiDNNj30,Beginner,8,4.8,Hindi,TRUE
+Machine Learning Full Course,Machine Learning,YouTube,Video,https://www.youtube.com/watch?v=GwIo3gDZCVQ,Intermediate,40,4.8,English,TRUE
+Web Development Complete Course - Hindi,Web Development,YouTube,Video,https://www.youtube.com/watch?v=ysEN5RaKOlA,Beginner,30,4.7,Hindi,TRUE
+DSA Full Course in Hindi - Apna College,Programming,YouTube,Video,https://www.youtube.com/watch?v=rZ41y93P2Qo,Beginner,60,4.9,Hindi,TRUE
+React JS Complete Tutorial,Web Development,YouTube,Video,https://www.youtube.com/watch?v=bMknfKXIFA8,Intermediate,12,4.7,English,TRUE
+SQL for Data Science,Data Science,YouTube,Video,https://www.youtube.com/watch?v=HXV3zeQKqGY,Beginner,5,4.6,English,TRUE
+Digital Marketing Full Course Hindi,Digital Marketing,YouTube,Video,https://www.youtube.com/watch?v=nU-IIXBWlS4,Beginner,8,4.5,Hindi,TRUE
+Machine Learning A-Z,Machine Learning,Udemy,Course,https://www.udemy.com/course/machinelearning/,Intermediate,44,4.6,English,FALSE
+The Complete Web Development Bootcamp,Web Development,Udemy,Course,https://www.udemy.com/course/the-complete-web-development-bootcamp/,Beginner,65,4.7,English,FALSE
+Python Bootcamp - Jose Portilla,Programming,Udemy,Course,https://www.udemy.com/course/complete-python-bootcamp/,Beginner,22,4.7,English,FALSE
+Deep Learning Specialization,Machine Learning,Coursera,Course,https://www.coursera.org/specializations/deep-learning,Advanced,80,4.9,English,FALSE
+Google Data Analytics Certificate,Data Science,Coursera,Course,https://www.coursera.org/professional-certificates/google-data-analytics,Beginner,180,4.8,English,FALSE
+IBM Data Science Professional Certificate,Data Science,Coursera,Course,https://www.coursera.org/professional-certificates/ibm-data-science,Beginner,200,4.7,English,FALSE
+CS50 - Introduction to Computer Science,Programming,edX,Course,https://www.edx.org/course/introduction-computer-science-harvardx-cs50x,Beginner,10,4.9,English,TRUE
+Google Digital Garage - Digital Marketing,Digital Marketing,Google,Course,https://learndigital.withgoogle.com/digitalgarage,Beginner,40,4.6,English,TRUE
+AWS Cloud Practitioner Essentials,Cloud Computing,AWS,Course,https://aws.amazon.com/training/digital/aws-cloud-practitioner-essentials/,Beginner,6,4.7,English,TRUE
+Figma UI UX Design Essentials,Design,YouTube,Video,https://www.youtube.com/watch?v=kbZejnPXyLM,Beginner,10,4.6,English,TRUE
+Excel Full Course for Beginners,Business,YouTube,Video,https://www.youtube.com/watch?v=Vl0H-qTclOg,Beginner,8,4.5,English,TRUE
+Power BI Full Course,Data Science,YouTube,Video,https://www.youtube.com/watch?v=AGrl-H87pRU,Beginner,6,4.6,English,TRUE
+Tableau Complete Tutorial,Data Science,YouTube,Video,https://www.youtube.com/watch?v=TPMlZxRRaBQ,Beginner,5,4.5,English,TRUE
+JavaScript Complete Course,Web Development,YouTube,Video,https://www.youtube.com/watch?v=PkZNo7MFNFg,Beginner,14,4.8,English,TRUE
+Node.js Tutorial for Beginners,Web Development,YouTube,Video,https://www.youtube.com/watch?v=TlB_eWDSMt4,Intermediate,7,4.6,English,TRUE
+Django Web Framework Tutorial,Web Development,YouTube,Video,https://www.youtube.com/watch?v=rHux0gMZ3Eg,Intermediate,4,4.5,English,TRUE
+Flutter App Development Course,Mobile Development,YouTube,Video,https://www.youtube.com/watch?v=VPvVD8t02U8,Intermediate,37,4.7,English,TRUE
+Cybersecurity for Beginners,Cybersecurity,YouTube,Video,https://www.youtube.com/watch?v=hXSFdwIOfnE,Beginner,12,4.6,English,TRUE
+Ethical Hacking Full Course,Cybersecurity,YouTube,Video,https://www.youtube.com/watch?v=3Kq1MIfTWCE,Intermediate,15,4.7,English,TRUE
+Docker and Kubernetes Complete Course,DevOps,YouTube,Video,https://www.youtube.com/watch?v=bhBSlnQcq2k,Intermediate,7,4.7,English,TRUE
+Git and GitHub Full Course,Programming,YouTube,Video,https://www.youtube.com/watch?v=apGV9Kg7ics,Beginner,4,4.6,English,TRUE
+SEO Complete Course 2024,Digital Marketing,YouTube,Video,https://www.youtube.com/watch?v=xsVTqzratPs,Beginner,6,4.5,English,TRUE
+Canva Tutorial for Beginners,Design,YouTube,Video,https://www.youtube.com/watch?v=EuYPGVfV2a8,Beginner,3,4.4,English,TRUE
+Photoshop Complete Tutorial Hindi,Design,YouTube,Video,https://www.youtube.com/watch?v=2GRMCOjlHNo,Beginner,8,4.5,Hindi,TRUE
+Stock Market Basics Hindi,Business,YouTube,Video,https://www.youtube.com/watch?v=fFsNBHi5ius,Beginner,5,4.7,Hindi,TRUE
+Accounting for Beginners,Business,YouTube,Video,https://www.youtube.com/watch?v=yYX4bvQSqbo,Beginner,10,4.5,English,TRUE
+Public Speaking Course,Communication,YouTube,Video,https://www.youtube.com/watch?v=AykYRO5d_lI,Beginner,3,4.6,English,TRUE
+English Speaking Course Hindi,Communication,YouTube,Video,https://www.youtube.com/watch?v=UJGwFSCEbT4,Beginner,15,4.6,Hindi,TRUE
+MS Excel Advanced Functions,Business,YouTube,Video,https://www.youtube.com/watch?v=Jl0Qk63z2ZY,Intermediate,6,4.5,English,TRUE
+WordPress Complete Tutorial,Web Development,YouTube,Video,https://www.youtube.com/watch?v=O79pJ7qXwoE,Beginner,5,4.4,English,TRUE
+Content Writing Masterclass,Digital Marketing,YouTube,Video,https://www.youtube.com/watch?v=cLTx2K0FRaQ,Beginner,4,4.4,English,TRUE
+Statistics for Data Science,Data Science,YouTube,Video,https://www.youtube.com/watch?v=xxpc-HPKN28,Beginner,10,4.7,English,TRUE
+Pandas Complete Tutorial,Data Science,YouTube,Video,https://www.youtube.com/watch?v=vmEHCJofslg,Beginner,5,4.7,English,TRUE
+Natural Language Processing,Machine Learning,YouTube,Video,https://www.youtube.com/watch?v=8rXD5-xhemo,Advanced,15,4.7,English,TRUE
+Computer Vision Full Course,Machine Learning,YouTube,Video,https://www.youtube.com/watch?v=oXlwWbU8l2o,Advanced,10,4.6,English,TRUE
+UI UX Design Complete Course,Design,YouTube,Video,https://www.youtube.com/watch?v=c9Wg6Cb_YlU,Beginner,12,4.6,English,TRUE
+Adobe Illustrator Tutorial Hindi,Design,YouTube,Video,https://www.youtube.com/watch?v=4KTgbDFXkKQ,Beginner,6,4.4,Hindi,TRUE
+UPSC Preparation Strategy,Government,YouTube,Video,https://www.youtube.com/watch?v=jrLgRxqEbCc,Intermediate,5,4.8,Hindi,TRUE
+CAT Preparation Complete Guide,Business,YouTube,Video,https://www.youtube.com/watch?v=lNjUEMqnknk,Intermediate,8,4.6,Hindi,TRUE
+JEE Maths Complete Course,Programming,YouTube,Video,https://www.youtube.com/watch?v=rBcOONtRiMY,Intermediate,40,4.7,Hindi,TRUE
+Freelancing Guide for Indians,Business,YouTube,Video,https://www.youtube.com/watch?v=lMzKkMjpFXo,Beginner,3,4.7,Hindi,TRUE
+How to Write a Resume,Communication,YouTube,Video,https://www.youtube.com/watch?v=BYyk8bDHVxM,Beginner,1,4.5,English,TRUE
+Interview Preparation Tips Hindi,Communication,YouTube,Video,https://www.youtube.com/watch?v=kRi-3KTcvJk,Beginner,2,4.7,Hindi,TRUE
+Leadership Skills Development,Management,YouTube,Video,https://www.youtube.com/watch?v=YSo0r8Yz78Q,Intermediate,4,4.6,English,TRUE
+Project Management Fundamentals,Management,YouTube,Video,https://www.youtube.com/watch?v=ZKOL-rZ79gs,Beginner,5,4.5,English,TRUE
+Introduction to Blockchain,Blockchain,YouTube,Video,https://www.youtube.com/watch?v=SSo_EIwHSd4,Beginner,4,4.6,English,TRUE
+Cloud Computing Fundamentals,Cloud Computing,YouTube,Video,https://www.youtube.com/watch?v=M988_fsOSWo,Beginner,5,4.6,English,TRUE

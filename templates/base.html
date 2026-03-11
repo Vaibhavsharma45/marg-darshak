@@ -5,499 +5,330 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Marg Darshak - जीवन के हर पड़ाव पर सही दिशा{% endblock %}</title>
     
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
     {% block extra_css %}{% endblock %}
     
     <style>
-        /* ========== DARK MODE STYLES ========== */
-        body {
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+        body { transition: background-color 0.3s, color 0.3s; }
         
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-        }
+        /* ===== DARK MODE ===== */
+        body.dark-mode { background-color: #111827; color: #e5e7eb; }
+        body.dark-mode .card { background-color: #1f2937; color: #e5e7eb; border-color: #374151; }
+        body.dark-mode .navbar { background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%) !important; }
+        body.dark-mode .bg-light { background-color: #1f2937 !important; }
+        body.dark-mode .text-muted { color: #9ca3af !important; }
+        body.dark-mode .sidebar { background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%); }
+        body.dark-mode footer { background-color: #030712 !important; }
+        body.dark-mode .form-control, body.dark-mode .form-select { background-color: #1f2937; color: #e5e7eb; border-color: #374151; }
+        body.dark-mode .modal-content { background-color: #1f2937; color: #e5e7eb; }
+        body.dark-mode .alert { border-color: #374151; }
         
-        body.dark-mode .card {
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            border-color: #3a3a3a;
+        /* ===== NAVBAR USER BADGE ===== */
+        .user-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 14px; border-radius: 20px;
+            background: rgba(255,255,255,0.15);
+            color: white; font-size: 0.85rem; font-weight: 600;
+            transition: all 0.3s ease;
         }
-        
-        body.dark-mode .navbar {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        .user-badge:hover { background: rgba(255,255,255,0.25); color: white; text-decoration: none; }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; color: white;
         }
-        
-        body.dark-mode .bg-light {
-            background-color: #2a2a2a !important;
+        .user-type-badge {
+            font-size: 0.65rem; padding: 2px 8px;
+            border-radius: 10px; font-weight: 600;
         }
-        
-        body.dark-mode .text-muted {
-            color: #aaa !important;
-        }
-        
-        body.dark-mode .sidebar {
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-        }
-        
-        body.dark-mode footer {
-            background-color: #0d0d0d !important;
-        }
-        
-        body.dark-mode .form-control,
-        body.dark-mode .form-select {
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            border-color: #3a3a3a;
-        }
-        
-        /* ========== SIDEBAR STYLES ========== */
+        .badge-student { background: #10b981; }
+        .badge-graduate { background: #3b82f6; }
+        .badge-professional { background: #8b5cf6; }
+
+        /* ===== FLASH MESSAGES ===== */
+        .flash-container { position: fixed; top: 70px; right: 20px; z-index: 9998; max-width: 350px; }
+        .flash-msg { padding: 12px 18px; border-radius: 10px; margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideInRight 0.4s ease;
+            display: flex; align-items: center; gap: 10px; }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* ===== SIDEBAR ===== */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100vh;
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100vh;
             background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            transition: left 0.3s ease;
-            z-index: 1050;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            padding: 20px; transition: left 0.3s ease; z-index: 1050;
+            overflow-y: auto; box-shadow: 2px 0 20px rgba(0,0,0,0.3);
         }
+        .sidebar.active { left: 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1040; display: none; }
+        .sidebar-overlay.active { display: block; }
+        .sidebar-header { color: white; margin-bottom: 25px; text-align: center; padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .sidebar-menu { list-style: none; padding: 0; }
+        .sidebar-menu li { margin-bottom: 6px; }
+        .sidebar-menu a { display: flex; align-items: center; padding: 11px 14px; color: white;
+            text-decoration: none; border-radius: 10px; transition: all 0.3s ease; font-size: 0.92rem; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); }
+        .sidebar-menu a i { margin-right: 12px; font-size: 1rem; width: 22px; text-align: center; }
+        .sidebar-section-title { color: rgba(255,255,255,0.6); font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 1px; padding: 12px 14px 6px; font-weight: 700; }
+        .sidebar-user-info { background: rgba(255,255,255,0.1); border-radius: 12px;
+            padding: 12px; margin-bottom: 20px; text-align: center; }
+
+        /* ===== FLOATING BUTTONS ===== */
+        .floating-buttons { position: fixed; bottom: 30px; right: 30px; z-index: 1000;
+            display: flex; flex-direction: column; gap: 12px; }
+        .floating-btn { width: 50px; height: 50px; border-radius: 50%; border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; transition: all 0.3s ease; color: white; }
+        .floating-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+        .dark-mode-toggle { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .scroll-to-top { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: none; }
+        .sidebar-toggle-btn { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .chat-float-btn { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+        /* ===== PAGE LOADER ===== */
+        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.97); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
+        body.dark-mode .page-loader { background: rgba(17,24,39,0.97); }
+        .page-loader.hidden { opacity: 0; pointer-events: none; }
+        .loader-logo { font-size: 3rem; animation: pulse 1.5s ease infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .loader-text { margin-top: 15px; font-family: 'Noto Sans Devanagari', sans-serif;
+            color: #667eea; font-size: 0.95rem; }
         
-        .sidebar.active {
-            left: 0;
-        }
-        
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1040;
-            display: none;
-        }
-        
-        .sidebar-overlay.active {
-            display: block;
-        }
-        
-        .sidebar-header {
-            color: white;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .sidebar-header h4 {
-            margin: 10px 0 0 0;
-            font-weight: 700;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .sidebar-menu li {
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-menu a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(5px);
-        }
-        
-        .sidebar-menu a i {
-            margin-right: 15px;
-            font-size: 1.2rem;
-            width: 25px;
-            text-align: center;
-        }
-        
-        /* ========== FLOATING BUTTONS ========== */
-        .floating-buttons {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .floating-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-            color: white;
-        }
-        
-        .floating-btn:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-        
-        .dark-mode-toggle {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .scroll-to-top {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            display: none;
-        }
-        
-        .sidebar-toggle-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        
-        /* ========== BACK BUTTON ========== */
-        .back-button {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            z-index: 999;
-            padding: 10px 20px;
-            border-radius: 25px;
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .back-button:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        body.dark-mode .back-button {
-            background: #2a2a2a;
-            color: #667eea;
-            border-color: #667eea;
-        }
-        
-        body.dark-mode .back-button:hover {
-            background: #667eea;
-            color: white;
-        }
-        
-        /* ========== ANIMATIONS ========== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease;
-        }
-        
-        /* ========== SCROLL BAR CUSTOM ========== */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        body.dark-mode ::-webkit-scrollbar-track {
-            background: #2a2a2a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
-        
-        /* ========== RESPONSIVE ========== */
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        body.dark-mode ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(#667eea, #764ba2); border-radius: 10px; }
+
         @media (max-width: 768px) {
-            .sidebar {
-                width: 250px;
-                left: -250px;
-            }
-            
-            .floating-buttons {
-                bottom: 20px;
-                right: 20px;
-                gap: 10px;
-            }
-            
-            .floating-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1.2rem;
-            }
-            
-            .back-button {
-                top: 65px;
-                right: 10px;
-                padding: 8px 15px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        /* ========== LOADING SPINNER ========== */
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        
-        body.dark-mode .page-loader {
-            background: rgba(26, 26, 26, 0.95);
-        }
-        
-        .page-loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loader-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            .sidebar { width: 260px; left: -260px; }
+            .floating-buttons { bottom: 20px; right: 15px; gap: 8px; }
+            .floating-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+            .flash-container { right: 10px; left: 10px; max-width: none; }
         }
     </style>
 </head>
 <body>
-    
-    <!-- Page Loader -->
-    <div class="page-loader" id="pageLoader">
-        <div class="loader-spinner"></div>
+
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+    <div class="loader-logo">🧭</div>
+    <div class="loader-text">मार्गदर्शक लोड हो रहा है...</div>
+</div>
+
+<!-- Flash Messages -->
+<div class="flash-container" id="flashContainer">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash-msg alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'warning' if category == 'warning' else 'info' }} alert-dismissible">
+                <i class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-circle' if category == 'danger' else 'fa-info-circle' }}"></i>
+                {{ message }}
+                <button type="button" class="btn-close btn-sm" onclick="this.parentElement.remove()"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div style="font-size:2.5rem;">🧭</div>
+        <h5 style="color:white;margin:8px 0 2px;font-weight:700;">Marg Darshak</h5>
+        <small style="color:rgba(255,255,255,0.7);">मार्गदर्शक</small>
     </div>
-    
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-compass fa-3x"></i>
-            <h4>Marg Darshak</h4>
-            <small>मार्गदर्शक</small>
+
+    {% if current_user %}
+    <div class="sidebar-user-info">
+        <div class="user-avatar mx-auto mb-2" style="width:40px;height:40px;font-size:1rem;">
+            {{ current_user.name[0].upper() }}
         </div>
-        
-        <ul class="sidebar-menu">
-            <li><a href="/"><i class="fas fa-home"></i><span>Home</span></a></li>
-            <li><a href="/career"><i class="fas fa-briefcase"></i><span>Career Quiz</span></a></li>
-            <li><a href="/career/browse"><i class="fas fa-search"></i><span>Browse Careers</span></a></li>
-            <li><a href="/gyan"><i class="fas fa-om"></i><span>Daily Wisdom</span></a></li>
-            <li><a href="/gyan/search"><i class="fas fa-book-open"></i><span>Search Verses</span></a></li>
-            <li><a href="/skill"><i class="fas fa-graduation-cap"></i><span>Learning Resources</span></a></li>
-            <li><a href="/api/stats" target="_blank"><i class="fas fa-chart-bar"></i><span>Statistics</span></a></li>
-        </ul>
-        
-        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; color: white; opacity: 0.8;">
-            <small>Made with ❤️</small><br>
-            <small>v1.0.0</small>
-        </div>
+        <div style="color:white;font-weight:600;font-size:0.9rem;">{{ current_user.name }}</div>
+        <span class="user-type-badge badge-{{ current_user.user_type }}" style="font-size:0.7rem;padding:2px 8px;border-radius:10px;color:white;">
+            {{ current_user.user_type.title() }}
+        </span>
     </div>
-    
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    
-    <!-- Floating Buttons -->
-    <div class="floating-buttons">
-        <button class="floating-btn sidebar-toggle-btn" onclick="toggleSidebar()" title="Menu">
-            <i class="fas fa-bars"></i>
-        </button>
-        <button class="floating-btn dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="darkModeBtn">
-            <i class="fas fa-moon"></i>
-        </button>
-        <button class="floating-btn scroll-to-top" onclick="scrollToTop()" id="scrollTopBtn" title="Scroll to Top">
-            <i class="fas fa-arrow-up"></i>
-        </button>
-    </div>
-    
-    <!-- Back Button (shows on non-home pages) -->
-    {% if request and request.path != '/' %}
-    <a href="javascript:history.back()" class="back-button">
-        <i class="fas fa-arrow-left"></i> Back
-    </a>
     {% endif %}
+
+    <ul class="sidebar-menu">
+        <div class="sidebar-section-title">Main</div>
+        <li><a href="/"><i class="fas fa-home"></i>Home</a></li>
+        <li><a href="/assessment"><i class="fas fa-brain"></i>Career Assessment</a></li>
+        <li><a href="/chat"><i class="fas fa-robot"></i>AI Career Counselor</a></li>
+        
+        <div class="sidebar-section-title">Modules</div>
+        <li><a href="/career/browse"><i class="fas fa-briefcase"></i>Browse Careers</a></li>
+        <li><a href="/gyan"><i class="fas fa-om"></i>Daily Wisdom</a></li>
+        <li><a href="/gyan/search"><i class="fas fa-book-open"></i>Search Verses</a></li>
+        <li><a href="/skill"><i class="fas fa-graduation-cap"></i>Learning Resources</a></li>
+        
+        <div class="sidebar-section-title">Account</div>
+        {% if current_user %}
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i>My Dashboard</a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        {% else %}
+        <li><a href="/login"><i class="fas fa-sign-in-alt"></i>Login</a></li>
+        <li><a href="/register"><i class="fas fa-user-plus"></i>Register</a></li>
+        {% endif %}
+    </ul>
     
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-compass"></i> Marg Darshak
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/career"><i class="fas fa-briefcase"></i> Career</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/gyan"><i class="fas fa-om"></i> Gyan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/skill"><i class="fas fa-book"></i> Skills</a></li>
-                </ul>
+    <div style="position:absolute;bottom:15px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.5);font-size:0.75rem;">
+        Marg Darshak v2.0 • Major Project
+    </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- Floating Buttons -->
+<div class="floating-buttons">
+    <button class="floating-btn sidebar-toggle-btn" onclick="toggleSidebar()" title="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    <a href="/chat" class="floating-btn chat-float-btn" title="AI Counselor" style="text-decoration:none;">
+        <i class="fas fa-robot"></i>
+    </a>
+    <button class="floating-btn dark-mode-toggle" onclick="toggleDarkMode()" title="Dark Mode" id="darkModeBtn">
+        <i class="fas fa-moon"></i>
+    </button>
+    <button class="floating-btn scroll-to-top" onclick="scrollToTop()" id="scrollTopBtn" title="Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            🧭 Marg Darshak
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/assessment"><i class="fas fa-brain"></i> Assessment</a></li>
+                <li class="nav-item"><a class="nav-link" href="/career/browse"><i class="fas fa-briefcase"></i> Careers</a></li>
+                <li class="nav-item"><a class="nav-link" href="/gyan"><i class="fas fa-om"></i> Gyan</a></li>
+                <li class="nav-item"><a class="nav-link" href="/skill"><i class="fas fa-book"></i> Skills</a></li>
+                <li class="nav-item"><a class="nav-link" href="/chat"><i class="fas fa-robot"></i> AI Chat</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto align-items-center">
+                {% if current_user %}
+                <li class="nav-item me-2">
+                    <span class="user-type-badge badge-{{ current_user.user_type }}" style="font-size:0.7rem;padding:3px 10px;border-radius:10px;color:white;">
+                        {{ current_user.user_type.title() }}
+                    </span>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle user-badge" href="#" data-bs-toggle="dropdown">
+                        <span class="user-avatar">{{ current_user.name[0].upper() }}</span>
+                        {{ current_user.name.split()[0] }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="/assessment"><i class="fas fa-redo me-2"></i>Retake Assessment</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item me-2">
+                    <a class="btn btn-outline-light btn-sm" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-light btn-sm fw-bold" href="/register" style="color:#667eea;">Register</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h6 class="fw-bold">🧭 Marg Darshak</h6>
+                <p class="small text-muted">"जीवन के हर पड़ाव पर सही दिशा"<br>India's Complete Career Guidance Platform</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6 class="fw-bold">Quick Links</h6>
+                <div class="d-flex flex-column gap-1">
+                    <a href="/assessment" class="text-muted small text-decoration-none">Career Assessment</a>
+                    <a href="/gyan" class="text-muted small text-decoration-none">Gyan Kosh</a>
+                    <a href="/skill" class="text-muted small text-decoration-none">Learning Resources</a>
+                    <a href="/chat" class="text-muted small text-decoration-none">AI Counselor</a>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6 class="fw-bold">For</h6>
+                <div class="d-flex flex-column gap-1">
+                    <span class="text-muted small">🎓 Students (School Level)</span>
+                    <span class="text-muted small">📚 Graduates</span>
+                    <span class="text-muted small">💼 Professionals</span>
+                </div>
             </div>
         </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="container">
-            <p class="mb-2">🧭 Marg Darshak - "जीवन के हर पड़ाव पर सही दिशा"</p>
-            <p class="mb-0">Made with ❤️ for helping people find their path</p>
-            <small class="text-muted">© 2025 | Minor Project</small>
+        <hr class="border-secondary">
+        <div class="text-center">
+            <small class="text-muted">© 2025 Marg Darshak | Made with ❤️ by Vaibhav Sharma | Major Project</small>
         </div>
-    </footer>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
-    <script>
-        // ========== PAGE LOADER ==========
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.getElementById('pageLoader').classList.add('hidden');
-            }, 500);
-        });
-        
-        // ========== DARK MODE ==========
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            
-            // Save preference
-            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-            
-            // Update icon
-            const icon = document.querySelector('#darkModeBtn i');
-            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<script>
+    window.addEventListener('load', () => setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 400));
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+        document.querySelector('#darkModeBtn i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('#darkModeBtn i').className = 'fas fa-sun';
         }
-        
-        // Load dark mode preference
-        window.addEventListener('DOMContentLoaded', function() {
-            const darkMode = localStorage.getItem('darkMode');
-            if (darkMode === 'enabled') {
-                document.body.classList.add('dark-mode');
-                document.querySelector('#darkModeBtn i').className = 'fas fa-sun';
-            }
-        });
-        
-        // ========== SIDEBAR ==========
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-        }
-        
-        // Close sidebar on link click
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                setTimeout(toggleSidebar, 200);
-            });
-        });
-        
-        // Close sidebar on ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('sidebar').classList.contains('active')) {
-                toggleSidebar();
-            }
-        });
-        
-        // ========== SCROLL TO TOP ==========
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-        
-        // Show/hide scroll to top button
-        window.addEventListener('scroll', function() {
-            const scrollBtn = document.getElementById('scrollTopBtn');
-            if (window.pageYOffset > 300) {
-                scrollBtn.style.display = 'flex';
-            } else {
-                scrollBtn.style.display = 'none';
-            }
-        });
-        
-        
-        // ========== CONSOLE MESSAGE ==========
-        console.log('%c🧭 Marg Darshak', 'color: #667eea; font-size: 24px; font-weight: bold;');
-        console.log('%cFinding your path to success!', 'color: #764ba2; font-size: 14px;');
-    </script>
-    
-    {% block extra_js %}{% endblock %}
+        // Auto-dismiss flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.flash-msg').forEach(el => el.style.opacity = '0');
+            setTimeout(() => document.querySelectorAll('.flash-msg').forEach(el => el.remove()), 500);
+        }, 4000);
+    });
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+        document.body.style.overflow = document.getElementById('sidebar').classList.contains('active') ? 'hidden' : '';
+    }
+    document.querySelectorAll('.sidebar-menu a').forEach(link => link.addEventListener('click', () => setTimeout(toggleSidebar, 200)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.getElementById('sidebar').classList.remove('active'); document.getElementById('sidebarOverlay').classList.remove('active'); document.body.style.overflow = ''; } });
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    window.addEventListener('scroll', () => {
+        document.getElementById('scrollTopBtn').style.display = window.pageYOffset > 300 ? 'flex' : 'none';
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

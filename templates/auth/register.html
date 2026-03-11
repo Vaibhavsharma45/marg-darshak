@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Register - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg" style="border-radius:20px;overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:30px;text-align:center;">
+                    <div style="font-size:3rem;">🎓</div>
+                    <h3 class="text-white fw-bold mt-2 mb-1">Join Marg Darshak</h3>
+                    <p class="text-white mb-0" style="opacity:0.85;">Apna career journey shuru karo</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-user me-2 text-primary"></i>Aapka Naam</label>
+                            <input type="text" name="name" class="form-control" style="border-radius:10px;" placeholder="Jaise: Rahul Sharma" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-envelope me-2 text-primary"></i>Email</label>
+                            <input type="email" name="email" class="form-control" style="border-radius:10px;" placeholder="your@email.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-lock me-2 text-primary"></i>Password</label>
+                            <input type="password" name="password" class="form-control" style="border-radius:10px;" placeholder="Kam se kam 6 characters" required minlength="6">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold"><i class="fas fa-user-circle me-2 text-primary"></i>Aap kaun ho?</label>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="user_type" id="r_student" value="student" checked>
+                                    <label class="btn btn-outline-primary w-100 d-flex flex-column align-items-center py-2" for="r_student" style="border-radius:10px;font-size:0.8rem;">
+                                        <span>🎓</span><strong>Student</strong>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="user_type" id="r_grad" value="graduate">
+                                    <label class="btn btn-outline-success w-100 d-flex flex-column align-items-center py-2" for="r_grad" style="border-radius:10px;font-size:0.8rem;">
+                                        <span>📚</span><strong>Graduate</strong>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="user_type" id="r_pro" value="professional">
+                                    <label class="btn btn-outline-secondary w-100 d-flex flex-column align-items-center py-2" for="r_pro" style="border-radius:10px;font-size:0.8rem;">
+                                        <span>💼</span><strong>Professional</strong>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
+                            <i class="fas fa-rocket me-2"></i>Register Karo
+                        </button>
+                    </form>
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Pehle se account hai?</p>
+                        <a href="/login" class="btn btn-outline-primary fw-bold" style="border-radius:10px;">Login Karo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

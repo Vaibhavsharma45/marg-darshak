@@ -1,48 +1,52 @@
 {% extends 'base.html' %}
-
-{% block title %}Daily Wisdom - Gyan Kosh{% endblock %}
-
+{% block title %}Daily Wisdom - Marg Darshak{% endblock %}
 {% block content %}
 <div class="container my-5">
     <div class="text-center mb-5">
-        <h1 class="display-4">📿 Gyan Kosh</h1>
-        <h3 class="devanagari-text mb-3">ज्ञान कोश</h3>
-        <p class="lead">Daily Spiritual Wisdom</p>
+        <div style="font-size:4rem;">🕉️</div>
+        <h1 class="fw-bold mt-3">Gyan Kosh</h1>
+        <p class="text-muted">Aaj ka shloka — {{ shloka.source }} {{ shloka.chapter }}.{{ shloka.verse_number }}</p>
     </div>
-    
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow-lg border-0 p-4">
-                <div class="card-body">
-                    <h5 class="text-muted mb-3">{{ shloka.source }} - Chapter {{ shloka.chapter }}, Verse {{ shloka.verse_number }}</h5>
-                    
-                    <div class="sanskrit-text mb-4 p-4 bg-light rounded">
-                        <h3 class="devanagari-text text-center" style="line-height: 2;">
-                            {{ shloka.sanskrit_text }}
-                        </h3>
+            <div class="card border-0 shadow" style="border-radius:20px;overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#f093fb,#f5576c);padding:30px;text-align:center;">
+                    <p class="text-white fw-bold" style="font-family:'Noto Sans Devanagari',sans-serif;font-size:1.2rem;line-height:2;">
+                        {{ shloka.sanskrit_text or '' }}
+                    </p>
+                </div>
+                <div class="card-body p-4">
+                    {% if shloka.hindi_meaning %}
+                    <div class="mb-4 p-3 rounded-3" style="background:rgba(240,147,251,0.08);">
+                        <h6 class="fw-bold text-danger mb-2"><i class="fas fa-language me-2"></i>Hindi Arth</h6>
+                        <p style="font-family:'Noto Sans Devanagari',sans-serif;line-height:1.8;" class="mb-0">{{ shloka.hindi_meaning }}</p>
                     </div>
-                    
-                    <div class="meaning mb-4">
-                        <h5><i class="fas fa-language"></i> हिंदी अर्थ:</h5>
-                        <p class="devanagari-text fs-5">{{ shloka.hindi_meaning }}</p>
+                    {% endif %}
+                    {% if shloka.english_meaning %}
+                    <div class="mb-4 p-3 rounded-3" style="background:rgba(79,172,254,0.08);">
+                        <h6 class="fw-bold text-primary mb-2"><i class="fas fa-globe me-2"></i>English Meaning</h6>
+                        <p class="mb-0">{{ shloka.english_meaning }}</p>
                     </div>
-                    
-                    <div class="meaning mb-4">
-                        <h5><i class="fas fa-globe"></i> English Meaning:</h5>
-                        <p class="fs-5">{{ shloka.english_meaning }}</p>
-                    </div>
-                    
-                    <div class="application p-3 bg-primary bg-opacity-10 rounded">
-                        <h5><i class="fas fa-lightbulb"></i> Practical Application:</h5>
+                    {% endif %}
+                    {% if shloka.practical_application %}
+                    <div class="p-3 rounded-3" style="background:rgba(67,233,123,0.08);">
+                        <h6 class="fw-bold text-success mb-2"><i class="fas fa-lightbulb me-2"></i>Modern Application</h6>
                         <p class="mb-0">{{ shloka.practical_application }}</p>
                     </div>
-                    
-                    <div class="mt-4 text-center">
-                        <a href="https://www.youtube.com/results?search_query=bhagavad+gita+chapter+{{ shloka.chapter }}+verse+{{ shloka.verse_number }}+recitation" target="_blank" class="btn btn-outline-primary me-2">
-                            <i class="fas fa-search"></i> Find Audio
+                    {% endif %}
+                    {% if shloka.tags %}
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        {% for tag in shloka.tags.split(';') %}
+                        <span class="badge bg-light text-dark px-3 py-1">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="mt-4 d-flex gap-3 justify-content-center">
+                        <a href="/gyan" class="btn btn-outline-secondary" style="border-radius:10px;">
+                            <i class="fas fa-random me-2"></i>New Shloka
                         </a>
-                        <a href="/gyan/search" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Explore More
+                        <a href="/gyan/search" class="btn btn-outline-primary" style="border-radius:10px;">
+                            <i class="fas fa-search me-2"></i>Search All
                         </a>
                     </div>
                 </div>
@@ -50,13 +54,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .devanagari-text {
-        font-family: 'Noto Sans Devanagari', sans-serif;
-    }
-    .sanskrit-text {
-        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
-    }
-</style>
 {% endblock %}

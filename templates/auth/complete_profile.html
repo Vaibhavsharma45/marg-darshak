@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Complete Profile - Marg Darshak{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="text-center mb-4">
+                <div style="font-size:3rem;">📋</div>
+                <h2 class="fw-bold mt-2">Profile Complete Karo</h2>
+                <p class="text-muted">Personalized guidance ke liye kuch aur details chahiye</p>
+            </div>
+            <div class="card border-0 shadow-sm" style="border-radius:16px;">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold"><i class="fas fa-map-marker-alt me-2 text-danger"></i>State</label>
+                                <select name="state" class="form-select" style="border-radius:10px;" required>
+                                    <option value="">Select State</option>
+                                    {% set states = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Delhi","Jammu & Kashmir","Ladakh","Chandigarh","Puducherry"] %}
+                                    {% for s in states %}
+                                    <option value="{{ s }}" {% if user.state == s %}selected{% endif %}>{{ s }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold"><i class="fas fa-city me-2 text-info"></i>City</label>
+                                <input type="text" name="city" class="form-control" value="{{ user.city or '' }}" style="border-radius:10px;" placeholder="Aapka city">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold"><i class="fas fa-user-circle me-2 text-primary"></i>Profile Type Update</label>
+                                <select name="user_type" class="form-select" style="border-radius:10px;">
+                                    <option value="student" {% if user.user_type == 'student' %}selected{% endif %}>🎓 Student (School/10th/12th)</option>
+                                    <option value="graduate" {% if user.user_type == 'graduate' %}selected{% endif %}>📚 Graduate (College/Fresher)</option>
+                                    <option value="professional" {% if user.user_type == 'professional' %}selected{% endif %}>💼 Professional (Working)</option>
+                                </select>
+                            </div>
+                            <!-- Student fields -->
+                            <div class="col-12" id="studentFields" style="display:none;">
+                                <label class="form-label fw-semibold">Current Class</label>
+                                <select name="current_class" class="form-select" style="border-radius:10px;">
+                                    <option value="">Select Class</option>
+                                    <option value="8th">8th</option>
+                                    <option value="9th">9th</option>
+                                    <option value="10th">10th</option>
+                                    <option value="11th">11th</option>
+                                    <option value="12th">12th</option>
+                                </select>
+                            </div>
+                            <!-- Graduate fields -->
+                            <div class="col-12" id="graduateFields" style="display:none;">
+                                <label class="form-label fw-semibold">Graduation Field</label>
+                                <input type="text" name="current_field" class="form-control" style="border-radius:10px;" placeholder="Jaise: Computer Science, Commerce, etc.">
+                            </div>
+                            <!-- Professional fields -->
+                            <div class="col-12" id="professionalFields" style="display:none;">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Current Field</label>
+                                        <input type="text" name="current_field" class="form-control" style="border-radius:10px;" placeholder="Jaise: IT, Finance, Marketing">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Experience (Years)</label>
+                                        <input type="number" name="experience_years" class="form-control" style="border-radius:10px;" min="0" max="50" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 fw-bold" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
+                            <i class="fas fa-save me-2"></i>Save & Continue
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+const userTypeSelect = document.querySelector('select[name="user_type"]');
+function showFields() {
+    document.getElementById('studentFields').style.display = 'none';
+    document.getElementById('graduateFields').style.display = 'none';
+    document.getElementById('professionalFields').style.display = 'none';
+    const t = userTypeSelect.value;
+    if (t === 'student') document.getElementById('studentFields').style.display = 'block';
+    else if (t === 'graduate') document.getElementById('graduateFields').style.display = 'block';
+    else if (t === 'professional') document.getElementById('professionalFields').style.display = 'block';
+}
+userTypeSelect.addEventListener('change', showFields);
+showFields();
+</script>
+{% endblock %}

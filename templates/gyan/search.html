@@ -1,66 +1,38 @@
 {% extends 'base.html' %}
-
-{% block title %}Search Wisdom - Gyan Kosh{% endblock %}
-
+{% block title %}Search Wisdom - Marg Darshak{% endblock %}
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center mb-5">🔍 Search Spiritual Wisdom</h1>
-    
-    <!-- Search Bar -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-6">
-            <form action="/gyan/search" method="get">
-                <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" name="q" 
-                           placeholder="Search by topic, keyword..." 
-                           value="{{ query }}">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                </div>
-            </form>
+    <h2 class="fw-bold text-center mb-4">🕉️ Search Gyan Kosh</h2>
+    <form method="GET" class="mb-4">
+        <div class="input-group" style="border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+            <input type="text" name="q" class="form-control form-control-lg border-0" value="{{ query }}" placeholder="Search by topic, emotion, or keyword...">
+            <button class="btn btn-primary px-4" style="background:linear-gradient(135deg,#f093fb,#f5576c);border:none;">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
-    </div>
-    
-    <!-- Results -->
-    <div class="row">
-        {% if shlokas %}
-            {% for shloka in shlokas %}
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 hover-card">
-                    <div class="card-body">
-                        <h6 class="text-muted">{{ shloka.source }} {{ shloka.chapter }}.{{ shloka.verse_number }}</h6>
-                        <p class="devanagari-text">{{ shloka.sanskrit_text[:100] }}...</p>
-                        <p class="text-muted small">{{ shloka.english_meaning[:150] }}...</p>
-                        <a href="/gyan/detail/{{ shloka.id }}" class="btn btn-sm btn-outline-primary">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
+    </form>
+    {% if shlokas %}
+    <div class="row g-4">
+        {% for s in shlokas %}
+        <div class="col-md-6">
+            <a href="/gyan/detail/{{ s.id }}" class="card border-0 shadow-sm text-decoration-none h-100" style="border-radius:14px;transition:all 0.3s;">
+                <div class="card-body p-4">
+                    <span class="badge mb-2" style="background:linear-gradient(135deg,#f093fb,#f5576c);font-size:0.72rem;">{{ s.source }} {{ s.chapter }}.{{ s.verse_number }}</span>
+                    <p class="text-dark mb-2" style="font-size:0.9rem;">{{ (s.english_meaning or '')[:120] }}...</p>
+                    {% if s.tags %}
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for tag in s.tags.split(';')[:3] %}
+                        <span class="badge bg-light text-dark" style="font-size:0.7rem;">{{ tag }}</span>
+                        {% endfor %}
                     </div>
+                    {% endif %}
                 </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12 text-center">
-                <p class="lead">No results found. Try different keywords.</p>
-                <a href="/gyan" class="btn btn-primary mt-3">
-                    <i class="fas fa-home"></i> Back to Daily Wisdom
-                </a>
-            </div>
-        {% endif %}
+            </a>
+        </div>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center py-5"><div style="font-size:3rem;">🔍</div><h5 class="mt-3">Koi result nahi mila</h5></div>
+    {% endif %}
 </div>
-
-<style>
-    .devanagari-text {
-        font-family: 'Noto Sans Devanagari', sans-serif;
-    }
-    .hover-card {
-        transition: transform 0.3s ease;
-        cursor: pointer;
-    }
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-</style>
 {% endblock %}

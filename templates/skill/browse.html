@@ -1,84 +1,45 @@
 {% extends 'base.html' %}
-
-{% block title %}Browse Resources - Skill Saathi{% endblock %}
-
+{% block title %}Learning Resources - Marg Darshak{% endblock %}
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center mb-5">📚 Curated Learning Resources</h1>
-    
-    <!-- Filters -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <form action="/skill/browse" method="get" class="row g-3">
-                <div class="col-md-4">
-                    <select name="topic" class="form-select">
-                        <option value="all">All Topics</option>
-                        {% for topic in topics %}
-                        <option value="{{ topic }}" {% if selected_topic == topic %}selected{% endif %}>
-                            {{ topic }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select name="difficulty" class="form-select">
-                        <option value="all">All Levels</option>
-                        <option value="Beginner" {% if selected_difficulty == 'Beginner' %}selected{% endif %}>Beginner</option>
-                        <option value="Intermediate" {% if selected_difficulty == 'Intermediate' %}selected{% endif %}>Intermediate</option>
-                        <option value="Advanced" {% if selected_difficulty == 'Advanced' %}selected{% endif %}>Advanced</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="free" value="true" id="freeOnly" {% if free_only %}checked{% endif %}>
-                        <label class="form-check-label" for="freeOnly">
-                            Free Only
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Filter</button>
-                </div>
+    <div class="text-center mb-5"><h1 class="fw-bold">📚 Skill Saathi</h1><p class="text-muted">{{ resources|length }} curated learning resources</p></div>
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:14px;">
+        <div class="card-body p-3">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-4"><input type="text" name="search" class="form-control" value="{{ request.args.get('search','') }}" placeholder="Search resources..." style="border-radius:10px;"></div>
+                <div class="col-md-3"><select name="topic" class="form-select" style="border-radius:10px;"><option value="all" {% if selected_topic=='all' %}selected{% endif %}>All Topics</option>{% for t in topics %}<option value="{{ t }}" {% if selected_topic==t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+                <div class="col-md-2"><select name="difficulty" class="form-select" style="border-radius:10px;"><option value="all" {% if selected_difficulty=='all' %}selected{% endif %}>All Levels</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option></select></div>
+                <div class="col-md-2"><div class="form-check mt-2"><input class="form-check-input" type="checkbox" name="free" value="true" id="freeOnly" {% if free_only %}checked{% endif %}><label class="form-check-label" for="freeOnly">Free Only</label></div></div>
+                <div class="col-md-1"><button type="submit" class="btn btn-primary w-100" style="border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;"><i class="fas fa-filter"></i></button></div>
             </form>
         </div>
     </div>
-    
-    <!-- Resources Grid -->
-    <div class="row">
-        {% if resources %}
-            {% for resource in resources %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 hover-card">
-                    <div class="card-body">
-                        <span class="badge bg-primary mb-2">{{ resource.platform }}</span>
-                        {% if resource.is_free %}
-                        <span class="badge bg-success mb-2">FREE</span>
-                        {% endif %}
-                        
-                        <h5 class="card-title">{{ resource.title }}</h5>
-                        <p class="text-muted small">{{ resource.topic }}</p>
-                        
-                        <div class="mb-2">
-                            <i class="fas fa-star text-warning"></i> {{ resource.quality_score }}/5
-                        </div>
-                        
-                        <div class="mb-2">
-                            <i class="fas fa-clock"></i> {{ resource.duration_hours }}h
-                            <span class="badge bg-secondary ms-2">{{ resource.difficulty }}</span>
-                        </div>
-                        
-                        <a href="{{ resource.url }}" target="_blank" class="btn btn-primary w-100 mt-3">
-                            Open Resource <i class="fas fa-external-link-alt"></i>
-                        </a>
+    {% if resources %}
+    <div class="row g-4">
+        {% for r in resources %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius:14px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge" style="background:#e5e7eb;color:#374151;font-size:0.72rem;">{{ r.platform or 'Online' }}</span>
+                        {% if r.is_free %}<span class="badge bg-success" style="font-size:0.72rem;">FREE</span>{% else %}<span class="badge bg-warning text-dark" style="font-size:0.72rem;">PAID</span>{% endif %}
                     </div>
+                    <h6 class="fw-bold mt-2">{{ r.title }}</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-primary-subtle text-primary" style="font-size:0.72rem;">{{ r.topic }}</span>
+                        {% if r.difficulty %}<span class="badge bg-info-subtle text-info" style="font-size:0.72rem;">{{ r.difficulty }}</span>{% endif %}
+                        {% if r.quality_score %}<span class="badge bg-warning-subtle text-warning" style="font-size:0.72rem;">⭐ {{ r.quality_score }}</span>{% endif %}
+                    </div>
+                    <a href="{{ r.url }}" target="_blank" class="btn btn-sm btn-primary w-100" style="border-radius:8px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;font-size:0.82rem;">
+                        <i class="fas fa-external-link-alt me-1"></i>Open Resource
+                    </a>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12 text-center">
-                <p class="lead">No resources found. Try different filters.</p>
-            </div>
-        {% endif %}
+        </div>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center py-5"><div style="font-size:3rem;">😕</div><h5 class="mt-3">Koi resource nahi mila</h5><a href="/skill" class="btn btn-outline-primary mt-2">Clear Filters</a></div>
+    {% endif %}
 </div>
 {% endblock %}
