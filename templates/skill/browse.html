@@ -1,45 +1,116 @@
 {% extends 'base.html' %}
-{% block title %}Learning Resources - Marg Darshak{% endblock %}
+{% block title %}Learning Resources — Marg Darshak{% endblock %}
+{% block extra_css %}
+<style>
+:root{--ind:#6366f1;--vio:#8b5cf6;--pink:#ec4899;--em:#10b981;--am:#f59e0b;--cy:#06b6d4;--border:rgba(255,255,255,0.08);--surface:rgba(255,255,255,0.04);--textdim:rgba(255,255,255,0.45);}
+.skill-wrap{position:relative;z-index:1;padding:60px 0 80px;}
+.skill-wrap::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 700px 500px at 50% -10%,rgba(16,185,129,0.1),transparent);}
+.glass{background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(18px);border-radius:16px;}
+.search-bar{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:6px 6px 6px 22px;display:flex;align-items:center;gap:10px;max-width:540px;margin:0 auto 28px;transition:border-color .2s;}
+.search-bar:focus-within{border-color:rgba(99,102,241,.5);}
+.search-bar input{flex:1;background:none;border:none;outline:none;color:white;font-size:14px;font-family:inherit;}
+.search-bar input::placeholder{color:var(--textdim);}
+.search-bar button{background:linear-gradient(135deg,var(--ind),var(--pink));border:none;border-radius:40px;padding:9px 22px;color:white;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;}
+.filter-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:32px;align-items:center;}
+.filter-sel{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:rgba(255,255,255,.65);font-size:13px;font-family:inherit;outline:none;cursor:pointer;}
+.filter-sel:focus{border-color:rgba(99,102,241,.5);}
+.free-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--textdim);}
+.free-check input{accent-color:var(--ind);width:14px;height:14px;cursor:pointer;}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:900px){.res-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.res-grid{grid-template-columns:1fr;}}
+.res-card{display:flex;flex-direction:column;padding:20px;border-radius:16px;background:var(--surface);border:1px solid var(--border);transition:all .3s;text-decoration:none;color:inherit;}
+.res-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.38);box-shadow:0 14px 40px rgba(0,0,0,.3);color:inherit;text-decoration:none;}
+.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ind),var(--pink));transform:scaleX(0);transform-origin:left;transition:transform .3s;border-radius:2px 2px 0 0;}
+.res-card{position:relative;overflow:hidden;}
+.res-card:hover::before{transform:scaleX(1);}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.diff-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.diff-Beginner{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;}
+.diff-Intermediate{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fcd34d;}
+.diff-Advanced{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
+.platform-icons{font-size:.9rem;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="text-center mb-5"><h1 class="fw-bold">📚 Skill Saathi</h1><p class="text-muted">{{ resources|length }} curated learning resources</p></div>
-    <div class="card border-0 shadow-sm mb-4" style="border-radius:14px;">
-        <div class="card-body p-3">
-            <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-4"><input type="text" name="search" class="form-control" value="{{ request.args.get('search','') }}" placeholder="Search resources..." style="border-radius:10px;"></div>
-                <div class="col-md-3"><select name="topic" class="form-select" style="border-radius:10px;"><option value="all" {% if selected_topic=='all' %}selected{% endif %}>All Topics</option>{% for t in topics %}<option value="{{ t }}" {% if selected_topic==t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
-                <div class="col-md-2"><select name="difficulty" class="form-select" style="border-radius:10px;"><option value="all" {% if selected_difficulty=='all' %}selected{% endif %}>All Levels</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option></select></div>
-                <div class="col-md-2"><div class="form-check mt-2"><input class="form-check-input" type="checkbox" name="free" value="true" id="freeOnly" {% if free_only %}checked{% endif %}><label class="form-check-label" for="freeOnly">Free Only</label></div></div>
-                <div class="col-md-1"><button type="submit" class="btn btn-primary w-100" style="border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;"><i class="fas fa-filter"></i></button></div>
-            </form>
-        </div>
+<div class="skill-wrap">
+<div class="container" style="position:relative;z-index:1;">
+
+  <!-- Hero -->
+  <div style="text-align:center;margin-bottom:40px;animation:fadeUp .5s ease both;">
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.25);margin-bottom:10px;">Learning Resources</p>
+    <h1 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.4rem);font-weight:800;color:white;margin-bottom:8px;">
+      Skill <span style="background:linear-gradient(135deg,#a5b4fc,#f9a8d4,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Repository</span>
+    </h1>
+    <p style="color:var(--textdim);font-size:15px;">{{ resources|length }} curated resources across all career paths</p>
+  </div>
+
+  <!-- Filters -->
+  <form method="GET" action="/skill">
+    <div class="search-bar">
+      <span style="color:var(--textdim);flex-shrink:0;">🔍</span>
+      <input type="text" name="search" value="{{ request.args.get('search','') }}" placeholder="Search resources, topics, platforms…">
+      <button type="submit">Search</button>
     </div>
-    {% if resources %}
-    <div class="row g-4">
-        {% for r in resources %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius:14px;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge" style="background:#e5e7eb;color:#374151;font-size:0.72rem;">{{ r.platform or 'Online' }}</span>
-                        {% if r.is_free %}<span class="badge bg-success" style="font-size:0.72rem;">FREE</span>{% else %}<span class="badge bg-warning text-dark" style="font-size:0.72rem;">PAID</span>{% endif %}
-                    </div>
-                    <h6 class="fw-bold mt-2">{{ r.title }}</h6>
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <span class="badge bg-primary-subtle text-primary" style="font-size:0.72rem;">{{ r.topic }}</span>
-                        {% if r.difficulty %}<span class="badge bg-info-subtle text-info" style="font-size:0.72rem;">{{ r.difficulty }}</span>{% endif %}
-                        {% if r.quality_score %}<span class="badge bg-warning-subtle text-warning" style="font-size:0.72rem;">⭐ {{ r.quality_score }}</span>{% endif %}
-                    </div>
-                    <a href="{{ r.url }}" target="_blank" class="btn btn-sm btn-primary w-100" style="border-radius:8px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;font-size:0.82rem;">
-                        <i class="fas fa-external-link-alt me-1"></i>Open Resource
-                    </a>
-                </div>
-            </div>
-        </div>
+    <div class="filter-row">
+      <select name="topic" class="filter-sel" onchange="this.form.submit()">
+        <option value="all" {% if selected_topic=='all' %}selected{% endif %}>All Topics</option>
+        {% for t in topics %}
+        <option value="{{ t }}" {% if selected_topic==t %}selected{% endif %}>{{ t }}</option>
         {% endfor %}
+      </select>
+      <select name="difficulty" class="filter-sel" onchange="this.form.submit()">
+        <option value="all" {% if selected_difficulty=='all' %}selected{% endif %}>All Levels</option>
+        <option value="Beginner"     {% if selected_difficulty=='Beginner' %}selected{% endif %}>Beginner</option>
+        <option value="Intermediate" {% if selected_difficulty=='Intermediate' %}selected{% endif %}>Intermediate</option>
+        <option value="Advanced"     {% if selected_difficulty=='Advanced' %}selected{% endif %}>Advanced</option>
+      </select>
+      <label class="free-check">
+        <input type="checkbox" name="free" value="true" {% if free_only %}checked{% endif %} onchange="this.form.submit()">
+        Free Only
+      </label>
     </div>
-    {% else %}
-    <div class="text-center py-5"><div style="font-size:3rem;">😕</div><h5 class="mt-3">Koi resource nahi mila</h5><a href="/skill" class="btn btn-outline-primary mt-2">Clear Filters</a></div>
-    {% endif %}
+  </form>
+
+  <!-- Grid -->
+  {% if resources %}
+  <div class="res-grid">
+    {% for r in resources %}
+    <a href="{{ r.url or '#' }}" target="_blank" rel="noopener" class="res-card">
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+        <div class="platform-icons" style="background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);">
+          {{ '📺' if r.resource_type=='Video' else '📖' if r.resource_type=='Book' else '🎓' if r.resource_type=='Course' else '📄' if r.resource_type=='Article' else '🎙️' if r.resource_type=='Podcast' else '🔗' }}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:13px;line-height:1.45;margin-bottom:4px;">{{ r.title }}</div>
+          <div style="color:var(--textdim);font-size:11px;">{{ r.platform }}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;">
+        <span style="padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);font-size:11px;color:#94a3b8;">{{ r.topic }}</span>
+        {% if r.difficulty %}<span class="diff-badge diff-{{ r.difficulty }}">{{ r.difficulty }}</span>{% endif %}
+        {% if r.is_free %}<span style="padding:3px 9px;border-radius:20px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);font-size:11px;color:#6ee7b7;font-weight:600;">Free</span>{% endif %}
+      </div>
+      {% if r.duration_hours %}<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:auto;">⏱ {{ r.duration_hours }}h</div>{% endif %}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--textdim);">{{ r.resource_type or 'Resource' }}</span>
+        <span style="color:var(--ind);font-size:13px;">→</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:80px 20px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+    <h5 style="font-family:'Syne',sans-serif;color:white;margin-bottom:8px;">No resources found</h5>
+    <p style="color:var(--textdim);margin-bottom:20px;font-size:14px;">Try adjusting your search or filter criteria.</p>
+    <a href="/skill" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 22px;color:var(--textdim);font-size:13px;text-decoration:none;transition:all .2s;"
+       onmouseover="this.style.borderColor='rgba(99,102,241,.4)';this.style.color='white'"
+       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">Clear Filters</a>
+  </div>
+  {% endif %}
+
+</div>
 </div>
 {% endblock %}

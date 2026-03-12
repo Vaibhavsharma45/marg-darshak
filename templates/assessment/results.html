@@ -1,221 +1,224 @@
 {% extends 'base.html' %}
-{% block title %}Your Results - Marg Darshak{% endblock %}
+{% block title %}Your Results — Marg Darshak{% endblock %}
+{% block extra_css %}
+<style>
+:root{--ind:#6366f1;--vio:#8b5cf6;--pink:#ec4899;--em:#10b981;--am:#f59e0b;--cy:#06b6d4;--border:rgba(255,255,255,0.08);--surface:rgba(255,255,255,0.04);--textdim:rgba(255,255,255,0.45);}
+.res-wrap{position:relative;z-index:1;padding:50px 0 80px;}
+.res-wrap::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 700px 500px at 10% -10%,rgba(99,102,241,0.12),transparent),radial-gradient(ellipse 600px 500px at 90% 50%,rgba(236,72,153,0.08),transparent);}
+.glass{background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(18px);border-radius:18px;}
+.section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,0.22);margin-bottom:14px;}
+.career-main{background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(236,72,153,0.07));border:1px solid rgba(99,102,241,0.38);border-radius:20px;padding:28px;cursor:pointer;transition:all .3s;text-decoration:none;display:block;color:inherit;}
+.career-main:hover{transform:translateY(-3px);box-shadow:0 18px 45px rgba(0,0,0,0.38);color:inherit;text-decoration:none;}
+.career-alt{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;cursor:pointer;transition:all .25s;text-decoration:none;display:block;color:inherit;}
+.career-alt:hover{transform:translateY(-4px);border-color:rgba(99,102,241,0.4);text-decoration:none;color:inherit;}
+.tag{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;}
+.tag-ind{background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.35);color:#a5b4fc;}
+.tag-em{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;}
+.tag-am{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#fcd34d;}
+.tag-grey{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;}
+.tag-cy{background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);color:#67e8f9;}
+.tag-pink{background:rgba(236,72,153,0.12);border:1px solid rgba(236,72,153,0.3);color:#f9a8d4;}
+.trait-bar{height:5px;border-radius:5px;background:rgba(255,255,255,0.06);overflow:hidden;margin-top:5px;}
+.trait-fill{height:100%;border-radius:5px;transition:width 1.4s cubic-bezier(.34,1.2,.64,1);}
+.fade-up{animation:fadeUp .6s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.glow-icon{animation:iconGlow 3s ease infinite;}
+@keyframes iconGlow{0%,100%{filter:drop-shadow(0 0 8px rgba(99,102,241,0.4));}50%{filter:drop-shadow(0 0 16px rgba(236,72,153,0.5));}}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container my-5" id="resultsContainer" style="display:none;">
-    
-    <!-- Personality Card -->
-    <div class="text-center mb-5">
-        <div id="personalityEmoji" style="font-size:5rem;"></div>
-        <h2 class="fw-bold mt-3 mb-1" id="personalityType"></h2>
-        <p class="text-muted" id="personalityDesc"></p>
-        <div id="stateBadge" class="mb-2"></div>
-        <div id="userTypeBadge"></div>
+<div class="res-wrap">
+<div class="container" style="max-width:860px;">
+
+  <!-- Loading state (shown until JS populates data) -->
+  <div id="loadingState" style="text-align:center;padding:80px 20px;">
+    <div style="width:48px;height:48px;border-radius:50%;border:3px solid rgba(255,255,255,0.08);border-top-color:#6366f1;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
+    <p style="color:var(--textdim);font-size:14px;">Loading your results…</p>
+    <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+  </div>
+
+  <!-- Results (hidden until JS fills it) -->
+  <div id="resultsContent" style="display:none;">
+
+    <!-- Personality -->
+    <div class="fade-up" style="text-align:center;margin-bottom:44px;animation-delay:.05s;">
+      <div id="persIcon" class="glow-icon" style="font-size:64px;margin-bottom:14px;"></div>
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,0.25);margin-bottom:10px;">Your Professional Profile</p>
+      <h1 id="persType" style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;background:linear-gradient(135deg,#a5b4fc,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;"></h1>
+      <p id="persSummary" style="color:#94a3b8;font-size:15px;max-width:500px;margin:0 auto;line-height:1.75;"></p>
     </div>
 
-    <!-- Trait Scores Chart -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm" style="border-radius:16px;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4"><i class="fas fa-chart-bar me-2 text-primary"></i>Aapke Trait Scores</h5>
-                    <div id="traitBars" class="d-flex flex-column gap-3"></div>
-                </div>
-            </div>
+    <!-- Trait breakdown -->
+    <div class="glass fade-up" style="padding:24px;margin-bottom:22px;animation-delay:.12s;">
+      <p class="section-label">Aptitude Breakdown</p>
+      <div id="traitGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;"></div>
+    </div>
+
+    <!-- Primary recommendation -->
+    <div class="fade-up" style="margin-bottom:20px;animation-delay:.2s;">
+      <p class="section-label">Primary Career Recommendation</p>
+      <a id="topCareerLink" href="#" class="career-main">
+        <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+          <span id="topEmoji" style="font-size:46px;line-height:1;"></span>
+          <div style="flex:1;">
+            <h2 id="topTitle" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:8px;"></h2>
+            <div id="topTags" style="display:flex;flex-wrap:wrap;gap:7px;"></div>
+          </div>
         </div>
-    </div>
-
-    <!-- Strengths -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm" style="border-radius:16px;background:linear-gradient(135deg,rgba(102,126,234,0.05),rgba(118,75,162,0.05));">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3"><i class="fas fa-star me-2 text-warning"></i>Aapki Top Strengths</h5>
-                    <div id="strengthTags" class="d-flex flex-wrap gap-2"></div>
-                </div>
-            </div>
+        <p id="topDesc" style="color:#94a3b8;font-size:14px;line-height:1.75;margin-bottom:18px;"></p>
+        <div id="topSkills" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;"></div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#ec4899);border:none;border-radius:12px;padding:12px 24px;color:white;font-weight:600;font-size:14px;">
+          View Full Roadmap &amp; AI Guidance →
         </div>
+      </a>
     </div>
 
-    <!-- Career Recommendations -->
-    <div class="mb-5">
-        <h4 class="fw-bold text-center mb-4">🎯 Aapke Liye Top Career Matches</h4>
-        <div class="row g-4" id="careerCards"></div>
+    <!-- Alt recommendations -->
+    <div class="fade-up" style="margin-bottom:36px;animation-delay:.28s;">
+      <p class="section-label">Additional Recommendations</p>
+      <div id="altGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;"></div>
     </div>
 
-    <!-- Recommended Resources -->
-    <div class="mb-5">
-        <h4 class="fw-bold text-center mb-4">📚 Recommended Free Resources</h4>
-        <div class="row g-3" id="resourceCards"></div>
+    <!-- Wisdom -->
+    <div class="glass fade-up" style="padding:26px;margin-bottom:32px;border:1px solid rgba(139,92,246,0.2);background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(139,92,246,0.04));animation-delay:.35s;">
+      <p class="section-label" style="color:rgba(167,139,250,0.5);">🕉 Wisdom for Your Journey</p>
+      <p id="wisdomSanskrit" style="font-family:'Noto Sans Devanagari',sans-serif;color:rgba(255,255,255,0.45);font-size:14px;line-height:1.85;margin-bottom:10px;"></p>
+      <p id="wisdomEnglish" style="color:rgba(255,255,255,0.75);font-style:italic;font-size:14px;line-height:1.75;margin-bottom:10px;"></p>
+      <p id="wisdomApply" style="color:var(--textdim);font-size:13px;line-height:1.7;"></p>
+      <p id="wisdomSource" style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:10px;"></p>
     </div>
 
-    <!-- Actions -->
-    <div class="text-center">
-        <a href="/chat" class="btn btn-primary btn-lg me-3" style="border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;">
-            <i class="fas fa-robot me-2"></i>AI Counselor se Pooch
-        </a>
-        <a href="/career/browse" class="btn btn-outline-primary btn-lg me-3" style="border-radius:12px;">
-            <i class="fas fa-search me-2"></i>Sabhi Careers Browse Karo
-        </a>
-        <a href="/assessment" class="btn btn-outline-secondary btn-lg" style="border-radius:12px;">
-            <i class="fas fa-redo me-2"></i>Dubara Lo
-        </a>
+    <div style="text-align:center;">
+      <a href="/assessment" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:11px 24px;color:var(--textdim);font-weight:500;font-size:14px;text-decoration:none;transition:all .2s;"
+         onmouseover="this.style.borderColor='rgba(99,102,241,0.4)';this.style.color='white'"
+         onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='var(--textdim)'">
+        ← Retake Assessment
+      </a>
     </div>
+
+  </div><!-- /resultsContent -->
 
 </div>
-
-<!-- No Data State -->
-<div id="noDataState" class="container my-5 text-center" style="display:none;">
-    <div style="font-size:4rem;">😕</div>
-    <h3 class="mt-3">Koi result nahi mila</h3>
-    <p class="text-muted">Pehle assessment complete karo</p>
-    <a href="/assessment" class="btn btn-primary mt-2">Assessment Shuru Karo</a>
 </div>
+{% endblock %}
 
-<style>
-.career-result-card { border-radius: 16px; transition: all 0.3s; border: none; }
-.career-result-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important; }
-.trait-bar-fill { height: 12px; border-radius: 10px; transition: width 1s ease; }
-body.dark-mode .card { background: #1f2937; }
-</style>
-
+{% block extra_js %}
 <script>
-const traitColors = {
-    technical: '#3b82f6', analytical: '#8b5cf6', creative: '#f59e0b',
-    social: '#10b981', entrepreneurial: '#ef4444', leadership: '#ec4899'
-};
-const traitLabels = {
-    technical: '🔧 Technical', analytical: '📊 Analytical', creative: '🎨 Creative',
-    social: '🤝 Social', entrepreneurial: '🚀 Entrepreneurial', leadership: '👑 Leadership'
-};
-const personalityEmojis = {
-    'The Builder 🔧': '🔧', 'The Analyst 📊': '📊', 'The Creator 🎨': '🎨',
-    'The Helper 🤝': '🤝', 'The Visionary 🚀': '🚀', 'The Leader 👑': '👑'
+// ── Data ──────────────────────────────────────────────────────
+var WISDOM = [
+  {verse:"Bhagavad Gita 2.47",sanskrit:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।",english:"You have the right to perform your duties, but you are not entitled to the fruits of your actions.",apply:"Focus entirely on the quality of your preparation and execution. The results will follow consistent, disciplined effort."},
+  {verse:"Bhagavad Gita 6.5",sanskrit:"उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।",english:"Elevate yourself through the power of your mind; do not degrade yourself, for the mind is both your best friend and your worst enemy.",apply:"Your mindset is the primary variable in your career trajectory. Invest in mental conditioning as seriously as skill development."},
+  {verse:"Bhagavad Gita 18.46",sanskrit:"स्वकर्मणा तमभ्यर्च्य सिद्धिं विन्दति मानवः।",english:"By performing one's natural work with excellence, a person attains the highest fulfillment.",apply:"Mastery of your chosen craft, practiced with integrity and dedication, is the most reliable path to professional excellence."},
+];
+
+var PERSONALITY = {
+  tech: {type:"Analytical Technologist",   icon:"🔧", summary:"You possess a natural affinity for systematic problem-solving and technical innovation. Complex systems are where you thrive."},
+  ana:  {type:"Strategic Analyst",          icon:"📊", summary:"Your strength lies in transforming ambiguous data into clear, actionable insights. You excel in environments that reward rigorous thinking."},
+  cre:  {type:"Creative Innovator",         icon:"🎨", summary:"You generate original ideas with remarkable fluency. Your creative capacity enables you to see solutions that others overlook."},
+  soc:  {type:"Collaborative Leader",       icon:"🤝", summary:"People gravitate toward your empathy and communication skills. You build trust naturally and amplify team performance."},
+  ent:  {type:"Entrepreneurial Visionary",  icon:"🚀", summary:"You are wired to identify opportunity, tolerate ambiguity, and execute bold strategies. You create value where others see obstacles."},
+  lead: {type:"Organizational Leader",      icon:"👑", summary:"Your decisive judgment and ability to mobilize people make you a natural candidate for executive leadership."},
+  care: {type:"Purpose-Driven Professional",icon:"💚", summary:"Your core motivation is improving lives. Careers aligned with service and impact will provide deep fulfillment."},
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    const raw = sessionStorage.getItem('assessmentResult');
-    if (!raw) {
-        document.getElementById('noDataState').style.display = 'block';
-        return;
-    }
-    
-    const data = JSON.parse(raw);
-    document.getElementById('resultsContainer').style.display = 'block';
-    renderResults(data);
+var TRAIT_CONFIG = [
+  {k:"technical",     label:"Technical",        c:"#06b6d4"},
+  {k:"analytical",    label:"Analytical",       c:"#8b5cf6"},
+  {k:"creative",      label:"Creative",         c:"#f59e0b"},
+  {k:"social",        label:"Social",           c:"#10b981"},
+  {k:"entrepreneurial",label:"Entrepreneurial", c:"#ef4444"},
+  {k:"leadership",    label:"Leadership",       c:"#ec4899"},
+  {k:"caring",        label:"Empathic",         c:"#06b6d4"},
+];
+
+var CAT_COLORS = {
+  Technology:"#06b6d4",Business:"#8b5cf6",Finance:"#f59e0b",
+  Healthcare:"#10b981",Legal:"#6366f1",Creative:"#ec4899",
+  Engineering:"#94a3b8",Media:"#f59e0b",Science:"#06b6d4",
+  Agriculture:"#10b981",Education:"#10b981"
+};
+
+// ── Load & Render ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var raw = sessionStorage.getItem('assessmentResult');
+  var data = raw ? JSON.parse(raw) : null;
+  if (!data) { window.location.href='/assessment'; return; }
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('resultsContent').style.display = 'block';
+
+  var scores = data.scores || {};
+  var careers = data.recommended_careers || [];
+  var personality = data.personality_type || 'Strategic Professional';
+
+  // Personality
+  var topKey = Object.entries(scores).sort(function(a,b){return b[1]-a[1];})[0];
+  var keyMap = {technical:'tech',analytical:'ana',creative:'cre',social:'soc',entrepreneurial:'ent',leadership:'lead',caring:'care'};
+  var pKey = topKey ? keyMap[topKey[0]] || 'ana' : 'ana';
+  var pers = PERSONALITY[pKey];
+  document.getElementById('persIcon').textContent = pers.icon;
+  document.getElementById('persType').textContent = pers.type;
+  document.getElementById('persSummary').textContent = pers.summary;
+
+  // Traits
+  var maxScore = Math.max.apply(null, Object.values(scores).map(Number)) || 1;
+  var traitHTML = '';
+  TRAIT_CONFIG.forEach(function(t) {
+    var val = Number(scores[t.k] || 0);
+    var pct = Math.round(val / maxScore * 100);
+    traitHTML += '<div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;">' +
+      '<span style="color:rgba(255,255,255,.6);font-weight:500;">' + t.label + '</span>' +
+      '<span style="color:' + t.c + ';font-weight:700;">' + val + '</span></div>' +
+      '<div class="trait-bar"><div class="trait-fill" style="width:' + pct + '%;background:' + t.c + ';"></div></div>' +
+      '</div>';
+  });
+  document.getElementById('traitGrid').innerHTML = traitHTML;
+
+  // Primary career
+  var top = careers[0];
+  if (top) {
+    document.getElementById('topCareerLink').href = '/career/detail/' + top.id;
+    document.getElementById('topEmoji').textContent = top.emoji || '🎯';
+    document.getElementById('topTitle').textContent = top.title;
+    document.getElementById('topDesc').textContent = top.description || '';
+    var catColor = CAT_COLORS[top.category] || '#6366f1';
+    var tagsHTML =
+      '<span class="tag" style="background:' + catColor + '22;border:1px solid ' + catColor + '44;color:' + catColor + ';">' + (top.category||'') + '</span>' +
+      (top.avg_salary_inr ? '<span class="tag tag-em">₹' + formatSalary(top.avg_salary_inr) + ' avg</span>' : '') +
+      (top.growth_rate ? '<span class="tag tag-am">↑ ' + top.growth_rate + ' Growth</span>' : '') +
+      (top.difficulty_level ? '<span class="tag tag-grey">' + top.difficulty_level + '</span>' : '');
+    document.getElementById('topTags').innerHTML = tagsHTML;
+    var skills = (top.required_skills||'').split(';').slice(0,5);
+    document.getElementById('topSkills').innerHTML = skills.map(function(s){ return '<span style="padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#cbd5e1;">'+s+'</span>'; }).join('');
+  }
+
+  // Alt careers
+  var altHTML = '';
+  careers.slice(1,4).forEach(function(c) {
+    altHTML += '<a href="/career/detail/' + c.id + '" class="career-alt">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">' +
+      '<span style="font-size:26px;">' + (c.emoji||'🎯') + '</span>' +
+      '<div><div style="font-family:\'Syne\',sans-serif;font-weight:700;color:white;font-size:14px;">' + c.title + '</div>' +
+      '<div style="color:var(--textdim);font-size:12px;margin-top:2px;">' + (c.avg_salary_inr?'₹'+formatSalary(c.avg_salary_inr)+' avg':'') + '</div></div></div>' +
+      '<p style="color:var(--textdim);font-size:12px;line-height:1.65;margin:0 0 10px;">' + (c.description||'').substring(0,80) + '…</p>' +
+      '<span style="color:#6366f1;font-size:12px;font-weight:600;">Explore →</span></a>';
+  });
+  document.getElementById('altGrid').innerHTML = altHTML;
+
+  // Wisdom
+  var w = WISDOM[Math.floor(Math.random()*WISDOM.length)];
+  document.getElementById('wisdomSanskrit').textContent = w.sanskrit;
+  document.getElementById('wisdomEnglish').textContent = '"' + w.english + '"';
+  document.getElementById('wisdomApply').innerHTML = '<strong style="color:#a5b4fc;">Practical Application:</strong> ' + w.apply;
+  document.getElementById('wisdomSource').textContent = '— ' + w.verse;
 });
 
-function renderResults(data) {
-    // Personality
-    document.getElementById('personalityEmoji').textContent = personalityEmojis[data.personality_type] || '🧭';
-    document.getElementById('personalityType').textContent = data.personality_type;
-    document.getElementById('personalityDesc').textContent = getPersonalityDesc(data.top_trait);
-    
-    if (data.state) {
-        document.getElementById('stateBadge').innerHTML = `<span class="badge bg-danger px-3 py-2 mb-1"><i class="fas fa-map-marker-alt me-1"></i>${data.state}</span>`;
-    }
-    const typeColors = {student:'#10b981', graduate:'#3b82f6', professional:'#8b5cf6'};
-    document.getElementById('userTypeBadge').innerHTML = `<span class="badge px-3 py-2" style="background:${typeColors[data.user_type]||'#667eea'}">${data.user_type.charAt(0).toUpperCase()+data.user_type.slice(1)}</span>`;
-    
-    // Trait Bars
-    const maxScore = Math.max(...Object.values(data.scores));
-    const barsHtml = Object.entries(data.scores)
-        .sort((a,b) => b[1]-a[1])
-        .map(([trait, score]) => {
-            const pct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-            return `
-            <div>
-                <div class="d-flex justify-content-between mb-1">
-                    <span class="fw-semibold" style="font-size:0.9rem;">${traitLabels[trait] || trait}</span>
-                    <span class="text-muted small">${score} pts</span>
-                </div>
-                <div style="background:#e5e7eb;border-radius:10px;height:12px;">
-                    <div class="trait-bar-fill" style="width:${pct}%;background:${traitColors[trait]};"></div>
-                </div>
-            </div>`;
-        }).join('');
-    document.getElementById('traitBars').innerHTML = barsHtml;
-    
-    // Strengths
-    if (data.strengths && data.strengths.length) {
-        const sArr = Array.isArray(data.strengths) ? data.strengths : JSON.parse(data.strengths);
-        document.getElementById('strengthTags').innerHTML = sArr.map(s => 
-            `<span class="badge px-3 py-2" style="background:linear-gradient(135deg,#667eea,#764ba2);font-size:0.85rem;">${s}</span>`
-        ).join('');
-    }
-    
-    // Career Cards
-    if (data.careers && data.careers.length) {
-        document.getElementById('careerCards').innerHTML = data.careers.map((c, i) => `
-            <div class="col-md-6 col-lg-4">
-                <div class="card career-result-card shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge" style="background:${getCategoryColor(c.category)};font-size:0.72rem;">${c.category || 'Career'}</span>
-                            ${i === 0 ? '<span class="badge bg-warning text-dark">Best Match ⭐</span>' : ''}
-                        </div>
-                        <h5 class="fw-bold mt-2">${c.title || 'Career'}</h5>
-                        <p class="text-muted small mb-3">${(c.description || '').substring(0, 100)}...</p>
-                        <div class="d-flex gap-2 flex-wrap mb-3">
-                            ${c.avg_salary_inr ? `<span class="badge bg-success-subtle text-success" style="font-size:0.72rem;">₹${formatSalary(c.avg_salary_inr)}/yr</span>` : ''}
-                            ${c.growth_rate ? `<span class="badge bg-info-subtle text-info" style="font-size:0.72rem;">${c.growth_rate} Growth</span>` : ''}
-                            ${c.difficulty_level ? `<span class="badge bg-warning-subtle text-warning" style="font-size:0.72rem;">${c.difficulty_level}</span>` : ''}
-                        </div>
-                        <a href="/career/detail/${c.id}" class="btn btn-sm btn-outline-primary w-100" style="border-radius:8px;">
-                            Full Roadmap Dekho <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    // Resource Cards
-    if (data.resources && data.resources.length) {
-        document.getElementById('resourceCards').innerHTML = data.resources.map(r => `
-            <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
-                    <div class="card-body p-3">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge" style="background:#e5e7eb;color:#374151;font-size:0.7rem;">${r.platform || 'Online'}</span>
-                            ${r.is_free ? '<span class="badge bg-success" style="font-size:0.7rem;">FREE</span>' : ''}
-                        </div>
-                        <h6 class="fw-bold">${r.title}</h6>
-                        <div class="d-flex gap-2 flex-wrap mb-2">
-                            <span class="small text-muted">${r.topic}</span>
-                            ${r.difficulty ? `<span class="small text-muted">• ${r.difficulty}</span>` : ''}
-                        </div>
-                        <a href="${r.url}" target="_blank" class="btn btn-sm btn-primary w-100" style="border-radius:8px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;font-size:0.8rem;">
-                            <i class="fas fa-external-link-alt me-1"></i>Open Resource
-                        </a>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-}
-
-function getPersonalityDesc(trait) {
-    const descs = {
-        technical: "Tum systems aur technology se naturally connect karte ho. Problem-solving tumhari superpower hai!",
-        analytical: "Data aur logic tumhara strong suit hai. Research aur insights mein tumhara koi jawab nahi!",
-        creative: "Tumhari imagination aur creativity hi tumhara biggest asset hai. Naye ideas naturally aate hain!",
-        social: "Log tumpe trust karte hain. Communication aur empathy tumhari core strengths hain!",
-        entrepreneurial: "Tumhare andar ek visionary hai. Risk lena aur naye opportunities create karna — yahi tumhara zone hai!",
-        leadership: "Team guide karna aur decisions lena — yahi tumhara natural calling hai!"
-    };
-    return descs[trait] || "Aapke andar unique abilities hain jo ek great career build kar sakti hain!";
-}
-
-function getCategoryColor(cat) {
-    const colors = {Technology:'#3b82f6', Business:'#f59e0b', Creative:'#ec4899', Healthcare:'#10b981'};
-    return colors[cat] || '#667eea';
-}
-
-function formatSalary(sal) {
-    if (sal >= 100000) return (sal/100000).toFixed(1) + 'L';
-    if (sal >= 1000) return (sal/1000).toFixed(0) + 'K';
-    return sal;
+function formatSalary(n) {
+  n = parseInt(n);
+  if (n >= 100000) return (n/100000).toFixed(1) + 'L';
+  return Math.round(n/1000) + 'K';
 }
 </script>
 {% endblock %}

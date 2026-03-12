@@ -1,31 +1,17 @@
 {% extends 'base.html' %}
-
-{% block title %}500 - Server Error{% endblock %}
-
+{% block title %}Server Error — Marg Darshak{% endblock %}
 {% block content %}
-<div class="container text-center my-5 py-5">
-    <div class="error-page">
-        <h1 class="display-1 fw-bold text-danger">500</h1>
-        <h2 class="mb-4">Internal Server Error</h2>
-        <p class="lead mb-4">
-            Something went wrong on our end. We're working to fix it!
-        </p>
-        <div class="mb-4">
-            <i class="fas fa-tools" style="font-size: 5rem; color: #dc3545; opacity: 0.5;"></i>
-        </div>
-        <a href="/" class="btn btn-primary btn-lg">
-            <i class="fas fa-home"></i> Back to Home
-        </a>
+<div style="position:relative;z-index:1;min-height:calc(100vh - 62px);display:flex;align-items:center;justify-content:center;padding:40px 20px;text-align:center;">
+  <div style="animation:fadeUp .6s ease both;max-width:480px;">
+    <div style="font-size:80px;margin-bottom:20px;opacity:.7;">⚙️</div>
+    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.25);margin-bottom:12px;">Error 500</p>
+    <h1 style="font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:white;margin-bottom:12px;">Something Went Wrong</h1>
+    <p style="color:rgba(255,255,255,.45);font-size:15px;line-height:1.7;margin-bottom:36px;">An unexpected error occurred on our server. Please try again — if the issue persists, the team has been notified.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#ec4899);border:none;border-radius:12px;padding:12px 26px;color:white;font-weight:600;font-size:14px;text-decoration:none;box-shadow:0 6px 20px rgba(99,102,241,.35);">← Go Home</a>
+      <a href="javascript:location.reload()" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 26px;color:rgba(255,255,255,.65);font-weight:500;font-size:14px;text-decoration:none;">Try Again</a>
     </div>
+  </div>
 </div>
-
-<style>
-    .error-page {
-        min-height: 60vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
+<style>@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}</style>
 {% endblock %}
