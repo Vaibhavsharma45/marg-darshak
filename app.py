@@ -119,6 +119,71 @@ def init_db():
 
 init_db()
 
+# ==================== AUTO LOAD CSV DATA ON STARTUP ====================
+def auto_load_data():
+    """Auto-load CSV data if tables are empty — runs on every startup"""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        career_count = c.execute('SELECT COUNT(*) FROM careers').fetchone()[0]
+        conn.close()
+
+        if career_count == 0:
+            import csv
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+
+            careers_path = os.path.join(BASE_DIR, 'data', 'careers.csv')
+            if os.path.exists(careers_path):
+                with open(careers_path, 'r', encoding='utf-8') as f:
+                    for row in csv.DictReader(f):
+                        is_free = 1 if str(row.get('is_free','')).upper() in ['TRUE','1','YES'] else 0
+                        cursor.execute('''INSERT INTO careers
+                            (title,category,description,required_skills,avg_salary_inr,
+                             growth_rate,difficulty_level,education_required,top_colleges,job_roles)
+                            VALUES (?,?,?,?,?,?,?,?,?,?)''',
+                            (row.get('title'), row.get('category'), row.get('description'),
+                             row.get('required_skills'), row.get('avg_salary_inr'),
+                             row.get('growth_rate'), row.get('difficulty_level'),
+                             row.get('education_required'), row.get('top_colleges'), row.get('job_roles')))
+
+            shlokas_path = os.path.join(BASE_DIR, 'data', 'shlokas.csv')
+            if os.path.exists(shlokas_path):
+                with open(shlokas_path, 'r', encoding='utf-8') as f:
+                    for row in csv.DictReader(f):
+                        cursor.execute('''INSERT INTO gyan_kosh
+                            (source,chapter,verse_number,sanskrit_text,hindi_meaning,
+                             english_meaning,practical_application,tags,audio_url)
+                            VALUES (?,?,?,?,?,?,?,?,?)''',
+                            (row.get('source'), row.get('chapter'), row.get('verse_number'),
+                             row.get('sanskrit_text'), row.get('hindi_meaning'),
+                             row.get('english_meaning'), row.get('practical_application'),
+                             row.get('tags'), row.get('audio_url')))
+
+            resources_path = os.path.join(BASE_DIR, 'data', 'resources.csv')
+            if os.path.exists(resources_path):
+                with open(resources_path, 'r', encoding='utf-8') as f:
+                    for row in csv.DictReader(f):
+                        is_free = 1 if str(row.get('is_free','')).upper() in ['TRUE','1','YES'] else 0
+                        cursor.execute('''INSERT INTO learning_resources
+                            (title,topic,platform,resource_type,url,difficulty,
+                             duration_hours,quality_score,language,is_free)
+                            VALUES (?,?,?,?,?,?,?,?,?,?)''',
+                            (row.get('title'), row.get('topic'), row.get('platform'),
+                             row.get('resource_type'), row.get('url'), row.get('difficulty'),
+                             row.get('duration_hours'), row.get('quality_score'),
+                             row.get('language'), is_free))
+
+            conn.commit()
+            conn.close()
+            print("✅ CSV data auto-loaded on startup")
+        else:
+            print(f"✅ DB already has {career_count} careers — skipping auto-load")
+    except Exception as e:
+        print(f"⚠️  Auto-load warning: {e}")
+
+auto_load_data()
+
 # ==================== AUTH HELPERS ====================
 
 def hash_password(password):
@@ -1247,4 +1312,5 @@ def load_data():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
