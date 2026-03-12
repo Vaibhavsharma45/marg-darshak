@@ -16,16 +16,13 @@
 .tab-pane{display:none;animation:fadeIn .3s ease;}
 .tab-pane.active{display:block;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .tag{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;}
 .step-row{display:flex;gap:16px;padding-bottom:22px;position:relative;}
 .step-row:not(:last-child)::before{content:'';position:absolute;left:17px;top:36px;bottom:0;width:1px;background:rgba(255,255,255,.07);}
 .step-num{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ind),var(--pink));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;color:white;font-size:13px;flex-shrink:0;}
-.skill-item{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-.college-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
+.skill-item,.college-item,.role-item,.res-item{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
 .college-num{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,rgba(99,102,241,.28),rgba(236,72,153,.18));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;color:#a5b4fc;font-size:12px;flex-shrink:0;}
-.role-item{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-.res-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
-/* Chat */
 .chat-sticky{position:sticky;top:78px;height:calc(100vh - 100px);display:flex;flex-direction:column;}
 .chat-box{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--surface);border:1px solid var(--border);backdrop-filter:blur(16px);border-radius:16px;}
 .chat-hdr{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
@@ -35,9 +32,9 @@
 .msg-row{display:flex;gap:8px;align-items:flex-end;}
 .msg-row.user{flex-direction:row-reverse;}
 .msg-av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:linear-gradient(135deg,var(--ind),var(--cy));}
-.msg-av-user{background:linear-gradient(135deg,var(--pink),#f43f5e);}
+.msg-av-user{background:linear-gradient(135deg,var(--pink),#f43f5e);font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:white;}
 .bubble{max-width:84%;padding:10px 14px;font-size:13px;line-height:1.7;border-radius:14px 4px 14px 14px;background:var(--surface);border:1px solid var(--border);color:rgba(255,255,255,.88);}
-.bubble.user{background:linear-gradient(135deg,var(--ind),var(--pink));border:none;border-radius:4px 14px 14px 14px;color:white;}
+.bubble.user{background:linear-gradient(135deg,var(--ind),var(--pink));border:none;border-radius:4px 14px 14px 14px;}
 .typing-dots{display:flex;gap:4px;align-items:center;padding:4px 0;}
 .typing-dots span{width:6px;height:6px;border-radius:50%;background:#a5b4fc;animation:tw 1.2s ease-in-out infinite alternate;}
 .typing-dots span:nth-child(2){animation-delay:.2s;}
@@ -55,21 +52,32 @@
 {% endblock %}
 
 {% block content %}
+<!-- Hidden data container — Jinja data lives here, NOT inside script tags -->
+<div id="__detData"
+  data-career='{{ career | tojson }}'
+  data-user-initial="{{ (current_user.name[0]|upper) if current_user else 'U' }}"
+  style="display:none;"></div>
+
 <div class="det-wrap">
 
 <!-- Sticky header -->
 <div class="det-header">
 <div class="container">
   <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-    <a href="{{ request.referrer or '/career/browse' }}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:7px 14px;color:var(--textdim);font-size:12px;text-decoration:none;font-weight:600;transition:all .2s;"
-       onmouseover="this.style.borderColor='rgba(99,102,241,.4)';this.style.color='white'"
-       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">← Back</a>
+    <a href="{{ request.referrer or '/career/browse' }}"
+      style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:7px 14px;color:var(--textdim);font-size:12px;text-decoration:none;font-weight:600;transition:all .2s;"
+      onmouseover="this.style.borderColor='rgba(99,102,241,.4)';this.style.color='white'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">← Back</a>
     <span style="font-size:26px;">{{ career.emoji or '🎯' }}</span>
     <div>
       <h2 style="font-family:'Syne',sans-serif;font-weight:800;color:white;font-size:17px;margin-bottom:4px;">{{ career.title }}</h2>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <span class="tag" style="background:rgba(99,102,241,.18);border:1px solid rgba(99,102,241,.35);color:#a5b4fc;">{{ career.category }}</span>
-        {% if career.avg_salary_inr %}<span class="tag" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;">₹{{ (career.avg_salary_inr|int // 100000) }}.{{ ((career.avg_salary_inr|int % 100000) // 10000) }}L avg</span>{% endif %}
+        {% if career.avg_salary_inr %}
+        <span class="tag" style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;">
+          ₹{% if career.avg_salary_inr|int >= 100000 %}{{ "%.1f"|format(career.avg_salary_inr|int / 100000) }}L{% else %}{{ (career.avg_salary_inr|int / 1000)|int }}K{% endif %} avg
+        </span>
+        {% endif %}
         {% if career.growth_rate %}<span class="tag" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fcd34d;">↑ {{ career.growth_rate }}</span>{% endif %}
         {% if career.difficulty_level %}<span class="tag" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#94a3b8;">{{ career.difficulty_level }}</span>{% endif %}
       </div>
@@ -82,9 +90,8 @@
 <div class="container">
 <div class="det-grid">
 
-  <!-- LEFT -->
+  <!-- LEFT: Info tabs -->
   <div>
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('roadmap',this)">Roadmap</button>
       <button class="tab-btn" onclick="showTab('skills',this)">Skills</button>
@@ -92,13 +99,11 @@
       <button class="tab-btn" onclick="showTab('roles',this)">Roles</button>
     </div>
 
-    <!-- Roadmap -->
     <div id="tab-roadmap" class="tab-pane active">
       <p style="color:#94a3b8;font-size:14px;line-height:1.8;margin-bottom:24px;">{{ career.description }}</p>
       <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.22);margin-bottom:18px;">Step-by-Step Career Roadmap</p>
       {% if career.roadmap %}
-        {% set steps = career.roadmap.split('|') %}
-        {% for step in steps %}
+        {% for step in career.roadmap.split('|') %}
         <div class="step-row">
           <div class="step-num">{{ loop.index }}</div>
           <div class="glass" style="padding:14px 18px;flex:1;">
@@ -107,13 +112,12 @@
         </div>
         {% endfor %}
       {% else %}
-        <div class="step-row"><div class="step-num">1</div><div class="glass" style="padding:14px 18px;flex:1;"><p style="color:rgba(255,255,255,.82);font-size:13px;margin:0;">Complete the required educational qualification: {{ career.education_required or 'See details below' }}.</p></div></div>
-        <div class="step-row"><div class="step-num">2</div><div class="glass" style="padding:14px 18px;flex:1;"><p style="color:rgba(255,255,255,.82);font-size:13px;margin:0;">Develop core skills: {{ career.required_skills or '' }}.</p></div></div>
+        <div class="step-row"><div class="step-num">1</div><div class="glass" style="padding:14px 18px;flex:1;"><p style="color:rgba(255,255,255,.82);font-size:13px;margin:0;">Complete the required qualification: {{ career.education_required or 'See details in Skills tab' }}.</p></div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="glass" style="padding:14px 18px;flex:1;"><p style="color:rgba(255,255,255,.82);font-size:13px;margin:0;">Develop core competencies: {{ (career.required_skills or '').replace(';',', ') }}.</p></div></div>
         <div class="step-row"><div class="step-num">3</div><div class="glass" style="padding:14px 18px;flex:1;"><p style="color:rgba(255,255,255,.82);font-size:13px;margin:0;">Build a portfolio, complete internships, and apply to relevant positions.</p></div></div>
       {% endif %}
     </div>
 
-    <!-- Skills -->
     <div id="tab-skills" class="tab-pane">
       <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.22);margin-bottom:16px;">Core Competencies Required</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;">
@@ -130,7 +134,6 @@
       </div>
     </div>
 
-    <!-- Colleges -->
     <div id="tab-colleges" class="tab-pane">
       <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.22);margin-bottom:16px;">Top Institutions in India</p>
       <div style="display:flex;flex-direction:column;gap:10px;">
@@ -143,11 +146,10 @@
       </div>
     </div>
 
-    <!-- Roles -->
     <div id="tab-roles" class="tab-pane">
       <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.22);margin-bottom:16px;">Job Titles &amp; Designations</p>
+      {% set role_icons = ['💼','📊','🎨','🔧','🚀','⚖️','💚','🎬','⚙️','🌿'] %}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
-        {% set role_icons = ['💼','📊','🎨','🔧','🚀','⚖️','💚','🎬','⚙️','🌿'] %}
         {% for role in career.job_roles.split(';') %}
         <div class="role-item">
           <span style="font-size:18px;">{{ role_icons[loop.index0 % 10] }}</span>
@@ -155,7 +157,6 @@
         </div>
         {% endfor %}
       </div>
-      <!-- Resources -->
       {% if resources %}
       <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.22);margin-bottom:14px;">Recommended Learning Resources</p>
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -164,7 +165,7 @@
           <span style="color:var(--ind);font-size:15px;flex-shrink:0;">📌</span>
           <div>
             <div style="color:rgba(255,255,255,.8);font-size:13px;font-weight:500;">{{ r.title }}</div>
-            <div style="color:var(--textdim);font-size:11px;margin-top:2px;">{{ r.platform }} {% if r.is_free %} · <span style="color:#6ee7b7;">Free</span>{% endif %}</div>
+            <div style="color:var(--textdim);font-size:11px;margin-top:2px;">{{ r.platform }}{% if r.is_free %} · <span style="color:#6ee7b7;">Free</span>{% endif %}</div>
           </div>
         </div>
         {% endfor %}
@@ -176,7 +177,6 @@
   <!-- RIGHT: AI Chat -->
   <div class="chat-sticky">
   <div class="chat-box">
-    <!-- Header -->
     <div class="chat-hdr">
       <div class="ai-av">🤖</div>
       <div>
@@ -188,14 +188,13 @@
       </div>
     </div>
 
-    <!-- Messages -->
     <div id="chatMsgs" class="chat-msgs">
       <div class="msg-row">
         <div class="msg-av-sm">🤖</div>
         <div class="bubble">
           <strong>Welcome!</strong> I'm your dedicated <strong>{{ career.title }}</strong> career advisor.<br><br>
           I can help you with:<br>
-          • Required qualifications and skill path<br>
+          • Required qualifications and skill development<br>
           • Salary benchmarks and career progression<br>
           • Top employers and how to get hired<br>
           • Entrance exams and certifications<br><br>
@@ -204,7 +203,6 @@
       </div>
     </div>
 
-    <!-- Quick chips -->
     <div id="chipsArea" style="padding:8px 12px;border-top:1px solid rgba(255,255,255,.04);display:flex;flex-wrap:wrap;gap:5px;">
       <button class="chip" onclick="sendChip(this)">What qualifications are required?</button>
       <button class="chip" onclick="sendChip(this)">What is the typical salary range?</button>
@@ -212,7 +210,6 @@
       <button class="chip" onclick="sendChip(this)">Top companies hiring for this role?</button>
     </div>
 
-    <!-- Input -->
     <div class="chat-input-row">
       <textarea id="chatInput" class="chat-input" rows="1" placeholder="Ask your career question…"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"
@@ -229,18 +226,20 @@
 
 {% block extra_js %}
 <script>
-// Tab switching
+// Read Jinja data from hidden div — zero Jinja inside this script block
+var detEl       = document.getElementById('__detData');
+var career      = JSON.parse(detEl.getAttribute('data-career'));
+var userInitial = detEl.getAttribute('data-user-initial');
+
 function showTab(id, btn) {
-  document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
 }
 
-// Chat
 var chatHistory = [];
-var isThinking = false;
-var career = {{ career | tojson }};
+var isThinking  = false;
 
 function scrollChat() {
   var msgs = document.getElementById('chatMsgs');
@@ -249,13 +248,11 @@ function scrollChat() {
 
 function addBubble(role, html) {
   var msgs = document.getElementById('chatMsgs');
-  var row = document.createElement('div');
+  var row  = document.createElement('div');
   row.className = 'msg-row' + (role === 'user' ? ' user' : '');
-
   var avHtml = role === 'user'
-    ? '<div class="msg-av-sm msg-av-user" style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:11px;color:white;">{{ (current_user.name[0].upper() if current_user else 'U') }}</div>'
+    ? '<div class="msg-av-sm msg-av-user">' + userInitial + '</div>'
     : '<div class="msg-av-sm">🤖</div>';
-
   row.innerHTML = avHtml + '<div class="bubble ' + role + '">' + html + '</div>';
   msgs.appendChild(row);
   scrollChat();
@@ -263,20 +260,17 @@ function addBubble(role, html) {
 
 function showTyping() {
   var msgs = document.getElementById('chatMsgs');
-  var row = document.createElement('div');
+  var row  = document.createElement('div');
   row.className = 'msg-row'; row.id = 'typingRow';
   row.innerHTML = '<div class="msg-av-sm">🤖</div><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
-  msgs.appendChild(row);
-  scrollChat();
+  msgs.appendChild(row); scrollChat();
 }
-function hideTyping() { var el = document.getElementById('typingRow'); if(el) el.remove(); }
+function hideTyping() { var el = document.getElementById('typingRow'); if (el) el.remove(); }
 
 function sendChip(btn) {
   document.getElementById('chipsArea').style.display = 'none';
-  var msg = btn.textContent;
-  sendMessage(msg);
+  sendMessage(btn.textContent.trim());
 }
-
 function sendMsg() {
   var inp = document.getElementById('chatInput');
   var msg = inp.value.trim();
@@ -285,41 +279,34 @@ function sendMsg() {
   document.getElementById('chipsArea').style.display = 'none';
   sendMessage(msg);
 }
-
 function sendMessage(msg) {
   isThinking = true;
   document.getElementById('sendBtn').disabled = true;
   addBubble('user', escHtml(msg));
   chatHistory.push({ role: 'user', content: msg });
   showTyping();
-
   fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      message: msg,
-      history: chatHistory.slice(-8),
-      career_context: career.title + ' | ' + career.category
-    })
+    body: JSON.stringify({ message: msg, history: chatHistory.slice(-8), career_context: career.title + ' | ' + career.category })
   })
-  .then(function(r){ return r.json(); })
+  .then(function(r) { return r.json(); })
   .then(function(d) {
     hideTyping();
     var reply = d.message || 'I apologize — please try again.';
-    addBubble('bot', formatMsg(reply));
+    addBubble('bot', fmtMsg(reply));
     chatHistory.push({ role: 'assistant', content: reply });
     isThinking = false;
     document.getElementById('sendBtn').disabled = false;
   })
   .catch(function() {
     hideTyping();
-    addBubble('bot', 'I\'m temporarily unavailable. Please try again in a moment.');
+    addBubble('bot', 'Temporarily unavailable. Please try again.');
     isThinking = false;
     document.getElementById('sendBtn').disabled = false;
   });
 }
-
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function formatMsg(t) { return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>'); }
+function fmtMsg(t)  { return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>'); }
 </script>
 {% endblock %}
