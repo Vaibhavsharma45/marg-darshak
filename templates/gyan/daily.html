@@ -1,124 +1,62 @@
 {% extends 'base.html' %}
-{% block title %}Gyan Kosh — Aaj Ka Shloka{% endblock %}
-{% block extra_css %}
-<style>
-.gyan-wrap { padding: 60px 0 80px; position: relative; z-index: 1; }
-.gyan-wrap::before {
-    content: ''; position: fixed; inset: 0; pointer-events: none;
-    background: radial-gradient(ellipse 700px 500px at 50% -5%, rgba(236,72,153,0.1), transparent);
-}
-.shloka-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(236,72,153,0.2);
-    border-radius: 24px; overflow: hidden;
-    max-width: 760px; margin: 0 auto;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
-}
-.shloka-top {
-    background: linear-gradient(135deg,rgba(236,72,153,0.2),rgba(244,63,94,0.12));
-    padding: 36px 40px; text-align: center;
-    position: relative; overflow: hidden;
-}
-.shloka-top::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(249,168,212,0.5),transparent); }
-.shloka-top::after { content:'🕉'; position:absolute; right:20px; bottom:-10px; font-size:6rem; opacity:.08; pointer-events:none; }
-.sanskrit-text {
-    font-family: 'Noto Sans Devanagari', sans-serif;
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    color: rgba(255,255,255,0.85); line-height: 2.2;
-    font-weight: 600;
-}
-.shloka-body { padding: 36px 40px; }
-.meaning-block {
-    padding: 18px 20px; border-radius: 14px; margin-bottom: 16px;
-}
-.mb-hindi { background:rgba(236,72,153,0.07); border:1px solid rgba(236,72,153,0.18); }
-.mb-english { background:rgba(6,182,212,0.07); border:1px solid rgba(6,182,212,0.18); }
-.mb-apply { background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.18); }
-.meaning-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-.ml-hindi { color:#f9a8d4; }
-.ml-english { color:#67e8f9; }
-.ml-apply { color:#6ee7b7; }
-.meaning-text { font-size:0.9rem; line-height:1.8; color:rgba(255,255,255,0.75); }
-.hindi-meaning { font-family:'Noto Sans Devanagari',sans-serif; }
-.tags-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:24px; }
-.actions-row { display:flex; gap:12px; flex-wrap:wrap; }
-.tag-shloka { padding:4px 12px; border-radius:20px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); font-size:0.72rem; }
-</style>
-{% endblock %}
+
+{% block title %}Daily Wisdom - Gyan Kosh{% endblock %}
 
 {% block content %}
-<div class="gyan-wrap">
-<div class="container" style="position:relative;z-index:1;">
-
-    <!-- Header -->
+<div class="container my-5">
     <div class="text-center mb-5">
-        <p class="sec-label" style="justify-content:center;">Gyan Kosh</p>
-        <h1 style="font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:white;">
-            Aaj Ka <span class="gradient-text">Shloka</span> 🕉️
-        </h1>
-        <p style="color:var(--text-dim);margin-top:8px;font-family:'Noto Sans Devanagari',sans-serif;">
-            {{ shloka.source }} — अध्याय {{ shloka.chapter }}, श्लोक {{ shloka.verse_number }}
-        </p>
+        <h1 class="display-4">📿 Gyan Kosh</h1>
+        <h3 class="devanagari-text mb-3">ज्ञान कोश</h3>
+        <p class="lead">Daily Spiritual Wisdom</p>
     </div>
-
-    <!-- Shloka Card -->
-    <div class="shloka-card">
-        <div class="shloka-top">
-            <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">
-                {{ shloka.source }} · Chapter {{ shloka.chapter }} · Verse {{ shloka.verse_number }}
-            </div>
-            <div class="sanskrit-text">{{ shloka.sanskrit_text or '' }}</div>
-        </div>
-
-        <div class="shloka-body">
-            {% if shloka.hindi_meaning %}
-            <div class="meaning-block mb-hindi">
-                <div class="meaning-label ml-hindi">🇮🇳 Hindi Arth</div>
-                <div class="meaning-text hindi-meaning">{{ shloka.hindi_meaning }}</div>
-            </div>
-            {% endif %}
-
-            {% if shloka.english_meaning %}
-            <div class="meaning-block mb-english">
-                <div class="meaning-label ml-english">🌏 English Meaning</div>
-                <div class="meaning-text">{{ shloka.english_meaning }}</div>
-            </div>
-            {% endif %}
-
-            {% if shloka.practical_application %}
-            <div class="meaning-block mb-apply">
-                <div class="meaning-label ml-apply">💡 Modern Career Application</div>
-                <div class="meaning-text">{{ shloka.practical_application }}</div>
-            </div>
-            {% endif %}
-
-            {% if shloka.tags %}
-            <div class="tags-row">
-                {% for tag in shloka.tags.split(';') %}
-                <span class="tag-shloka">{{ tag }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <div class="actions-row">
-                <a href="/gyan" class="btn-ghost" style="padding:10px 22px;font-size:0.85rem;">
-                    🔀 New Shloka
-                </a>
-                <a href="/gyan/search" class="btn-ghost" style="padding:10px 22px;font-size:0.85rem;">
-                    🔍 Search All Verses
-                </a>
-                <a href="/chat" class="btn-glow" style="padding:10px 22px;font-size:0.85rem;">
-                    🤖 Apply to My Career
-                </a>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 p-4">
+                <div class="card-body">
+                    <h5 class="text-muted mb-3">{{ shloka.source }} - Chapter {{ shloka.chapter }}, Verse {{ shloka.verse_number }}</h5>
+                    
+                    <div class="sanskrit-text mb-4 p-4 bg-light rounded">
+                        <h3 class="devanagari-text text-center" style="line-height: 2;">
+                            {{ shloka.sanskrit_text }}
+                        </h3>
+                    </div>
+                    
+                    <div class="meaning mb-4">
+                        <h5><i class="fas fa-language"></i> हिंदी अर्थ:</h5>
+                        <p class="devanagari-text fs-5">{{ shloka.hindi_meaning }}</p>
+                    </div>
+                    
+                    <div class="meaning mb-4">
+                        <h5><i class="fas fa-globe"></i> English Meaning:</h5>
+                        <p class="fs-5">{{ shloka.english_meaning }}</p>
+                    </div>
+                    
+                    <div class="application p-3 bg-primary bg-opacity-10 rounded">
+                        <h5><i class="fas fa-lightbulb"></i> Practical Application:</h5>
+                        <p class="mb-0">{{ shloka.practical_application }}</p>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <a href="https://www.youtube.com/results?search_query=bhagavad+gita+chapter+{{ shloka.chapter }}+verse+{{ shloka.verse_number }}+recitation" target="_blank" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search"></i> Find Audio
+                        </a>
+                        <a href="/gyan/search" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Explore More
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Tip -->
-    <div style="max-width:760px;margin:24px auto 0;text-align:center;color:var(--text-fade);font-size:0.78rem;">
-        💡 "Apply to My Career" pe click karo — AI tumhare career situation ke hisaab se is shloka ka practical use batayega
-    </div>
-
 </div>
-</div>
+
+<style>
+    .devanagari-text {
+        font-family: 'Noto Sans Devanagari', sans-serif;
+    }
+    .sanskrit-text {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+    }
+</style>
 {% endblock %}

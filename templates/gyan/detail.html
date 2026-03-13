@@ -1,96 +1,76 @@
 {% extends 'base.html' %}
-{% block title %}{{ shloka.source }} {{ shloka.chapter }}.{{ shloka.verse_number }} — Marg Darshak{% endblock %}
-{% block extra_css %}
-<style>
-:root{--ind:#6366f1;--vio:#8b5cf6;--pink:#ec4899;--em:#10b981;--border:rgba(255,255,255,0.08);--surface:rgba(255,255,255,0.04);--textdim:rgba(255,255,255,0.45);}
-.gd-wrap{position:relative;z-index:1;padding:60px 0 80px;}
-.gd-wrap::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 700px 500px at 50% -5%,rgba(139,92,246,0.1),rgba(236,72,153,0.06),transparent);}
-.shloka-card{background:rgba(255,255,255,.03);border:1px solid rgba(139,92,246,.2);border-radius:24px;overflow:hidden;max-width:760px;margin:0 auto;box-shadow:0 30px 80px rgba(0,0,0,.4);}
-.shloka-top{background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(236,72,153,.14));padding:40px;text-align:center;position:relative;overflow:hidden;}
-.shloka-top::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(196,181,253,.5),transparent);}
-.shloka-top::after{content:'🕉';position:absolute;right:20px;bottom:-16px;font-size:7rem;opacity:.07;pointer-events:none;}
-.sanskrit-text{font-family:'Noto Sans Devanagari',sans-serif;font-size:clamp(1rem,2.5vw,1.2rem);color:rgba(255,255,255,.9);line-height:2.1;font-weight:600;}
-.shloka-body{padding:36px 40px;}
-@media(max-width:600px){.shloka-top,.shloka-body{padding:24px;}}
-.meaning-block{padding:18px 20px;border-radius:14px;margin-bottom:14px;}
-.mb-hindi{background:rgba(236,72,153,.06);border:1px solid rgba(236,72,153,.18);}
-.mb-english{background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.18);}
-.mb-apply{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.18);}
-.ml{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.meaning-text{font-size:14px;line-height:1.85;color:rgba(255,255,255,.75);}
-.tag-chip{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);font-size:12px;color:#64748b;}
-</style>
-{% endblock %}
+
+{% block title %}Shloka Detail - Gyan Kosh{% endblock %}
 
 {% block content %}
-<div class="gd-wrap">
-<div class="container" style="position:relative;z-index:1;">
-
-  <!-- Nav -->
-  <div style="max-width:760px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-    <a href="/gyan/search" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:7px 14px;color:var(--textdim);font-size:12px;text-decoration:none;font-weight:600;transition:all .2s;"
-       onmouseover="this.style.borderColor='rgba(139,92,246,.4)';this.style.color='white'"
-       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">← All Verses</a>
-    <a href="/gyan" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:7px 14px;color:var(--textdim);font-size:12px;text-decoration:none;font-weight:600;transition:all .2s;"
-       onmouseover="this.style.borderColor='rgba(139,92,246,.4)';this.style.color='white'"
-       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">🔀 New Verse</a>
-  </div>
-
-  <!-- Shloka card -->
-  <div class="shloka-card" style="animation:fadeUp .6s ease both;">
-    <div class="shloka-top">
-      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:16px;">
-        {{ shloka.source }} &nbsp;·&nbsp; Chapter {{ shloka.chapter }} &nbsp;·&nbsp; Verse {{ shloka.verse_number }}
-      </div>
-      {% if shloka.sanskrit_text %}
-      <div class="sanskrit-text">{{ shloka.sanskrit_text }}</div>
-      {% endif %}
+<div class="container my-5">
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 p-4">
+                <div class="card-body">
+                    <h5 class="text-muted mb-4">
+                        {{ shloka.source }} - Chapter {{ shloka.chapter }}, Verse {{ shloka.verse_number }}
+                    </h5>
+                    
+                    <!-- Sanskrit Text -->
+                    <div class="sanskrit-box mb-4 p-4 rounded">
+                        <h3 class="devanagari-text text-center" style="line-height: 2; color: #764ba2;">
+                            {{ shloka.sanskrit_text }}
+                        </h3>
+                    </div>
+                    
+                    <!-- Hindi Meaning -->
+                    <div class="meaning-section mb-4 p-3 bg-light rounded">
+                        <h5><i class="fas fa-language text-primary"></i> हिंदी अर्थ:</h5>
+                        <p class="devanagari-text fs-5 mb-0">{{ shloka.hindi_meaning }}</p>
+                    </div>
+                    
+                    <!-- English Meaning -->
+                    <div class="meaning-section mb-4 p-3 bg-light rounded">
+                        <h5><i class="fas fa-globe text-success"></i> English Meaning:</h5>
+                        <p class="fs-5 mb-0">{{ shloka.english_meaning }}</p>
+                    </div>
+                    
+                    <!-- Practical Application -->
+                    <div class="application-box p-4 rounded mb-4" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-left: 4px solid #667eea;">
+                        <h5><i class="fas fa-lightbulb text-warning"></i> Practical Application:</h5>
+                        <p class="fs-6 mb-0">{{ shloka.practical_application }}</p>
+                    </div>
+                    
+                    <!-- Tags -->
+                    <div class="mb-4">
+                        <h6>Tags:</h6>
+                        {% for tag in shloka.tags.split(';') %}
+                        <span class="badge bg-secondary me-2">{{ tag.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-4">
+                        <a href="https://www.youtube.com/results?search_query=bhagavad+gita+chapter+{{ shloka.chapter }}+verse+{{ shloka.verse_number }}+sanskrit" target="_blank" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search"></i> Find Audio
+                        </a>
+                        <a href="/gyan/search" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-search"></i> More Verses
+                        </a>
+                        <a href="/gyan" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Daily Wisdom
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="shloka-body">
-      {% if shloka.hindi_meaning %}
-      <div class="meaning-block mb-hindi">
-        <div class="ml" style="color:#f9a8d4;">🇮🇳 Hindi Meaning</div>
-        <div class="meaning-text" style="font-family:'Noto Sans Devanagari',sans-serif;">{{ shloka.hindi_meaning }}</div>
-      </div>
-      {% endif %}
-
-      {% if shloka.english_meaning %}
-      <div class="meaning-block mb-english">
-        <div class="ml" style="color:#67e8f9;">🌏 English Meaning</div>
-        <div class="meaning-text" style="font-style:italic;">"{{ shloka.english_meaning }}"</div>
-      </div>
-      {% endif %}
-
-      {% if shloka.practical_application %}
-      <div class="meaning-block mb-apply">
-        <div class="ml" style="color:#6ee7b7;">💡 Modern Career Application</div>
-        <div class="meaning-text">{{ shloka.practical_application }}</div>
-      </div>
-      {% endif %}
-
-      {% if shloka.tags %}
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;">
-        {% for tag in shloka.tags.split(';') %}
-        <span class="tag-chip">{{ tag.strip() }}</span>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="/gyan" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 22px;color:var(--textdim);font-size:13px;font-weight:500;text-decoration:none;transition:all .2s;"
-           onmouseover="this.style.borderColor='rgba(139,92,246,.4)';this.style.color='white'"
-           onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">🔀 Another Verse</a>
-        <a href="/gyan/search" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 22px;color:var(--textdim);font-size:13px;font-weight:500;text-decoration:none;transition:all .2s;"
-           onmouseover="this.style.borderColor='rgba(139,92,246,.4)';this.style.color='white'"
-           onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--textdim)'">🔍 Search Verses</a>
-        <a href="/chat" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#ec4899);border:none;border-radius:12px;padding:10px 22px;color:white;font-size:13px;font-weight:600;text-decoration:none;box-shadow:0 6px 20px rgba(99,102,241,.35);transition:all .2s;"
-           onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 28px rgba(99,102,241,.5)'"
-           onmouseout="this.style.transform='';this.style.boxShadow='0 6px 20px rgba(99,102,241,.35)'">🤖 Apply to My Career</a>
-      </div>
-    </div>
-  </div>
-
 </div>
-</div>
+
+<style>
+    .devanagari-text {
+        font-family: 'Noto Sans Devanagari', sans-serif;
+    }
+    .sanskrit-box {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+        border: 2px solid #ff9800;
+    }
+</style>
 {% endblock %}

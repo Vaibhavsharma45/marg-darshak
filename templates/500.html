@@ -1,16 +1,31 @@
 {% extends 'base.html' %}
-{% block title %}Server Error — Marg Darshak{% endblock %}
+
+{% block title %}500 - Server Error{% endblock %}
+
 {% block content %}
-<div style="position:relative;z-index:1;min-height:calc(100vh - 62px);display:flex;align-items:center;justify-content:center;padding:40px 20px;text-align:center;">
-  <div style="animation:fadeUp .6s ease both;">
-    <div style="font-size:72px;margin-bottom:20px;opacity:.7;">⚙️</div>
-    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.25);margin-bottom:10px;">Error 500</p>
-    <h1 style="font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:white;margin-bottom:12px;">Something Went Wrong</h1>
-    <p style="color:rgba(255,255,255,.45);font-size:15px;line-height:1.7;margin-bottom:32px;max-width:400px;margin-inline:auto;">An unexpected error occurred. Please try again.</p>
-    <div style="display:flex;gap:12px;justify-content:center;">
-      <a href="/" class="btn-p">← Go Home</a>
-      <a href="javascript:location.reload()" class="btn-g">Try Again</a>
+<div class="container text-center my-5 py-5">
+    <div class="error-page">
+        <h1 class="display-1 fw-bold text-danger">500</h1>
+        <h2 class="mb-4">Internal Server Error</h2>
+        <p class="lead mb-4">
+            Something went wrong on our end. We're working to fix it!
+        </p>
+        <div class="mb-4">
+            <i class="fas fa-tools" style="font-size: 5rem; color: #dc3545; opacity: 0.5;"></i>
+        </div>
+        <a href="/" class="btn btn-primary btn-lg">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
     </div>
-  </div>
 </div>
+
+<style>
+    .error-page {
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
 {% endblock %}
