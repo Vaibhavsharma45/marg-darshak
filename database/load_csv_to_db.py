@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 def load_csv_data():
-    """Load CSV files into database"""
+    """Load CSV files into database""" 
     
     db_path = 'database/marg_darshak.db'
     
