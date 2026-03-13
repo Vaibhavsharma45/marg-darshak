@@ -7,7 +7,7 @@
 **"जीवन के हर पड़ाव पर सही दिशा"**  
 *Finding Your Path in Life*
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=render)]([https://marg-darshak-lzy4.onrender.com](https://marg-darshak-14hw.onrender.com))
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=render)]((https://marg-darshak-14hw.onrender.com))
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/Vaibhavsharma045/marg-darshak)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0-lightgrey?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)
