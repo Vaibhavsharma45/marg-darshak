@@ -2,786 +2,531 @@
 {% block title %}Dashboard — Marg Darshak{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════
-   ROOT & BACKGROUND
-══════════════════════════════════════════ */
-.db-wrap {
-    min-height: 100vh;
-    background: #060818;
-    font-family: 'DM Sans', sans-serif;
-    position: relative;
-    overflow-x: hidden;
-    padding: 0 0 80px;
-    color: #e2e8f0;
-}
-#starCanvas {
-    position: fixed; inset: 0;
-    pointer-events: none; z-index: 0;
-}
-.nebula {
-    position: fixed; border-radius: 50%;
-    filter: blur(90px); opacity: 0.15;
-    pointer-events: none; z-index: 0;
-    animation: nFloat 14s ease-in-out infinite;
-}
-.n1{width:700px;height:700px;background:radial-gradient(#6d28d9,transparent);top:-200px;left:-150px;}
-.n2{width:550px;height:550px;background:radial-gradient(#db2777,transparent);top:35%;right:-120px;animation-delay:-5s;}
-.n3{width:450px;height:450px;background:radial-gradient(#0891b2,transparent);bottom:5%;left:25%;animation-delay:-9s;}
-@keyframes nFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-28px) scale(1.04);}}
+/* ═══ DASHBOARD LAYOUT ═══ */
+.db-wrap { position: relative; z-index: 1; padding: 32px 0 80px; }
 
-/* ══════════════════════════════════════════
-   TOP NAV BAR
-══════════════════════════════════════════ */
-.db-topbar {
-    position: relative; z-index: 10;
-    padding: 20px 0 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 32px;
-}
-.db-topbar-inner {
-    display: flex; align-items: center;
-    justify-content: space-between; gap: 16px;
-    flex-wrap: wrap; padding-bottom: 18px;
-}
-.db-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem; font-weight: 700;
-    color: #a78bfa; letter-spacing: 0.5px;
-    text-decoration: none;
-}
-.db-nav-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-.db-nav-pill {
-    padding: 6px 14px; border-radius: 20px;
-    font-size: 0.78rem; font-weight: 500;
-    color: rgba(255,255,255,0.5);
-    text-decoration: none; border: none;
-    background: transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.db-nav-pill:hover,.db-nav-pill.active {
-    background: rgba(124,58,237,0.2);
-    color: #c4b5fd;
-    border-radius: 20px;
-}
-.db-nav-pill.active { border: 1px solid rgba(124,58,237,0.4); }
+/* Star canvas for dashboard only */
+#dbCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.nebula { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.14; pointer-events: none; z-index: 0; animation: nf 14s ease-in-out infinite; }
+.n1 { width: 700px; height: 700px; background: radial-gradient(#4338ca, transparent); top: -20%; left: -10%; }
+.n2 { width: 550px; height: 550px; background: radial-gradient(#be185d, transparent); top: 40%; right: -8%; animation-delay: -5s; }
+.n3 { width: 400px; height: 400px; background: radial-gradient(#0e7490, transparent); bottom: 0; left: 30%; animation-delay: -9s; }
+@keyframes nf { 0%,100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.05) translateY(-20px); } }
 
-/* ══════════════════════════════════════════
-   CONTENT LAYER
-══════════════════════════════════════════ */
-.db-content { position: relative; z-index: 1; }
-
-/* ══════════════════════════════════════════
-   HERO WELCOME STRIP
-══════════════════════════════════════════ */
+/* ═══ HERO STRIP ═══ */
 .hero-strip {
-    background: linear-gradient(120deg,
-        rgba(109,40,217,0.22) 0%,
-        rgba(219,39,119,0.12) 50%,
-        rgba(8,145,178,0.12) 100%);
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(24px);
-    border-radius: 22px;
-    padding: 28px 32px;
-    margin-bottom: 28px;
-    position: relative; overflow: hidden;
+  background: linear-gradient(120deg, rgba(99,102,241,0.2), rgba(236,72,153,0.1), rgba(8,145,178,0.1));
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(24px);
+  border-radius: 22px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  position: relative; overflow: hidden;
+  animation: fadeUp .5s ease both;
 }
 .hero-strip::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent);
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent);
 }
-/* Decorative corner glow */
 .hero-strip::after {
-    content: '';
-    position: absolute; top: -60px; right: -60px;
-    width: 200px; height: 200px;
-    background: radial-gradient(rgba(124,58,237,0.3), transparent 70%);
-    border-radius: 50%; pointer-events: none;
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(rgba(99,102,241,0.2), transparent);
+  pointer-events: none;
 }
 
-/* ══════════════════════════════════════════
-   AVATAR
-══════════════════════════════════════════ */
-.cosmo-avatar {
-    width: 68px; height: 68px; border-radius: 50%;
-    background: linear-gradient(135deg,#7c3aed,#ec4899);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-size: 1.7rem; font-weight: 800; color: white;
-    flex-shrink: 0; position: relative;
-    animation: avGlow 3s ease infinite;
-}
-@keyframes avGlow{
-    0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0),0 0 24px rgba(124,58,237,0.5);}
-    50%{box-shadow:0 0 0 6px rgba(124,58,237,0.08),0 0 32px rgba(236,72,153,0.5);}
-}
-.av-ring {
-    position: absolute; inset: -5px; border-radius: 50%;
-    background: conic-gradient(#7c3aed,#ec4899,#06b6d4,#7c3aed);
-    z-index: -1; animation: avSpin 5s linear infinite;
-    mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),white calc(100% - 2.5px));
-    -webkit-mask: radial-gradient(farthest-side,transparent calc(100% - 2.5px),white calc(100% - 2.5px));
-}
-@keyframes avSpin{to{transform:rotate(360deg);}}
-
-/* ══════════════════════════════════════════
-   SECTION GRID
-══════════════════════════════════════════ */
-.db-grid { display: grid; gap: 20px; }
-.db-grid-2col { grid-template-columns: 1fr 340px; }
-@media(max-width:992px){.db-grid-2col{grid-template-columns:1fr;}}
-
-/* ══════════════════════════════════════════
-   GLASS PANEL
-══════════════════════════════════════════ */
-.glass {
-    background: rgba(255,255,255,0.035);
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(18px);
-    border-radius: 20px;
-    position: relative; overflow: hidden;
-    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-}
-.glass:hover {
-    border-color: rgba(124,58,237,0.3);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 18px rgba(124,58,237,0.1);
-    transform: translateY(-2px);
-}
-.glass-shine::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
+/* Avatar */
+.db-avatar {
+  width: 58px; height: 58px; border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 1.4rem; color: white; flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
+  animation: glow 3s ease infinite;
 }
 
-/* Section label */
-.sec-label {
-    font-size: 0.68rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 2px;
-    color: rgba(255,255,255,0.3); margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
+/* Type badges */
+.type-badge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  text-transform: capitalize;
 }
-.sec-label::after {
-    content: ''; flex: 1; height: 1px;
-    background: rgba(255,255,255,0.07);
+.tb-student     { background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.3); color: #6ee7b7; }
+.tb-graduate    { background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.3); color: #a5b4fc; }
+.tb-professional{ background: rgba(6,182,212,.15);  border: 1px solid rgba(6,182,212,.3);  color: #67e8f9; }
+.tb-state       { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.6); }
+
+/* ═══ TWO-COLUMN GRID ═══ */
+.db-grid { display: grid; grid-template-columns: 1fr 380px; gap: 22px; align-items: start; }
+@media(max-width:900px) { .db-grid { grid-template-columns: 1fr; } }
+
+/* ═══ GLASS PANELS ═══ */
+.db-panel {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 20px;
 }
 
-/* ══════════════════════════════════════════
-   PERSONALITY HERO CARD
-══════════════════════════════════════════ */
+/* ═══ PERSONALITY CARD ═══ */
 .pers-card {
-    background: linear-gradient(135deg,
-        rgba(124,58,237,0.18) 0%,
-        rgba(236,72,153,0.1) 100%);
-    border: 1px solid rgba(124,58,237,0.3);
-    border-radius: 16px; padding: 20px;
-    margin-bottom: 20px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(236,72,153,0.08));
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 14px; padding: 18px 20px; margin-bottom: 20px;
+  position: relative; overflow: hidden;
 }
 .pers-card::before {
-    content: attr(data-emoji);
-    position: absolute; right: 16px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 4rem; opacity: 0.12;
-    pointer-events: none;
-}
-.pers-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.3rem; font-weight: 800;
-    color: white; margin: 0 0 4px;
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(165,180,252,0.5), transparent);
 }
 .live-dot {
-    display: inline-block;
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #4ade80; margin-right: 6px;
-    box-shadow: 0 0 8px #4ade80;
-    animation: ldot 1.4s ease infinite;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80; box-shadow: 0 0 8px #4ade80;
+  animation: blink 1.4s ease infinite; display: inline-block;
 }
-@keyframes ldot{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.pers-name {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 1.2rem; color: white; margin: 4px 0;
+}
 
-/* ══════════════════════════════════════════
-   TRAIT BARS — CIRCULAR MINI + BAR
-══════════════════════════════════════════ */
-.trait-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px; margin-bottom: 20px;
-}
-.trait-item {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 12px; padding: 12px 14px;
-    transition: all 0.25s;
-}
-.trait-item:hover { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); }
-.trait-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.trait-name { font-size: 0.78rem; color: rgba(255,255,255,0.65); text-transform: capitalize; font-weight: 500; }
-.trait-val { font-family: 'Syne',sans-serif; font-size: 0.9rem; font-weight: 700; }
-.trait-bar-bg { height: 5px; border-radius: 5px; background: rgba(255,255,255,0.07); overflow: hidden; }
-.trait-bar-fg { height: 100%; border-radius: 5px; width: 0; transition: width 1.6s cubic-bezier(0.34,1.3,0.64,1); }
+/* ═══ TRAIT BARS ═══ */
+.trait-item { margin-bottom: 12px; }
+.trait-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.trait-name { font-size: 12px; color: rgba(255,255,255,.6); font-weight: 500; text-transform: capitalize; }
+.trait-val  { font-size: 12px; font-weight: 700; }
+.trait-bar-bg { height: 5px; border-radius: 5px; background: rgba(255,255,255,.07); overflow: hidden; }
+.trait-bar-fg { height: 100%; border-radius: 5px; width: 0; transition: width 1.4s cubic-bezier(.34,1.2,.64,1); }
 
-/* ══════════════════════════════════════════
-   CAREER ROADMAP PREVIEW
-══════════════════════════════════════════ */
-.roadmap-list { display: flex; flex-direction: column; gap: 10px; }
+/* ═══ STRENGTHS ═══ */
+.str-tag {
+  display: inline-block; padding: 4px 11px; border-radius: 20px;
+  background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.22);
+  color: #a5b4fc; font-size: 11px; font-weight: 600; margin: 3px;
+}
+
+/* ═══ ROADMAP LIST ═══ */
 .roadmap-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 16px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; text-decoration: none;
-    transition: all 0.25s; position: relative;
-    overflow: hidden;
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: 12px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  text-decoration: none; color: var(--dim);
+  transition: all .25s; margin-bottom: 8px;
 }
-.roadmap-item::before {
-    content: '';
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 3px; border-radius: 3px 0 0 3px;
-    background: linear-gradient(#7c3aed,#ec4899);
-    opacity: 0; transition: opacity 0.25s;
-}
-.roadmap-item:hover { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); transform: translateX(4px); }
-.roadmap-item:hover::before { opacity: 1; }
+.roadmap-item:hover { background: rgba(99,102,241,.08); border-color: rgba(99,102,241,.3); color: white; }
 .roadmap-rank {
-    width: 28px; height: 28px; border-radius: 8px;
-    background: linear-gradient(135deg,rgba(124,58,237,0.3),rgba(236,72,153,0.2));
-    border: 1px solid rgba(124,58,237,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne',sans-serif; font-size: 0.75rem; font-weight: 700;
-    color: #c4b5fd; flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 12px; color: white; flex-shrink: 0;
 }
-.roadmap-title { color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 600; }
-.roadmap-arrow { margin-left: auto; color: rgba(255,255,255,0.25); font-size: 0.8rem; transition: color 0.2s; }
-.roadmap-item:hover .roadmap-arrow { color: #a78bfa; }
+.roadmap-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.82); }
+.roadmap-arrow { margin-left: auto; color: rgba(255,255,255,.25); font-size: 16px; transition: color .2s; }
+.roadmap-item:hover .roadmap-arrow { color: #a5b4fc; }
 
-/* ══════════════════════════════════════════
-   STRENGTHS TAGS
-══════════════════════════════════════════ */
-.strength-tag {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 12px; border-radius: 20px;
-    font-size: 0.76rem; font-weight: 500;
-    background: rgba(6,182,212,0.12);
-    border: 1px solid rgba(6,182,212,0.25);
-    color: #67e8f9;
-}
-.strength-tag::before { content: '✦'; font-size: 0.6rem; }
-
-/* ══════════════════════════════════════════
-   PROGRESS RING (SVG)
-══════════════════════════════════════════ */
-.progress-ring-wrap { position: relative; display: inline-flex; }
-.ring-label {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-}
-.ring-pct { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 800; color: white; line-height: 1; }
-.ring-sub { font-size: 0.62rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
-
-/* ══════════════════════════════════════════
-   QUICK ACTION BUTTONS
-══════════════════════════════════════════ */
+/* ═══ QUICK ACTIONS ═══ */
 .qa-btn {
-    display: flex; align-items: center; gap: 12px;
-    padding: 13px 16px; border-radius: 14px;
-    text-decoration: none; font-size: 0.84rem; font-weight: 500;
-    border: 1px solid rgba(255,255,255,0.07);
-    background: rgba(255,255,255,0.03);
-    color: rgba(255,255,255,0.7);
-    transition: all 0.22s; margin-bottom: 8px;
-    position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 12px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  text-decoration: none; color: rgba(255,255,255,.75);
+  transition: all .25s; margin-bottom: 8px;
+  font-size: 13px; font-weight: 500;
 }
-.qa-btn::after {
-    content: '→';
-    margin-left: auto; color: rgba(255,255,255,0.2);
-    transition: all 0.2s; font-size: 0.9rem;
-}
-.qa-btn:hover { color: white; transform: translateX(4px); }
-.qa-btn:hover::after { color: #a78bfa; transform: translateX(3px); }
+.qa-btn:hover { background: rgba(99,102,241,.08); border-color: rgba(99,102,241,.28); color: white; }
 .qa-ico {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
 }
+.qa-arrow { margin-left: auto; font-size: 14px; color: rgba(255,255,255,.25); }
 
-/* ══════════════════════════════════════════
-   ACTIVITY / TIMELINE
-══════════════════════════════════════════ */
-.timeline { display: flex; flex-direction: column; gap: 0; }
-.tl-item { display: flex; gap: 14px; padding-bottom: 16px; position: relative; }
-.tl-item:not(:last-child)::before {
-    content: '';
-    position: absolute; left: 15px; top: 32px; bottom: 0;
-    width: 1px; background: rgba(255,255,255,0.07);
-}
-.tl-dot {
-    width: 30px; height: 30px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);
-}
-.tl-body { padding-top: 4px; }
-.tl-title { font-size: 0.82rem; color: rgba(255,255,255,0.8); font-weight: 500; }
-.tl-time { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
-
-/* ══════════════════════════════════════════
-   SHLOKA BANNER
-══════════════════════════════════════════ */
-.shloka-banner {
-    background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(244,63,94,0.12));
-    border: 1px solid rgba(236,72,153,0.25);
-    border-radius: 18px; padding: 22px;
-    text-align: center; position: relative; overflow: hidden;
-}
-.shloka-banner::after {
-    content: '🕉';
-    position: absolute; right: 12px; bottom: -8px;
-    font-size: 5rem; opacity: 0.07; pointer-events: none;
-}
-
-/* ══════════════════════════════════════════
-   STAT CHIPS
-══════════════════════════════════════════ */
-.stat-chips { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+/* ═══ STAT CHIPS ═══ */
+.stat-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .stat-chip {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px; padding: 16px 10px;
-    text-align: center; transition: all 0.25s;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px; padding: 16px 10px; text-align: center;
 }
-.stat-chip:hover { border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.07); transform: translateY(-2px); }
-.chip-num {
-    font-family: 'Syne',sans-serif; font-size: 1.5rem; font-weight: 800;
-    background: linear-gradient(135deg,#a78bfa,#f0abfc);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    line-height: 1;
-}
-.chip-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 4px; letter-spacing: 0.5px; }
+.chip-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #a5b4fc, #f0abfc); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.chip-lbl { font-size: 11px; color: var(--dim); margin-top: 2px; }
 
-/* ══════════════════════════════════════════
-   EMPTY STATE
-══════════════════════════════════════════ */
+/* ═══ PROFILE RING ═══ */
+.progress-ring-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
+.ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-pct { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: white; }
+.ring-sub { font-size: 10px; color: var(--dim); }
+
+/* ═══ TIMELINE ═══ */
+.tl-item { display: flex; gap: 14px; padding-bottom: 18px; position: relative; }
+.tl-item:not(:last-child)::before { content: ''; position: absolute; left: 14px; top: 30px; bottom: 0; width: 1px; background: rgba(255,255,255,.08); }
+.tl-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; border: 1px solid; }
+.tl-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.8); margin-bottom: 3px; }
+.tl-time  { font-size: 11px; color: var(--dim); }
+
+/* ═══ EMPTY STATE ═══ */
 .empty-state {
-    border: 1px dashed rgba(255,255,255,0.12);
-    border-radius: 20px; padding: 48px 28px; text-align: center;
+  text-align: center; padding: 44px 24px;
+  background: rgba(255,255,255,.03);
+  border: 1px dashed rgba(99,102,241,.25); border-radius: 18px;
 }
-.pulse-orb {
-    width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 20px;
-    background: linear-gradient(135deg,#7c3aed,#ec4899);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; position: relative;
-}
-.pulse-orb::before,.pulse-orb::after {
-    content:''; position:absolute; inset:0; border-radius:50%;
-    border:2px solid rgba(124,58,237,0.4); animation:pOrb 2s ease infinite;
-}
-.pulse-orb::after{animation-delay:1s;}
-@keyframes pOrb{0%{transform:scale(1);opacity:.8;}100%{transform:scale(2.1);opacity:0;}}
+.pulse-orb { font-size: 3rem; margin-bottom: 14px; animation: glow 2.5s ease infinite; display: block; }
 
-/* ══════════════════════════════════════════
-   TYPE BADGES
-══════════════════════════════════════════ */
-.tb { display:inline-block; padding:3px 12px; border-radius:20px; font-size:0.72rem; font-weight:600; }
-.tb-student  { background:rgba(16,185,129,0.15); color:#6ee7b7; border:1px solid rgba(16,185,129,0.25); }
-.tb-graduate { background:rgba(59,130,246,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.25); }
-.tb-professional { background:rgba(139,92,246,0.15); color:#c4b5fd; border:1px solid rgba(139,92,246,0.25); }
-.tb-state { background:rgba(236,72,153,0.12); color:#f9a8d4; border:1px solid rgba(236,72,153,0.22); }
+/* ═══ SHLOKA BANNER ═══ */
+.shloka-banner {
+  background: linear-gradient(135deg, rgba(236,72,153,.18), rgba(244,63,94,.1));
+  border: 1px solid rgba(236,72,153,.25);
+  border-radius: 18px; padding: 24px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.shloka-banner::before {
+  content: '🕉';
+  position: absolute; right: 12px; bottom: -12px;
+  font-size: 4.5rem; opacity: .07; pointer-events: none;
+}
 
-/* ══════════════════════════════════════════
-   ANIMATIONS
-══════════════════════════════════════════ */
-@keyframes fSlideDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
-@keyframes fSlideUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
-.anim-d0{animation:fSlideDown .55s ease both;}
-.anim-u1{animation:fSlideUp .6s ease .1s both;}
-.anim-u2{animation:fSlideUp .6s ease .2s both;}
-.anim-u3{animation:fSlideUp .6s ease .3s both;}
-.anim-u4{animation:fSlideUp .6s ease .4s both;}
+/* Animations */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.au0 { animation: fadeUp .5s ease .00s both; }
+.au1 { animation: fadeUp .5s ease .08s both; }
+.au2 { animation: fadeUp .5s ease .16s both; }
+.au3 { animation: fadeUp .5s ease .24s both; }
+.au4 { animation: fadeUp .5s ease .32s both; }
 </style>
 {% endblock %}
 
 {% block content %}
-<canvas id="starCanvas"></canvas>
+<!-- Star canvas -->
+<canvas id="dbCanvas"></canvas>
 <div class="nebula n1"></div>
 <div class="nebula n2"></div>
 <div class="nebula n3"></div>
 
-<div class="db-wrap">
-
-    <!-- ── TOP NAV ── -->
-    <div class="db-topbar">
-        <div class="container db-topbar-inner">
-            <a href="/" class="db-logo">🧭 Marg Darshak</a>
-            <nav class="db-nav-pills">
-                <a href="/dashboard"  class="db-nav-pill active">Dashboard</a>
-                <a href="/assessment" class="db-nav-pill">Assessment</a>
-                <a href="/career/browse" class="db-nav-pill">Careers</a>
-                <a href="/chat"       class="db-nav-pill">AI Chat</a>
-                <a href="/gyan"       class="db-nav-pill">Gyan</a>
-                <a href="/skill"      class="db-nav-pill">Skills</a>
-            </nav>
-            <a href="/logout" style="font-size:0.78rem;color:rgba(255,255,255,0.3);text-decoration:none;padding:6px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;transition:all .2s;" onmouseover="this.style.color='#f9a8d4'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Sign out</a>
-        </div>
-    </div>
-
-    <div class="db-content container">
-
-        <!-- ── HERO STRIP ── -->
-        <div class="hero-strip anim-d0">
-            <div class="d-flex align-items-center gap-4 flex-wrap">
-                <div class="cosmo-avatar">
-                    <div class="av-ring"></div>
-                    {{ user.name[0].upper() if user.name else '?' }}
-                </div>
-                <div style="flex:1; min-width:200px;">
-                    <p style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:0 0 4px;">Your Space</p>
-                    <h2 style="font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:white;margin:0 0 10px;">
-                        Namaste, {{ user.name.split()[0] if user.name else 'Explorer' }}! 🙏
-                    </h2>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <span class="tb tb-{{ user.user_type or 'student' }}">{{ user.user_type.title() if user.user_type else 'Student' }}</span>
-                        {% if user.state %}<span class="tb tb-state">📍 {{ user.state }}</span>{% endif %}
-                        {% if user.current_field %}<span class="tb tb-state">{{ user.current_field }}</span>{% endif %}
-                    </div>
-                </div>
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="/assessment" style="padding:10px 22px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:white;text-decoration:none;font-weight:600;font-size:0.85rem;box-shadow:0 8px 22px rgba(124,58,237,0.4);transition:all .3s;border:none;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 28px rgba(124,58,237,0.55)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 22px rgba(124,58,237,0.4)'">
-                        ✦ New Assessment
-                    </a>
-                    <a href="/chat" style="padding:10px 22px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);text-decoration:none;font-weight:500;font-size:0.85rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
-                        🤖 Ask AI
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- ── MAIN GRID ── -->
-        <div class="db-grid db-grid-2col">
-
-            <!-- ════ LEFT COLUMN ════ -->
-            <div>
-
-                {% if assessment %}
-                <!-- PERSONALITY + TRAITS -->
-                <div class="glass glass-shine p-4 mb-5 anim-u1">
-                    <p class="sec-label">Career Profile</p>
-
-                    <!-- Personality badge -->
-                    <div class="pers-card mb-4" data-emoji="🎯">
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                            <span class="live-dot"></span>
-                            <span style="font-size:0.72rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;">Personality Type</span>
-                        </div>
-                        <div class="pers-name">{{ assessment.personality_type or 'Career Explorer' }}</div>
-                        <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-top:4px;">
-                            {% if assessment.completed_at %}📅 {{ assessment.completed_at[:10] }}{% endif %}
-                            {% if assessment.state %} &nbsp;·&nbsp; 📍 {{ assessment.state }}{% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Trait Grid — rendered by JS -->
-                    <p class="sec-label" style="margin-top:0;">Trait Breakdown</p>
-                    <div class="trait-grid" id="traitGrid">
-                        <!-- JS fills this -->
-                    </div>
-
-                    <!-- Strengths -->
-                    <div id="strengthsRow" style="margin-bottom:20px;"></div>
-                </div>
-
-                <!-- CAREER ROADMAP PREVIEW -->
-                <div class="glass glass-shine p-4 mb-5 anim-u2">
-                    <p class="sec-label">Recommended Career Paths</p>
-                    <div class="roadmap-list" id="roadmapList">
-                        <!-- JS fills this -->
-                    </div>
-                    <a href="/career/browse" style="display:block;text-align:center;margin-top:16px;padding:10px;border-radius:12px;border:1px dashed rgba(124,58,237,0.3);color:rgba(167,139,250,0.7);text-decoration:none;font-size:0.82rem;transition:all .25s;" onmouseover="this.style.background='rgba(124,58,237,0.08)'" onmouseout="this.style.background=''">
-                        Explore all 40+ careers →
-                    </a>
-                </div>
-
-                {% else %}
-                <!-- EMPTY STATE -->
-                <div class="empty-state mb-5 anim-u1">
-                    <div class="pulse-orb">🧠</div>
-                    <h5 style="font-family:'Syne',sans-serif;font-weight:800;color:white;margin-bottom:8px;">Assessment nahi li abhi tak</h5>
-                    <p style="color:rgba(255,255,255,0.38);font-size:0.88rem;max-width:320px;margin:0 auto 24px;">5 minute ka psychometric test lo aur apna personality type, top careers aur skill roadmap pao</p>
-                    <a href="/assessment" style="display:inline-block;padding:12px 30px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:white;text-decoration:none;font-weight:700;font-family:'Syne',sans-serif;font-size:0.9rem;box-shadow:0 8px 22px rgba(124,58,237,0.4);">
-                        ✦ Assessment Shuru Karo
-                    </a>
-                </div>
-                {% endif %}
-
-                <!-- PLATFORM STATS -->
-                <div class="anim-u3">
-                    <p class="sec-label">Platform At a Glance</p>
-                    <div class="stat-chips">
-                        <div class="stat-chip">
-                            <div style="font-size:1.4rem;margin-bottom:6px;">🎯</div>
-                            <div class="chip-num">40+</div>
-                            <div class="chip-lbl">Careers</div>
-                        </div>
-                        <div class="stat-chip">
-                            <div style="font-size:1.4rem;margin-bottom:6px;">📚</div>
-                            <div class="chip-num">55+</div>
-                            <div class="chip-lbl">Resources</div>
-                        </div>
-                        <div class="stat-chip">
-                            <div style="font-size:1.4rem;margin-bottom:6px;">🕉️</div>
-                            <div class="chip-num">15+</div>
-                            <div class="chip-lbl">Shlokas</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ════ RIGHT COLUMN ════ -->
-            <div class="d-flex flex-column gap-4">
-
-                {% if assessment %}
-                <!-- PROFILE COMPLETENESS RING -->
-                <div class="glass glass-shine p-4 anim-u1">
-                    <p class="sec-label">Profile Strength</p>
-                    <div class="d-flex align-items-center gap-4">
-                        <div class="progress-ring-wrap">
-                            <svg width="90" height="90" viewBox="0 0 90 90">
-                                <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="7"/>
-                                <circle cx="45" cy="45" r="36" fill="none"
-                                    stroke="url(#ringGrad)" stroke-width="7"
-                                    stroke-linecap="round"
-                                    stroke-dasharray="226" stroke-dashoffset="56"
-                                    transform="rotate(-90 45 45)"/>
-                                <defs>
-                                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stop-color="#7c3aed"/>
-                                        <stop offset="100%" stop-color="#ec4899"/>
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                            <div class="ring-label">
-                                <div class="ring-pct">75%</div>
-                                <div class="ring-sub">done</div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:10px;">Complete karo profile:</div>
-                            <div style="display:flex;flex-direction:column;gap:6px;font-size:0.76rem;">
-                                <div style="color:#4ade80;">✅ Account created</div>
-                                <div style="color:#4ade80;">✅ Assessment completed</div>
-                                <div style="color:rgba(255,255,255,0.35);">○ Profile photo add karo</div>
-                                <div style="color:rgba(255,255,255,0.35);">○ Skills update karo</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- QUICK ACTIONS -->
-                <div class="glass glass-shine p-4 anim-u2">
-                    <p class="sec-label">Quick Actions</p>
-                    <a href="/assessment" class="qa-btn">
-                        <div class="qa-ico" style="background:rgba(124,58,237,0.18);">🧠</div> Career Assessment
-                    </a>
-                    <a href="/chat" class="qa-btn">
-                        <div class="qa-ico" style="background:rgba(16,185,129,0.18);">🤖</div> AI Career Counselor
-                    </a>
-                    <a href="/career/browse" class="qa-btn">
-                        <div class="qa-ico" style="background:rgba(6,182,212,0.18);">🎯</div> Browse All Careers
-                    </a>
-                    <a href="/skill" class="qa-btn">
-                        <div class="qa-ico" style="background:rgba(251,191,36,0.18);">📚</div> Free Resources
-                    </a>
-                    <a href="/gyan" class="qa-btn">
-                        <div class="qa-ico" style="background:rgba(236,72,153,0.18);">🕉️</div> Daily Wisdom
-                    </a>
-                </div>
-
-                <!-- ACTIVITY / WHAT TO DO NEXT -->
-                <div class="glass glass-shine p-4 anim-u3">
-                    <p class="sec-label">What To Do Next</p>
-                    <div class="timeline">
-                        {% if not assessment %}
-                        <div class="tl-item">
-                            <div class="tl-dot" style="background:rgba(124,58,237,0.2);border-color:rgba(124,58,237,0.4);">🧠</div>
-                            <div class="tl-body">
-                                <div class="tl-title">Assessment lo — career path clear karo</div>
-                                <div class="tl-time">Step 1 · 5 minute</div>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="tl-item">
-                            <div class="tl-dot" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);">✅</div>
-                            <div class="tl-body">
-                                <div class="tl-title">Assessment completed!</div>
-                                <div class="tl-time">Done · {{ assessment.completed_at[:10] if assessment.completed_at else '' }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
-                        <div class="tl-item">
-                            <div class="tl-dot" style="background:rgba(6,182,212,0.15);border-color:rgba(6,182,212,0.3);">🎯</div>
-                            <div class="tl-body">
-                                <div class="tl-title">Career detail page dekho — roadmap explore karo</div>
-                                <div class="tl-time">Step 2 · Recommended</div>
-                            </div>
-                        </div>
-                        <div class="tl-item">
-                            <div class="tl-dot" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.3);">📚</div>
-                            <div class="tl-body">
-                                <div class="tl-title">Free resources se skill building shuru karo</div>
-                                <div class="tl-time">Step 3 · Ongoing</div>
-                            </div>
-                        </div>
-                        <div class="tl-item">
-                            <div class="tl-dot" style="background:rgba(236,72,153,0.15);border-color:rgba(236,72,153,0.3);">🤖</div>
-                            <div class="tl-body">
-                                <div class="tl-title">AI Counselor se doubts clear karo</div>
-                                <div class="tl-time">Step 4 · Anytime</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SHLOKA BANNER -->
-                <div class="shloka-banner anim-u4">
-                    <div style="font-size:1.8rem;margin-bottom:8px;">🕉️</div>
-                    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:white;margin-bottom:4px;">Aaj Ka Gyan</div>
-                    <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:16px;">Bhagavad Gita se career wisdom</div>
-                    <a href="/gyan" style="display:inline-block;padding:8px 22px;border-radius:10px;background:linear-gradient(135deg,#ec4899,#f43f5e);color:white;text-decoration:none;font-weight:600;font-size:0.82rem;">
-                        Shloka Dekho ✨
-                    </a>
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- ══ JINJA DATA — outside all script tags ══ -->
+<!-- Jinja data for JS — outside all script tags -->
 {% if assessment %}
 <div id="__db"
-     data-scores='{{ assessment.scores | tojson }}'
-     data-careers='{{ assessment.recommended_careers | tojson }}'
-     data-strengths='{{ assessment.strengths | tojson if assessment.strengths else "[]" }}'
-     style="display:none;"></div>
+  data-scores='{{ assessment.scores | tojson }}'
+  data-careers='{{ assessment.recommended_careers | tojson }}'
+  data-strengths='{{ assessment.strengths | tojson if assessment.strengths else "[]" }}'
+  style="display:none;"></div>
 {% endif %}
 
+<div class="db-wrap">
+<div class="container" style="position:relative;z-index:1;">
+
+  <!-- ── HERO STRIP ── -->
+  <div class="hero-strip au0">
+    <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+      <div class="db-avatar">{{ user.name[0].upper() if user.name else '?' }}</div>
+      <div style="flex:1;min-width:180px;">
+        <p style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin:0 0 4px;">Your Space</p>
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:white;margin:0 0 10px;">
+          Welcome back, {{ user.name.split()[0] if user.name else 'Explorer' }}! 👋
+        </h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="type-badge tb-{{ user.user_type or 'student' }}">{{ user.user_type.title() if user.user_type else 'Student' }}</span>
+          {% if user.state %}<span class="type-badge tb-state">📍 {{ user.state }}</span>{% endif %}
+          {% if user.current_field %}<span class="type-badge tb-state">{{ user.current_field }}</span>{% endif %}
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="/assessment" class="btn-p" style="font-size:.85rem;padding:10px 20px;">✦ New Assessment</a>
+        <a href="/chat" class="btn-g" style="font-size:.85rem;padding:10px 20px;">🤖 Ask AI</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN GRID ── -->
+  <div class="db-grid">
+
+    <!-- LEFT COLUMN -->
+    <div>
+      {% if assessment %}
+      <!-- Career Profile -->
+      <div class="db-panel au1">
+        <p class="sec-label">Career Profile</p>
+
+        <!-- Personality -->
+        <div class="pers-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span class="live-dot"></span>
+            <span style="font-size:10px;color:rgba(255,255,255,.38);letter-spacing:1.5px;text-transform:uppercase;">Personality Type</span>
+          </div>
+          <div class="pers-name">{{ assessment.personality_type or 'Career Explorer 🧭' }}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">
+            {% if assessment.completed_at %}📅 {{ assessment.completed_at[:10] }}{% endif %}
+            {% if assessment.state %} &nbsp;·&nbsp; 📍 {{ assessment.state }}{% endif %}
+          </div>
+        </div>
+
+        <!-- Trait breakdown (filled by JS) -->
+        <p class="sec-label">Trait Breakdown</p>
+        <div id="traitGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:20px;"></div>
+
+        <!-- Strengths (filled by JS) -->
+        <div id="strengthsRow"></div>
+      </div>
+
+      <!-- Recommended Careers -->
+      <div class="db-panel au2">
+        <p class="sec-label">Your Top Career Matches</p>
+        <div id="roadmapList"></div>
+        <a href="/career/browse"
+          style="display:block;text-align:center;margin-top:12px;padding:10px;border-radius:12px;border:1px dashed rgba(99,102,241,.25);color:rgba(165,180,252,.65);text-decoration:none;font-size:13px;transition:all .25s;"
+          onmouseover="this.style.background='rgba(99,102,241,.06)'"
+          onmouseout="this.style.background=''">
+          Explore all 30+ career paths →
+        </a>
+      </div>
+
+      {% else %}
+      <!-- Empty state -->
+      <div class="empty-state au1" style="margin-bottom:20px;">
+        <span class="pulse-orb">🧠</span>
+        <h5 style="font-family:'Syne',sans-serif;font-weight:800;color:white;margin-bottom:8px;">No Assessment Yet</h5>
+        <p style="color:rgba(255,255,255,.38);font-size:14px;max-width:300px;margin:0 auto 22px;">Take a 5-minute psychometric test to discover your personality type, top careers, and skill roadmap.</p>
+        <a href="/assessment" class="btn-p">✦ Start Assessment</a>
+      </div>
+      {% endif %}
+
+      <!-- Platform Stats -->
+      <div class="au3">
+        <p class="sec-label">Platform</p>
+        <div class="stat-chips">
+          <div class="stat-chip">
+            <div style="font-size:1.3rem;margin-bottom:4px;">🎯</div>
+            <div class="chip-num">30+</div>
+            <div class="chip-lbl">Careers</div>
+          </div>
+          <div class="stat-chip">
+            <div style="font-size:1.3rem;margin-bottom:4px;">📚</div>
+            <div class="chip-num">55+</div>
+            <div class="chip-lbl">Resources</div>
+          </div>
+          <div class="stat-chip">
+            <div style="font-size:1.3rem;margin-bottom:4px;">🕉️</div>
+            <div class="chip-num">15</div>
+            <div class="chip-lbl">Shlokas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:18px;">
+
+      {% if assessment %}
+      <!-- Profile Strength Ring -->
+      <div class="db-panel au1">
+        <p class="sec-label">Profile Strength</p>
+        <div style="display:flex;align-items:center;gap:18px;">
+          <div class="progress-ring-wrap">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="7"/>
+              <circle cx="45" cy="45" r="36" fill="none"
+                stroke="url(#rg)" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="226" stroke-dashoffset="56"
+                transform="rotate(-90 45 45)"/>
+              <defs>
+                <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%"   stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#ec4899"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-label">
+              <div class="ring-pct">75%</div>
+              <div class="ring-sub">done</div>
+            </div>
+          </div>
+          <div style="flex:1;">
+            <p style="font-size:12px;color:rgba(255,255,255,.55);margin-bottom:10px;">Complete your profile:</p>
+            <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;">
+              <span style="color:#4ade80;">✅ Account created</span>
+              <span style="color:#4ade80;">✅ Assessment completed</span>
+              {% if user.state %}<span style="color:#4ade80;">✅ State set</span>{% else %}<span style="color:rgba(255,255,255,.3);">○ <a href="/profile/complete" style="color:#a5b4fc;text-decoration:none;">Set your state</a></span>{% endif %}
+              <span style="color:rgba(255,255,255,.3);">○ Add skills & interests</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Quick Actions -->
+      <div class="db-panel au2">
+        <p class="sec-label">Quick Actions</p>
+        <a href="/assessment"    class="qa-btn"><div class="qa-ico" style="background:rgba(99,102,241,.18);">🧠</div>Career Assessment<span class="qa-arrow">›</span></a>
+        <a href="/chat"          class="qa-btn"><div class="qa-ico" style="background:rgba(16,185,129,.18);">🤖</div>AI Career Counselor<span class="qa-arrow">›</span></a>
+        <a href="/career/browse" class="qa-btn"><div class="qa-ico" style="background:rgba(6,182,212,.18);">🎯</div>Browse All Careers<span class="qa-arrow">›</span></a>
+        <a href="/skill"         class="qa-btn"><div class="qa-ico" style="background:rgba(245,158,11,.18);">📚</div>Free Resources<span class="qa-arrow">›</span></a>
+        <a href="/gyan"          class="qa-btn"><div class="qa-ico" style="background:rgba(236,72,153,.18);">🕉️</div>Daily Wisdom<span class="qa-arrow">›</span></a>
+      </div>
+
+      <!-- What To Do Next -->
+      <div class="db-panel au3">
+        <p class="sec-label">What To Do Next</p>
+        <div>
+          {% if not assessment %}
+          <div class="tl-item">
+            <div class="tl-dot" style="background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.4);">🧠</div>
+            <div><div class="tl-title">Take the career assessment</div><div class="tl-time">Step 1 · 5 minutes</div></div>
+          </div>
+          {% else %}
+          <div class="tl-item">
+            <div class="tl-dot" style="background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.3);">✅</div>
+            <div><div class="tl-title">Assessment completed</div><div class="tl-time">Done · {{ assessment.completed_at[:10] if assessment.completed_at else 'Completed' }}</div></div>
+          </div>
+          {% endif %}
+          <div class="tl-item">
+            <div class="tl-dot" style="background:rgba(6,182,212,.15);border-color:rgba(6,182,212,.3);">🎯</div>
+            <div><div class="tl-title">Explore your career roadmap in detail</div><div class="tl-time">Step 2 · Recommended</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.3);">📚</div>
+            <div><div class="tl-title">Start building skills with free resources</div><div class="tl-time">Step 3 · Ongoing</div></div>
+          </div>
+          <div class="tl-item" style="padding-bottom:0;">
+            <div class="tl-dot" style="background:rgba(236,72,153,.15);border-color:rgba(236,72,153,.3);">🤖</div>
+            <div><div class="tl-title">Chat with AI Counselor for personalized guidance</div><div class="tl-time">Step 4 · Anytime</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shloka Banner -->
+      <div class="shloka-banner au4">
+        <div style="font-size:1.8rem;margin-bottom:8px;">🕉️</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:white;margin-bottom:4px;">Daily Wisdom</div>
+        <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:16px;">Bhagavad Gita — career guidance from ancient wisdom</p>
+        <a href="/gyan" style="display:inline-block;padding:8px 22px;border-radius:10px;background:linear-gradient(135deg,#ec4899,#f43f5e);color:white;text-decoration:none;font-weight:600;font-size:13px;">Read Today's Verse ✨</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
 <script>
-/* ════ STAR FIELD ════ */
+/* ── STAR CANVAS ── */
 (function(){
-    var c=document.getElementById('starCanvas');
-    var x=c.getContext('2d');
-    var S=[],SS=[];
-    function rsz(){c.width=window.innerWidth;c.height=window.innerHeight;}
-    rsz(); window.addEventListener('resize',rsz);
-    var cols=['#ffffff','#c4b5fd','#93c5fd','#f9a8d4','#a5f3fc','#fde68a'];
-    for(var i=0;i<240;i++) S.push({
-        x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight,
-        r:Math.random()*1.7+0.15, a:Math.random()*.7+.2,
-        sp:Math.random()*.35+.08, ph:Math.random()*Math.PI*2,
-        col:cols[Math.floor(Math.random()*cols.length)]
+  var c = document.getElementById('dbCanvas');
+  var x = c.getContext('2d');
+  var S = [], SS = [], W, H;
+  function rsz(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  rsz(); window.addEventListener('resize', rsz);
+  var cols = ['#fff','#c4b5fd','#93c5fd','#f9a8d4','#a5f3fc','#fde68a'];
+  for(var i=0;i<220;i++) S.push({
+    x:Math.random()*1, y:Math.random()*1,
+    r:Math.random()*1.7+.15, a:Math.random()*.65+.15,
+    sp:Math.random()*.35+.08, ph:Math.random()*Math.PI*2,
+    c:cols[Math.floor(Math.random()*cols.length)]
+  });
+  function spawn(){ SS.push({x:Math.random()*innerWidth*.7, y:Math.random()*innerHeight*.35, len:Math.random()*130+70, spd:Math.random()*9+5, a:1, ang:Math.PI/5+Math.random()*.25}); }
+  setInterval(spawn, 3800);
+  function draw(t){
+    x.clearRect(0,0,W,H);
+    S.forEach(function(s){
+      var tw = Math.max(.05,Math.min(.9, s.a+Math.sin(t*.001*s.sp+s.ph)*.3));
+      x.save();x.globalAlpha=tw;x.fillStyle=s.c;
+      if(s.r>1.1){x.shadowColor=s.c;x.shadowBlur=7;}
+      x.beginPath();x.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);x.fill();x.restore();
     });
-    function spawn(){SS.push({x:Math.random()*innerWidth*.7,y:Math.random()*innerHeight*.35,
-        len:Math.random()*130+70,spd:Math.random()*9+5,a:1,ang:Math.PI/5+Math.random()*.25});}
-    setInterval(spawn,3800);
-    function draw(t){
-        x.clearRect(0,0,c.width,c.height);
-        S.forEach(function(s){
-            var tw=Math.max(.08,Math.min(1,s.a+Math.sin(t*.001*s.sp+s.ph)*.32));
-            x.save();x.globalAlpha=tw;x.fillStyle=s.col;
-            if(s.r>1.1){x.shadowColor=s.col;x.shadowBlur=7;}
-            x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();x.restore();
-        });
-        SS=SS.filter(function(ss){
-            x.save();x.globalAlpha=ss.a;
-            var g=x.createLinearGradient(ss.x,ss.y,ss.x-Math.cos(ss.ang)*ss.len,ss.y-Math.sin(ss.ang)*ss.len);
-            g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(196,181,253,0)');
-            x.strokeStyle=g;x.lineWidth=1.6;x.shadowColor='#c4b5fd';x.shadowBlur=6;
-            x.beginPath();x.moveTo(ss.x,ss.y);
-            x.lineTo(ss.x-Math.cos(ss.ang)*ss.len,ss.y-Math.sin(ss.ang)*ss.len);
-            x.stroke();x.restore();
-            ss.x+=Math.cos(ss.ang)*ss.spd;ss.y+=Math.sin(ss.ang)*ss.spd;ss.a-=.016;
-            return ss.a>0;
-        });
-        requestAnimationFrame(draw);
-    }
+    SS = SS.filter(function(ss){
+      x.save();x.globalAlpha=ss.a;
+      var g=x.createLinearGradient(ss.x,ss.y,ss.x-Math.cos(ss.ang)*ss.len,ss.y-Math.sin(ss.ang)*ss.len);
+      g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(196,181,253,0)');
+      x.strokeStyle=g;x.lineWidth=1.6;x.shadowColor='#c4b5fd';x.shadowBlur=6;
+      x.beginPath();x.moveTo(ss.x,ss.y);x.lineTo(ss.x-Math.cos(ss.ang)*ss.len,ss.y-Math.sin(ss.ang)*ss.len);x.stroke();x.restore();
+      ss.x+=Math.cos(ss.ang)*ss.spd;ss.y+=Math.sin(ss.ang)*ss.spd;ss.a-=.016;
+      return ss.a>0;
+    });
     requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
 })();
 
-/* ════ ASSESSMENT DATA RENDER ════ */
+/* ── ASSESSMENT DATA RENDER ── */
 (function(){
-    var el=document.getElementById('__db');
-    if(!el) return;
-    var scores, careers, strengths;
-    try{
-        scores   = JSON.parse(el.getAttribute('data-scores')   || '{}');
-        careers  = JSON.parse(el.getAttribute('data-careers')  || '[]');
-        strengths= JSON.parse(el.getAttribute('data-strengths')|| '[]');
-    } catch(e){ return; }
+  var el = document.getElementById('__db');
+  if(!el) return;
+  var scores, careers, strengths;
+  try {
+    scores   = JSON.parse(el.getAttribute('data-scores')   || '{}');
+    careers  = JSON.parse(el.getAttribute('data-careers')  || '[]');
+    strengths= JSON.parse(el.getAttribute('data-strengths')|| '[]');
+  } catch(e){ return; }
 
-    var GRAD={
-        technical:      ['#3b82f6','#06b6d4'],
-        analytical:     ['#8b5cf6','#a78bfa'],
-        creative:       ['#f59e0b','#fbbf24'],
-        social:         ['#10b981','#34d399'],
-        entrepreneurial:['#ef4444','#f87171'],
-        leadership:     ['#ec4899','#f472b6']
-    };
+  var GRAD = {
+    technical:       ['#3b82f6','#06b6d4'],
+    analytical:      ['#8b5cf6','#a78bfa'],
+    creative:        ['#f59e0b','#fbbf24'],
+    social:          ['#10b981','#34d399'],
+    entrepreneurial: ['#ef4444','#f87171'],
+    leadership:      ['#ec4899','#f472b6']
+  };
 
-    /* ---- Trait Grid ---- */
-    var grid=document.getElementById('traitGrid');
-    if(grid && typeof scores==='object'){
-        var maxV=Math.max.apply(null,Object.values(scores))||1;
-        var h='';
-        Object.keys(scores).forEach(function(t){
-            var sc=scores[t];
-            var pct=Math.min(Math.round(sc/maxV*100),100);
-            var g=GRAD[t]||['#7c3aed','#c4b5fd'];
-            h+='<div class="trait-item">'
-             +'<div class="trait-top">'
-             +'<span class="trait-name">'+t+'</span>'
-             +'<span class="trait-val" style="color:'+g[0]+'">'+sc+'</span>'
-             +'</div>'
-             +'<div class="trait-bar-bg">'
-             +'<div class="trait-bar-fg" id="tb_'+t+'" style="background:linear-gradient(90deg,'+g[0]+','+g[1]+')"></div>'
-             +'</div></div>';
-        });
-        grid.innerHTML=h;
-        setTimeout(function(){
-            Object.keys(scores).forEach(function(t){
-                var bar=document.getElementById('tb_'+t);
-                if(bar) bar.style.width=Math.min(Math.round(scores[t]/maxV*100),100)+'%';
-            });
-        },250);
-    }
+  /* Trait Grid */
+  var grid = document.getElementById('traitGrid');
+  if(grid && typeof scores === 'object'){
+    var maxV = Math.max.apply(null, Object.values(scores).map(Number)) || 1;
+    var h = '';
+    Object.keys(scores).forEach(function(t){
+      var sc = Number(scores[t]);
+      var pct = Math.min(Math.round(sc/maxV*100), 100);
+      var g = GRAD[t] || ['#6366f1','#a5b4fc'];
+      h += '<div class="trait-item">'
+         + '<div class="trait-top">'
+         + '<span class="trait-name">' + t + '</span>'
+         + '<span class="trait-val" style="color:' + g[0] + '">' + sc + '</span>'
+         + '</div>'
+         + '<div class="trait-bar-bg">'
+         + '<div class="trait-bar-fg" id="tb_'+t+'" style="background:linear-gradient(90deg,'+g[0]+','+g[1]+')"></div>'
+         + '</div></div>';
+    });
+    grid.innerHTML = h;
+    setTimeout(function(){
+      Object.keys(scores).forEach(function(t){
+        var bar = document.getElementById('tb_'+t);
+        if(bar) bar.style.width = Math.min(Math.round(Number(scores[t])/maxV*100),100)+'%';
+      });
+    }, 300);
+  }
 
-    /* ---- Strengths ---- */
-    var sRow=document.getElementById('strengthsRow');
-    if(sRow && Array.isArray(strengths) && strengths.length){
-        var sh='<p class="sec-label">Your Strengths</p><div class="d-flex flex-wrap gap-2">';
-        strengths.forEach(function(s){ sh+='<span class="strength-tag">'+s+'</span>'; });
-        sh+='</div>';
-        sRow.innerHTML=sh;
-    }
+  /* Strengths */
+  var sRow = document.getElementById('strengthsRow');
+  if(sRow && Array.isArray(strengths) && strengths.length){
+    var sh = '<p class="sec-label" style="margin-top:4px;">Your Key Strengths</p><div style="display:flex;flex-wrap:wrap;gap:5px;">';
+    strengths.forEach(function(s){ sh += '<span class="str-tag">'+s+'</span>'; });
+    sh += '</div>';
+    sRow.innerHTML = sh;
+  }
 
-    /* ---- Career Roadmap ---- */
-    var rList=document.getElementById('roadmapList');
-    if(rList && Array.isArray(careers) && careers.length){
-        var rh='';
-        careers.forEach(function(c,i){
-            rh+='<a href="/career/browse" class="roadmap-item">'
-              +'<div class="roadmap-rank">'+(i+1)+'</div>'
-              +'<div>'
-              +'<div class="roadmap-title">'+c+'</div>'
-              +'<div style="font-size:0.71rem;color:rgba(255,255,255,0.3);margin-top:2px;">Tap to explore full roadmap</div>'
-              +'</div>'
-              +'<div class="roadmap-arrow">›</div>'
-              +'</a>';
-        });
-        rList.innerHTML=rh;
-    }
+  /* Career roadmap list */
+  var rList = document.getElementById('roadmapList');
+  if(rList && Array.isArray(careers) && careers.length){
+    var rh = '';
+    careers.forEach(function(c, i){
+      var title = typeof c === 'string' ? c : (c.title || c);
+      var cid   = typeof c === 'object' && c.id ? c.id : '';
+      var href  = cid ? '/career/detail/'+cid : '/career/browse';
+      rh += '<a href="'+href+'" class="roadmap-item">'
+          + '<div class="roadmap-rank">'+(i+1)+'</div>'
+          + '<div><div class="roadmap-title">'+title+'</div>'
+          + '<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;">View full roadmap →</div></div>'
+          + '<div class="roadmap-arrow">›</div>'
+          + '</a>';
+    });
+    rList.innerHTML = rh;
+  }
 })();
 </script>
 {% endblock %}
